@@ -12,6 +12,8 @@ cmd à mettre
 après avoir installer les dépendances, lancer la commande
 ```bash
 mvn clean install
+```
+```bash
 mvn --projects backend spring-boot:run
 ```
 
