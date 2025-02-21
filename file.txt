@@ -1,0 +1,50 @@
+
+Git local setup
+
+Configure your Git identity locally to use it only for this project:
+
+git config --local user.name "Arnaud Gomes"
+git config --local user.email "arnaud.gomes@etu.u-bordeaux.fr"
+
+Add files
+
+Push files to this repository using SSH or HTTPS. If you're unsure, we recommend SSH.
+
+    SSH
+    HTTPS
+
+How to use SSH keys?
+Create a new repository
+
+git clone git@gitlab.emi.u-bordeaux.fr:pdl-l3/teams/2025/v3/v3b.git
+cd v3b
+git switch --create main
+touch README.md
+git add README.md
+git commit -m "add README"
+git push --set-upstream origin main
+
+Push an existing folder
+Go to your folder
+
+cd existing_folder
+
+Configure the Git repository
+
+git init --initial-branch=main
+git remote add origin git@gitlab.emi.u-bordeaux.fr:pdl-l3/teams/2025/v3/v3b.git
+git add .
+git commit -m "Initial commit"
+git push --set-upstream origin main
+
+Push an existing Git repository
+Go to your repository
+
+cd existing_repo
+
+Configure the Git repository
+
+git remote rename origin old-origin
+git remote add origin git@gitlab.emi.u-bordeaux.fr:pdl-l3/teams/2025/v3/v3b.git
+git push --set-upstream origin --all
+git push --set-upstream origin --tags
