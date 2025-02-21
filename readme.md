@@ -1,4 +1,4 @@
-## Table of Contents
+# Table of Contents
 [[_TOC_]]
 
 ## Projet L3
