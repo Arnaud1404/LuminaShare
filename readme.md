@@ -5,6 +5,11 @@ Ctrl + Shift + b
 
 # some git command
 
+pour commit directement en lien avec les issues
+```bash
+git commit -am "description #1"
+```
+
 pour afficher le dernier commit
 ```bash
 git log | head
