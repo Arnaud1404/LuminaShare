@@ -9,6 +9,11 @@ pour installer les dépendances
 ```bash
 cmd à mettre
 ```
+après avoir installer les dépendances, lancer la commande
+```bash
+mvn clean install
+mvn --projects backend spring-boot:run
+```
 
 pour généré la doc
 ```bash
