@@ -1,48 +1,44 @@
 <script setup lang="ts">
 
-import type {Images} from './http-api';
-
+import type { ImageGallery } from "./http-api"
 
 defineProps<{
-   images:Images[]
+  images: ImageGallery[]
 }>()
-
-
 </script>
 
 <template>
-<div v-for=" img in images" class="img_container" >
-  <img v-if="img.img_in_url" :src = "img.img_in_url" >
-  <p class="description_image"> {{img.name}}</p>
-</div>
+    <div class="image-grid">
+    <div v-for="img in images" :key="img.id" class="image-container">
+     <img v-if="img.dataUrl" :src="img.dataUrl" :alt="img.name">
+      <p>{{ img.name }}</p>
+    </div>
+  </div>
 </template>
 
-<style>
-
-.description_image {
-
-  height: 100px;
-  line-height: 100px;
-  text-align: center;
-  border: 1px dashed #5c61af;
-
+<style scoped>
+img:hover {
+  transform: scale(1.02);
 }
-
-.img_container {
+.image-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
   padding: 1rem;
 }
 
-.img_container img {
-  max-width: 100%;
-  max-height: auto;
+.image-container {
+  text-align: center;
+}
+
+.image-container img {
+  max-width: 200px;
+  max-height: 200px;
   object-fit: cover;
   border-radius: 4px;
 }
 
-.img_container p {
+.image-container p {
   margin-top: 0.5rem;
 }
 </style>
