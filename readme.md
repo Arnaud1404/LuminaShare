@@ -1,12 +1,20 @@
 # Projet L3
 Ceci est un projet developper par De Vos Kamiel, Arnaud Gomes
 
-# Quelque raccourci
+## 0. Table of Contents
+[[_TOC_]]
+
+## 1.Installation
+```bash
+cmd à mettre
+```
+
+## 2.Quelque raccourci
 
 pour prévisualiser le markdown
 Ctrl + Shift + v
 
-# some git command
+## 3.some git command
 
 pour commit directement en lien avec les issues
 ```bash
