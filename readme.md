@@ -1,14 +1,25 @@
+# Projet L3
+Ceci est un projet developper par De Vos Kamiel, Arnaud Gomes
+
 # Quelque raccourci
 
 pour prévisualiser le markdown
-Ctrl + Shift + b
+Ctrl + Shift + v
 
 # some git command
 
 pour commit directement en lien avec les issues
 ```bash
-git commit -am "description #1"
+git commit -am "description #NUM"
 ```
+
+si on souhaite directement fermer une issue on peut faire
+```bash
+git commit -am "description NOM#NUM"
+```
+Nom = Close | Fix | Resolve | Implemented
+
+[patern](https://docs.gitlab.com/user/project/issues/managing_issues/#default-closing-pattern)
 
 pour afficher le dernier commit
 ```bash
@@ -36,6 +47,3 @@ git checkout develop_kdevos
 git merge main
 git push
 ```
-
-
-Pour prévisualiser le Markdown : Ctrl + Shift + b
