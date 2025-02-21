@@ -1,8 +1,8 @@
-# Projet L3
-Ceci est un projet developper par De Vos Kamiel, Arnaud Gomes
-
 ## 0. Table of Contents
 [[_TOC_]]
+
+## Projet L3
+Ceci est un projet developper par De Vos Kamiel, Arnaud Gomes
 
 ## 1.Installation
 ```bash
