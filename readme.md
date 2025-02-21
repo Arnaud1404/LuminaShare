@@ -1,4 +1,10 @@
+# Quelque raccourci
+
+pour prévisualiser le markdown
+Ctrl + Shift + b
+
 # some git command
+
 pour afficher le dernier commit
 ```bash
 git log | head
