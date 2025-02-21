@@ -4,17 +4,23 @@
 # Projet L3
 Ceci est un projet developper par De Vos Kamiel, Arnaud Gomes
 
-# 1.Installation
+# Installation
+pour installer les dépendances
 ```bash
 cmd à mettre
 ```
 
-# 2.Quelque raccourci
+pour généré la doc
+```bash
+à def
+```
+
+# Quelque raccourci
 
 pour prévisualiser le markdown
 Ctrl + Shift + v
 
-# 3.some git command
+# some git command
 
 pour commit directement en lien avec les issues
 ```bash
