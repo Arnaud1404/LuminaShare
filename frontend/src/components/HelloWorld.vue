@@ -12,17 +12,16 @@ const images = ref<ImageGallery[]>([]);
 const selectedImage = ref<ImageGallery | null>(null);
 const file = ref<File | null>(null);
 
-// for the gallery
-onMounted(() => loadAllImages()
-      .then(response => images.value = response)
-      .catch(error => console.log(error)))
-
-getImagesAsJSON()
-  .then(result => {
-    console.log(result)
-    images.value = result;
-    console.log(images.value)})
-  .catch(error => console.log(error));
+// Load images when component mounts
+onMounted(() => {
+  getImagesAsJSON()
+    .then(result => {
+      console.log(result);
+      images.value = result;
+      console.log(images.value);
+    })
+    .catch(error => console.log(error));
+});
 
 const handleFileUpload = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -53,6 +52,17 @@ const submitFile = async () => {
   }
 };
 
+const downloadImage = () => {
+  if (selectedImage.value && selectedImage.value.dataUrl) {
+    const link = document.createElement('a');
+    link.href = selectedImage.value.dataUrl;
+    link.download = selectedImage.value.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+};
+
 // used for when the selectedImage changes
 watchEffect(async () => {
   if (selectedImage.value) {
@@ -76,8 +86,7 @@ watchEffect(async () => {
       </div>
   </div>
 
-  <Gallery :images="images"/>
-
+    
   <div class="select-image">
     <h3>Choose an image to display</h3>
     <select v-model="selectedImage">
@@ -86,18 +95,18 @@ watchEffect(async () => {
       </option>
     </select>
     <br/>
-    <!-- Render only if an image has been chosen -->
+    <button v-if="selectedImage && selectedImage.dataUrl" @click="downloadImage">Save Image</button>
     <img v-if="selectedImage && selectedImage.dataUrl" :src="selectedImage.dataUrl" :alt="selectedImage.name">
   </div>
+  <Gallery :images="images"/>
 </template>
-
 <style scoped>
  body{
  background:
         linear-gradient(
           rgba(0, 0, 0, 0.6), 
           rgba(0, 0, 0, 0.6)
-        ),
+        );
     }
 h1, h2, h3 {
   color: #ffffff;
