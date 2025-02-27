@@ -1,16 +1,21 @@
 package pdl.backend;
 
+import pdl.FileHandler.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.FileHandler;
 
 import javax.imageio.plugins.jpeg.JPEGImageReadParam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import pdl.FileHandler.FileController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -92,6 +97,8 @@ public class ImageController {
       Image img = new Image(file.getOriginalFilename(), file.getBytes(), file.getContentType(), file.getSize(),
           file.getResource().getDescription());
       imageDao.create(img);
+      FileController.store(file);
+
       // System.out.println("affiche");
       // System.out.println("truc :" + "la mort est là");
       return ResponseEntity

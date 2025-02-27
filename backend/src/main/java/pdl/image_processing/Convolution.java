@@ -1,4 +1,4 @@
-package imageprocessing;
+package pdl.image_processing;
 
 import boofcv.io.image.UtilImageIO;
 import boofcv.struct.image.GrayS16;
