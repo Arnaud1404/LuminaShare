@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.service.invoker.HttpRequestValues.Metadata;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RestController
@@ -88,11 +89,11 @@ public class ImageController {
       return new ResponseEntity<>("bad file type", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
 
     try {
-      int[] size = new int[2];
-      size[0] = 1;
-      size[1] = 2;
-      Image img = new Image(file.getOriginalFilename(), file.getBytes(), "jpg", file.getSize(), "");
+      Image img = new Image(file.getOriginalFilename(), file.getBytes(), file.getContentType(), file.getSize(),
+          file.getResource().getDescription());
       imageDao.create(img);
+      System.out.println("affiche");
+      System.err.println("content tyepe " + file.getResource().getDescription());
       return ResponseEntity
           .ok("Image added\n");
     } catch (IOException e2) {
@@ -107,8 +108,12 @@ public class ImageController {
     List<Image> imgs = imageDao.retrieveAll();
     for (Image img : imgs) {
       ObjectNode img_json = mapper.createObjectNode();
-      img_json.put("name", img.getName());
       img_json.put("id", img.getId());
+      img_json.put("name", img.getName());
+      img_json.put("type", img.getType());
+      img_json.put("lentgh", img.getLength());
+      img_json.put("description", img.getDesciption());
+
       nodes.add(img_json);
     }
     return nodes;
