@@ -92,8 +92,8 @@ public class ImageController {
       Image img = new Image(file.getOriginalFilename(), file.getBytes(), file.getContentType(), file.getSize(),
           file.getResource().getDescription());
       imageDao.create(img);
-      System.out.println("affiche");
-      System.err.println("content tyepe " + file.getResource().getDescription());
+      // System.out.println("affiche");
+      // System.out.println("truc :" + "la mort est là");
       return ResponseEntity
           .ok("Image added\n");
     } catch (IOException e2) {
@@ -111,7 +111,7 @@ public class ImageController {
       img_json.put("id", img.getId());
       img_json.put("name", img.getName());
       img_json.put("type", img.getType());
-      img_json.put("lentgh", img.getLength());
+      img_json.put("length", img.getLength());
       img_json.put("description", img.getDesciption());
 
       nodes.add(img_json);
