@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileController {
-
+ // insipré de https://spring.io/guides/gs/uploading-files
     private static final Path directory_location = Paths.get("src/main/resources/images");
 
     public static void store(MultipartFile file) {
@@ -17,7 +17,7 @@ public class FileController {
         try {
 
             if (file.isEmpty()) {
-                System.out.println("file empty");
+                throw new RuntimeException("file empty");
             }
             Path destinationFile = directory_location.resolve(
                     Paths.get(file.getOriginalFilename()))
