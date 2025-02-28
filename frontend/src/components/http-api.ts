@@ -1,47 +1,48 @@
 import axios, { type AxiosResponse } from 'axios';
 
-export interface Images {
+export interface ImageGallery {
     id: number;
     name: string;
-    img_in_url: string | null; // all the data of an image stored as bytes64 string
-
+    dataUrl: string | null;
+    
 }
 
-export async function getImages() {
-    let images: Images[] = [];
+export async function getImagesAsJSON() {
+    let json: ImageGallery[] = []
     await axios.get("/images")
-        .then((json_file) => images = json_file.data)
+        // Writes the id and name attributes but not dataUrl
+        .then((response) => json = response.data)
         .catch((error) => console.error(error));
-    for (var i = 0; i < images.length; i = i + 1) {
-        images[i].img_in_url = ""
-    }
-    return images;
+    return json;
 }
 
-export async function load_all_imageData(imgs: Images[], n: number) {
-    for (let i = 0; i < n; i = i + 1) {
-        if (!imgs[i].img_in_url) {
-            axios.get(`/images/${i}`, { responseType: "blob" })
-                .then(function (bytes_img: AxiosResponse) {
-                    const reader = new window.FileReader();
-                    reader.onload = () => {
-                        imgs[i].img_in_url = reader.result as string;
-                    };
-                    reader.readAsDataURL(bytes_img.data); // convert all the pixel of the img into a bse64 string that can be interpret by the navigator
-                }).catch(error => {
-                    console.log(error);
-                })
-        }
-    }
-}
-
-export async function load_json() {
-    let img:any = [];
-    axios.get('/images')
-        .then(function (response:AxiosResponse) {
-            img = response.data
-        }).catch(function (error) {
-            console.log(error)
+export async function loadImageData(imageID: number): Promise<string> {
+    return axios.get(`/images/${imageID}`, { responseType: "blob" })
+        .then(function (response: AxiosResponse) {
+            return new Promise<string>((resolve) => {
+                const reader = new window.FileReader();
+                reader.readAsDataURL(response.data);
+                reader.onload = () => resolve(reader.result as string);
+            });
+        }).catch(error => {
+            console.log(error);
+            throw error;
         });
-    return img;
+}
+
+
+
+export async function loadAllImages(): Promise<ImageGallery[]> {
+    const json = await getImagesAsJSON();
+    const imageDataUrlArray: ImageGallery[] = [];
+    
+    for (let i = 0; i < json.length; i++) {
+        const dataUrl = await loadImageData(i);
+        imageDataUrlArray.push({
+            id: json[i].id,
+            name: json[i].name,
+            dataUrl: dataUrl
+        });
+    }
+    return imageDataUrlArray;
 }

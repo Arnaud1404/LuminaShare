@@ -1,132 +1,140 @@
 <script setup lang="ts">
+import axios from 'axios';
+import { onMounted, ref, watchEffect } from 'vue';
+import { loadAllImages, loadImageData, getImagesAsJSON } from "./http-api"
 
-import { ref } from 'vue'
-import axios, { type AxiosResponse } from 'axios';
-import Gallery from "./Gallery.vue" //regarder props
-import { getImages,load_all_imageData } from './http-api';
-import type {Images} from './http-api';
+import type { ImageGallery } from "./http-api"
 
-var file = ref();
-var Images = ref<Images[]>([])
-var imgs = ref(); //images en json
+import Gallery from './Gallery.vue'
 
-async function json(){
-axios.get('/images')
-        .then(function (response:AxiosResponse) {
-            imgs.value = response.data
-        }).catch(function (error:any) {
-            console.log(error)
-        });
+
+const images = ref<ImageGallery[]>([]);
+const selectedImage = ref<ImageGallery | null>(null);
+const file = ref<File | null>(null);
+
+// for the gallery
+onMounted(() => loadAllImages()
+      .then(response => images.value = response)
+      .catch(error => console.log(error)))
+
+getImagesAsJSON()
+  .then(result => {
+    console.log(result)
+    images.value = result;
+    console.log(images.value)})
+  .catch(error => console.log(error));
+
+const handleFileUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files) {
+    file.value = target.files[0];
+  }
+};
+
+const submitFile = async () => {
+  if (!file.value) return;
+  
+  const formData = new FormData();
+  formData.append('file', file.value);
+  
+  try {
+    await axios.post('/images', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
       }
+    });
+    // Refresh the images list after a successful upload
+    loadAllImages()
+      .then(response => images.value = response)
+      .catch(error => console.log(error));
+    file.value = null;
+  } catch (error) {
+    console.error('Upload failed:', error);
+  }
+};
 
-function handleFileUpload( event:any ){
-  file.value = event.target.files[0];
-}
-
-async function submitFile(){
-  let fromData = new FormData();
-  fromData.append('file',file.value);
-
-  axios.post('/images',
-              fromData,
-              {
-                headers: {
-                  'Content-Type': 'multipart/from-data'
-                }
-              }
-  ).then(function(){
-      getImages().
-      then(response => {
-        Images.value = response;
-        load_all_imageData( Images.value, Images.value.length).
-        then(() =>
-        {
-          json().then(response => {
-          imgs.value = response;
-          })
-        })
-        .catch(error => console.log(`ERROR: ${error}`));
-      })
-      .catch(error => console.log(`ERROR: ${error}`));
-    })
-  .catch(error => console.log(`ERROR: ${error}`));
-
-}
-
-
-json().then(response => {
-  imgs.value = response;
-})
-
-
-getImages().then(response => {
-  Images.value = response;
-  load_all_imageData( Images.value, Images.value.length)
-})
-.catch(error => console.log(`ERROR: ${error}`));
-
-
-var img_src = ref("")
-var selected_image = ref()
-
-async function change_img( selected_image:number) {
-axios.get("/images/" + selected_image, { responseType:"blob" })
-    .then(function (img_bytes: AxiosResponse) {
-	const reader = new window.FileReader();
-	reader.readAsDataURL(img_bytes.data);
-	reader.onload = function() {
-	    const imageDataUrl = (reader.result as string);
-	    img_src.value = imageDataUrl;
-	}
+// used for when the selectedImage changes
+watchEffect(async () => {
+  if (selectedImage.value) {
+    selectedImage.value.dataUrl = await loadImageData(selectedImage.value.id);
+  }
 });
-}
-
-
 
 </script>
 
 <template>
-  <h1> Projet </h1>
+  <h1>Gallery</h1>
 
   <div class="container">
-    <div>
-      <hr/>
-      <label>File
-        <input type="file" @change="handleFileUpload( $event )"/>
-      </label>
-      <br>
-      <button v-on:click="submitFile()">Submit</button>
-    </div>
+      <div>
+        <h2>Upload File</h2>
+        <label>File
+          <input type="file" @change="handleFileUpload( $event )"/>
+        </label>
+        <br>
+        <button v-on:click="submitFile()">Submit</button>
+      </div>
   </div>
 
+  <Gallery :images="images"/>
 
-  <p>
-     the list of images in json format is : {{ imgs }}
-  </p>
-
-  <p>
-    here is the list of the images currently stored in the backend server :
-    <select v-model="selected_image" @change=" change_img(selected_image)">
-      <option v-for="image in imgs" :value="image.id">
-        {{image.name}}
+  <div class="select-image">
+    <h3>Choose an image to display</h3>
+    <select v-model="selectedImage">
+      <option v-for="img in images" :key="img.id" :value="img">
+        {{ img.name }}
       </option>
     </select>
-  </p>
-  <img :src= "img_src" id="select_file">
-
-  <section id="Gallery">
-    <h2> Gallery</h2>
-    <Gallery :images="Images"/>
-
-  </section>
-
+    <br/>
+    <!-- Render only if an image has been chosen -->
+    <img v-if="selectedImage && selectedImage.dataUrl" :src="selectedImage.dataUrl" :alt="selectedImage.name">
+  </div>
 </template>
 
 <style scoped>
-
-#select_file{
-  max-width: 60%;
-  height: auto;
+ body{
+ background:
+        linear-gradient(
+          rgba(0, 0, 0, 0.6), 
+          rgba(0, 0, 0, 0.6)
+        ),
+    }
+h1, h2, h3 {
+  color: #ffffff;
+  margin-bottom: 1.5rem;
 }
 
+.select-image {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+img:hover {
+  transform: scale(1.02);
+}
+
+button {
+  background-color: #4a4a4a;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #666;
+}
 </style>
