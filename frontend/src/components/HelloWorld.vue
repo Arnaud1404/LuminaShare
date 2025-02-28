@@ -53,6 +53,18 @@ const submitFile = async () => {
   }
 };
 
+const downloadImage = () => {
+  if (selectedImage.value && selectedImage.value.dataUrl) {
+    const link = document.createElement('a');
+    link.href = selectedImage.value.dataUrl;
+    link.download = selectedImage.value.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+};
+
+
 // used for when the selectedImage changes
 watchEffect(async () => {
   if (selectedImage.value) {
@@ -80,6 +92,10 @@ watchEffect(async () => {
 
   <div class="select-image">
     <h3>Choose an image to display</h3>
+    <br/>
+    <button v-if="selectedImage && selectedImage.dataUrl" @click="downloadImage">Save Image</button>
+    <br/>
+    
     <select v-model="selectedImage">
       <option v-for="img in images" :key="img.id" :value="img">
         {{ img.name }}
@@ -88,6 +104,8 @@ watchEffect(async () => {
     <br/>
     <!-- Render only if an image has been chosen -->
     <img v-if="selectedImage && selectedImage.dataUrl" :src="selectedImage.dataUrl" :alt="selectedImage.name">
+    
+
   </div>
 </template>
 
