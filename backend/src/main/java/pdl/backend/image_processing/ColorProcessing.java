@@ -1,4 +1,4 @@
-package pdl.image_processing;
+package pdl.backend.image_processing;
 
 import boofcv.alg.color.ColorHsv;
 import boofcv.io.image.ConvertBufferedImage;
