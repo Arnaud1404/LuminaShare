@@ -5,16 +5,15 @@ public class Image {
   private Long id;
   private String name;
   private String type;
-  private double length;
+  private String size;
   private String description;
   private byte[] data;
 
-  public Image(final String name, final byte[] data, final String type, double length,
-      final String desciption) {
+  public Image(final String name, final byte[] data, final String type, long widht, long height, final String desciption) {
     id = count++;
     this.name = name;
     this.type = type;
-    this.length = length;
+    this.size = widht + " x " + height + " pixels";
     this.description = desciption;
     this.data = data;
   }
@@ -35,8 +34,8 @@ public class Image {
     return description;
   }
 
-  public double getLength() {
-    return length;
+  public String getSize() {
+    return size;
   }
 
   public void setName(final String name) {

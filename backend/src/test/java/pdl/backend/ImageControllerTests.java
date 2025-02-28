@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
@@ -75,8 +77,14 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(7)
+	public void imageShouldNotBeFound() throws Exception {
+		this.mockMvc.perform(get("/images/0")).andExpect(status().isNotFound());
+	}
+
+	@Test
+	@Order(8)
 	public void createImageShouldReturnSuccess() throws Exception {
-		ClassPathResource imgFile = new ClassPathResource("images/test.jpg");
+		ClassPathResource imgFile = new ClassPathResource("images_test/test.jpg");
 
 		MockMultipartFile file_multipart = new MockMultipartFile("file", "test.jpg", MediaType.IMAGE_JPEG_VALUE,
 				imgFile.getInputStream());
@@ -85,7 +93,7 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(8)
+	@Order(9)
 	public void createImageShouldReturnUnsupportedMediaType() throws Exception {
 		ClassPathResource imgFile = new ClassPathResource("images/montagne.png");
 		byte[] fileContent;

@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
+import java.awt.image.BufferedImage;
 
+import javax.imageio.ImageIO;
 import javax.imageio.plugins.jpeg.JPEGImageReadParam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,6 +63,7 @@ public class ImageController {
   public ResponseEntity<?> deleteImage(@PathVariable("id") long id) {
     Optional<Image> img = imageDao.retrieve(id);
     if (img.isPresent()) {
+      FileController.remove_from_directory(img.get().getName());
       imageDao.delete(img.get());
       return ResponseEntity
           .ok("Image deleted successfully\n");
@@ -91,7 +94,8 @@ public class ImageController {
       return new ResponseEntity<>("bad file type", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
 
     try {
-      Image img = new Image(file.getOriginalFilename(), file.getBytes(), file.getContentType(), file.getSize(),
+      BufferedImage buff_img = ImageIO.read(file.getInputStream());
+      Image img = new Image(file.getOriginalFilename(), file.getBytes(), file.getContentType(), buff_img.getWidth(),buff_img.getHeight(),
           file.getResource().getDescription());
       imageDao.create(img);
       FileController.store(file);
@@ -115,7 +119,7 @@ public class ImageController {
       img_json.put("id", img.getId());
       img_json.put("name", img.getName());
       img_json.put("type", img.getType());
-      img_json.put("length", img.getLength());
+      img_json.put("size", img.getSize());
       img_json.put("description", img.getDesciption());
 
       nodes.add(img_json);
