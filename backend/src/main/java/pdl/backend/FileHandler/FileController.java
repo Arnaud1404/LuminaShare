@@ -1,10 +1,12 @@
 package pdl.backend.FileHandler;
 
+import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,15 +26,27 @@ public class FileController {
                     .normalize().toAbsolutePath();
             if (!destinationFile.getParent().equals(directory_location.toAbsolutePath())) { // pour des raison de
                                                                                             // sécurité
-                System.out.println("cannot store file outside current directory");
+                throw new RuntimeException("cannot store file outside current directory");
             }
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, destinationFile);
             }
 
         } catch (IOException e) {
-            System.out.println(e);
+            throw new RuntimeException(e);
+
         }
 
+    }
+
+    public static void remove_from_directory (String name ) {
+
+        Path fileToDelete = Paths.get(directory_location.toString() + "/" + name);
+        try {
+            Files.delete(fileToDelete);
+        }
+        catch (IOException e){
+            throw new RuntimeException(e);
+        }
     }
 }
