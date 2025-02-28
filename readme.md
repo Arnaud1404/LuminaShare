@@ -68,3 +68,12 @@ git checkout develop_kdevos
 git merge main
 git push
 ```
+
+pour supprimer une branche sur le gitlab
+```bash
+git push origin  --delete NOM_BRANCHE
+```
+pour supprimer une branche en local
+```bash
+git brand -D NOM_BRANCHE
+```
