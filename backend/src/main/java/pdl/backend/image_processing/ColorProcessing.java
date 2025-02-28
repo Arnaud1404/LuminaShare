@@ -1,5 +1,4 @@
-
-package imageprocessing;
+package pdl.backend.image_processing;
 
 import boofcv.alg.color.ColorHsv;
 import boofcv.io.image.ConvertBufferedImage;
@@ -98,13 +97,12 @@ public class ColorProcessing {
 
   public static GrayU8 histogramme_hue(Planar<GrayU8> input) {
     int height = 300;
-    int width = 360 ;
+    int width = 360;
     int max = 0;
     int histogram[] = new int[360];
     GrayU8 histo = new GrayU8(width, height);
     double r, g, b;
     double[] hsv = new double[3];
-
 
     for (int y = 0; y < input.height; y++) {
       for (int x = 0; x < input.width; x++) {
@@ -113,7 +111,7 @@ public class ColorProcessing {
         b = input.getBand(2).get(x, y);
 
         ColorHsv.rgbToHsv(r, g, b, hsv);
-        histogram[ (int) (hsv[0] * (180.0/Math.PI)) ] += 1;
+        histogram[(int) (hsv[0] * (180.0 / Math.PI))] += 1;
       }
     }
 
@@ -135,12 +133,11 @@ public class ColorProcessing {
     return histo;
   }
 
-  public static GrayU8 histo_2d_hue_saturation (Planar<GrayU8> input) {
-    int height = 101 ;
-    int width = 360 ;
-    int col =0;
-    int max_histo= 0;
-
+  public static GrayU8 histo_2d_hue_saturation(Planar<GrayU8> input) {
+    int height = 101;
+    int width = 360;
+    int col = 0;
+    int max_histo = 0;
 
     int histogram_2d[][] = new int[width][height];
 
@@ -149,7 +146,6 @@ public class ColorProcessing {
     double r, g, b;
     double[] hsv = new double[3];
 
-
     for (int y = 0; y < input.height; y++) {
       for (int x = 0; x < input.width; x++) {
         r = input.getBand(0).get(x, y);
@@ -157,31 +153,31 @@ public class ColorProcessing {
         b = input.getBand(2).get(x, y);
 
         ColorHsv.rgbToHsv(r, g, b, hsv);
-        hsv[0] = (hsv[0] * (180.0/Math.PI));
-        hsv[1] = hsv[1] * 100 ;
+        hsv[0] = (hsv[0] * (180.0 / Math.PI));
+        hsv[1] = hsv[1] * 100;
 
-        histogram_2d[(int)(hsv[0]) ][ (int)(hsv[1]) ] += 1;
+        histogram_2d[(int) (hsv[0])][(int) (hsv[1])] += 1;
 
       }
     }
 
     // for (int y = 0; y < input.height; y++) {
-    //   for (int x = 0; x < input.width; x++) {
-    //     if (max_histo < histogram_2d[x][y])
-    //       max_histo =  histogram_2d[x][y];
-    //   }
+    // for (int x = 0; x < input.width; x++) {
+    // if (max_histo < histogram_2d[x][y])
+    // max_histo = histogram_2d[x][y];
+    // }
     // }
 
     // for (int y = 0; y < input.height; y++) {
-    //   for (int x = 0; x < input.width; x++) {
-    //     histogram_2d[x][y] = 
-    //   }
+    // for (int x = 0; x < input.width; x++) {
+    // histogram_2d[x][y] =
+    // }
     // }
 
     for (int x = 0; x < width; x = x + 1) {
       for (int y = 0; y < height; y = y + 1) {
-          col = Math.min(255, histogram_2d[x][y]);
-          histo.set(x, y, col);
+        col = Math.min(255, histogram_2d[x][y]);
+        histo.set(x, y, col);
       }
     }
     return histo;
@@ -205,7 +201,6 @@ public class ColorProcessing {
     Planar<GrayU8> hsv = image.createSameShape();
     GrayU8 histo = histogramme_hue(image);
     GrayU8 histo2d = histo_2d_hue_saturation(image);
-
 
     // processing
     long time = System.currentTimeMillis();

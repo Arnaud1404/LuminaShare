@@ -5,12 +5,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.FileHandler;
 
 import javax.imageio.plugins.jpeg.JPEGImageReadParam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import pdl.backend.FileHandler.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.service.invoker.HttpRequestValues.Metadata;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RestController
@@ -88,8 +92,13 @@ public class ImageController {
       return new ResponseEntity<>("bad file type", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
 
     try {
-      Image img = new Image(file.getOriginalFilename(), file.getBytes());
+      Image img = new Image(file.getOriginalFilename(), file.getBytes(), file.getContentType(), file.getSize(),
+          file.getResource().getDescription());
       imageDao.create(img);
+      FileController.store(file);
+
+      // System.out.println("affiche");
+      // System.out.println("truc :" + "la mort est là");
       return ResponseEntity
           .ok("Image added\n");
     } catch (IOException e2) {
@@ -104,8 +113,12 @@ public class ImageController {
     List<Image> imgs = imageDao.retrieveAll();
     for (Image img : imgs) {
       ObjectNode img_json = mapper.createObjectNode();
-      img_json.put("name", img.getName());
       img_json.put("id", img.getId());
+      img_json.put("name", img.getName());
+      img_json.put("type", img.getType());
+      img_json.put("length", img.getLength());
+      img_json.put("description", img.getDesciption());
+
       nodes.add(img_json);
     }
     return nodes;
