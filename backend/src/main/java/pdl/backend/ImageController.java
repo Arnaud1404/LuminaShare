@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.awt.image.BufferedImage;
-import java.util.logging.FileHandler;
 
 import javax.imageio.ImageIO;
 import javax.imageio.plugins.jpeg.JPEGImageReadParam;
