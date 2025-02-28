@@ -16,6 +16,13 @@ public class ImageDao implements Dao<Image> {
 
   private final Map<Long, Image> images = new HashMap<>();
 
+  public void saveImage(String fileName, byte[] fileContent) {
+    long id = images.size() + 1L;
+    Image img = new Image(fileName, fileContent);
+    img.setId(id);
+    images.put(id, img);
+  }
+
   public ImageDao() {
     // placez une image test.jpg dans le dossier "src/main/resources" du projet
     final ClassPathResource imgFile = new ClassPathResource("images/test.jpg");
