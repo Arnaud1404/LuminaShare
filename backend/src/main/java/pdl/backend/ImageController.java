@@ -63,6 +63,7 @@ public class ImageController {
   public ResponseEntity<?> deleteImage(@PathVariable("id") long id) {
     Optional<Image> img = imageDao.retrieve(id);
     if (img.isPresent()) {
+      FileController.remove_from_directory(img.get().getName());
       imageDao.delete(img.get());
       return ResponseEntity
           .ok("Image deleted successfully\n");

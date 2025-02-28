@@ -76,7 +76,7 @@ public class ImageControllerTests {
 	@Test
 	@Order(7)
 	public void createImageShouldReturnSuccess() throws Exception {
-		ClassPathResource imgFile = new ClassPathResource("images/test.jpg");
+		ClassPathResource imgFile = new ClassPathResource("images_test/test.jpg");
 
 		MockMultipartFile file_multipart = new MockMultipartFile("file", "test.jpg", MediaType.IMAGE_JPEG_VALUE,
 				imgFile.getInputStream());

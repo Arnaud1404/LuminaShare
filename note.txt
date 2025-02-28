@@ -1,1 +1,1 @@
-des trucs
+curl -X DELETE "http://localhost:8181/images/0"
