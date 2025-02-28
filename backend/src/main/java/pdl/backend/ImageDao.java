@@ -1,5 +1,6 @@
 package pdl.backend;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -7,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.imageio.ImageIO;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Repository;
@@ -23,7 +26,8 @@ public class ImageDao implements Dao<Image> {
     try {
       fileContent = Files.readAllBytes(imgFile.getFile().toPath());
       String type = "jpeg";
-      Image img = new Image(imgFile.getFile().getName(), fileContent, type, fileContent.length,
+      BufferedImage buff_img = ImageIO.read(imgFile.getInputStream());
+      Image img = new Image(imgFile.getFile().getName(), fileContent, type, buff_img.getWidth(),buff_img.getHeight(),
           imgFile.getDescription());
 
       images.put(img.getId(), img);
