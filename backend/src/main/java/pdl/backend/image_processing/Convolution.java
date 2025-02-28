@@ -1,10 +1,9 @@
 package pdl.backend.image_processing;
 
+
 import boofcv.io.image.UtilImageIO;
 import boofcv.struct.image.GrayS16;
 import boofcv.struct.image.GrayU8;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Convolution {
 
