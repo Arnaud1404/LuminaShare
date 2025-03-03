@@ -15,6 +15,16 @@ import org.springframework.stereotype.Repository;
 public class ImageDao implements Dao<Image> {
 
   private final Map<Long, Image> images = new HashMap<>();
+  private long idCounter = 1L;// Compteur d'ID pour assurer des IDs uniques
+
+  /**
+    * Sauvegarde une image en lui attribuant un ID unique.
+  */
+  public void saveImage(String fileName, byte[] fileContent) {
+    Image img = new Image(fileName, fileContent);
+    img.setId(idCounter++);
+    images.put(img.getId(), img);
+  }
 
   public ImageDao() {
     // placez une image test.jpg dans le dossier "src/main/resources" du projet
@@ -42,6 +52,7 @@ public class ImageDao implements Dao<Image> {
 
   @Override
   public void create(final Image img) {
+    img.setId(idCounter++);
     images.put(img.getId(), img);
   }
 
