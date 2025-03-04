@@ -47,12 +47,3 @@ Le projet est organisé en deux modules principaux:
 
 - **frontend**: Vue 3 avec TypeScript et Vite
 - **backend**: API Java Spring Boot
-
-## Contribution
-
-Ce projet a été développé par De Vos Kamiel et Arnaud Gomes dans le cadre d'un projet universitaire.
-
-## Licence
-
-[MIT](LICENSE)
-Ce projet a été développé par De Vos Kamiel et Arnaud Gomes dans le cadre d'un projet universitaire.
