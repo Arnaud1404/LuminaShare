@@ -108,11 +108,12 @@ public class ImageController {
       ObjectNode img_json = mapper.createObjectNode();
       img_json.put("name", img.getName());
       img_json.put("id", img.getId());
+      img_json.put("url", "http://localhost:8181/images/" + img.getId()); // Ajout de l'URL
       nodes.add(img_json);
     }
     return nodes;
   }
-
+  //route pour indexer les images avec son id 
   @RequestMapping(value = "/images/{id}/descriptors", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   @ResponseBody
   public ResponseEntity<ObjectNode> getImageHistogram(@PathVariable("id") long id) {

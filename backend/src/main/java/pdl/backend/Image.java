@@ -15,6 +15,7 @@ public class Image {
     id = count++;
     this.name = name;
     this.data = data;
+    //descripteur
     try {
       ImageDescriptor descriptor = new ImageDescriptor(data);
       this.histogramHS = descriptor.getHistogramHS();

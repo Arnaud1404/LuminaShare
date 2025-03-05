@@ -56,6 +56,7 @@ public class ImageDao implements Dao<Image> {
   public void create(final Image img) {
     img.setId(idCounter++);
     images.put(img.getId(), img);
+    //pour l'affichage des histogrammes
     System.out.println(" Image enregistrée avec ID : " + img.getId());
     System.out.println(" Histogramme HS : " + Arrays.deepToString(img.getHistogramHS()));
     System.out.println(" Histogramme RGB : " + Arrays.deepToString(img.getHistogramRGB()));
