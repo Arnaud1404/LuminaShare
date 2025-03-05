@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+
 
 @Service
 public class ImageService {
@@ -48,6 +50,20 @@ public class ImageService {
             }
         }
     }
+    //Calculer et stocker les descripteurs lorsqu'une image est ajoutée et les récupérer ensuite 
+    public void addImage(String fileName, byte[] fileContent) {
+        Image img = new Image(fileName, fileContent);
+        imageDao.create(img);
+    }
+
+    public Optional<int[][]> getHistogramHS(long id) {
+        return Optional.ofNullable(imageDao.getHistogramHS(id));
+    }
+
+    public Optional<int[][][]> getHistogramRGB(long id) {
+        return Optional.ofNullable(imageDao.getHistogramRGB(id));
+    }
+
     /**
      * Vérifie si l'extension du fichier correspond aux formats supportés.
      */

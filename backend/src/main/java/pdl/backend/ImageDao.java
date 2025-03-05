@@ -1,5 +1,7 @@
 package pdl.backend;
 
+import java.util.Arrays;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -54,6 +56,9 @@ public class ImageDao implements Dao<Image> {
   public void create(final Image img) {
     img.setId(idCounter++);
     images.put(img.getId(), img);
+    System.out.println(" Image enregistrée avec ID : " + img.getId());
+    System.out.println(" Histogramme HS : " + Arrays.deepToString(img.getHistogramHS()));
+    System.out.println(" Histogramme RGB : " + Arrays.deepToString(img.getHistogramRGB()));
   }
 
   @Override
@@ -64,5 +69,18 @@ public class ImageDao implements Dao<Image> {
   @Override
   public void delete(final Image img) {
     images.remove(img.getId());
+  }
+  /**
+   * Récupère l'histogramme HS d'une image donnée par son ID.
+   */
+  public int[][] getHistogramHS(long id) {
+    return images.containsKey(id) ? images.get(id).getHistogramHS() : null;
+  }
+
+  /**
+   * Récupère l'histogramme RGB d'une image donnée par son ID.
+   */
+  public int[][][] getHistogramRGB(long id) {
+    return images.containsKey(id) ? images.get(id).getHistogramRGB() : null;
   }
 }

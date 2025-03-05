@@ -35,10 +35,12 @@ public class ImageController {
   private ObjectMapper mapper;
 
   private final ImageDao imageDao;
+  private final ImageService imageService;
 
   @Autowired
-  public ImageController(ImageDao imageDao) {
+  public ImageController(ImageDao imageDao, ImageService imageService) {
     this.imageDao = imageDao;
+    this.imageService = imageService;
   }
 
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
@@ -110,5 +112,21 @@ public class ImageController {
     }
     return nodes;
   }
+
+  @RequestMapping(value = "/images/{id}/descriptors", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  @ResponseBody
+  public ResponseEntity<ObjectNode> getImageHistogram(@PathVariable("id") long id) {
+    Optional<int[][]> histogramHS = imageService.getHistogramHS(id);
+    Optional<int[][][]> histogramRGB = imageService.getHistogramRGB(id);
+
+    if (histogramHS.isPresent() && histogramRGB.isPresent()) {
+        ObjectNode response = mapper.createObjectNode();
+        response.putPOJO("histogramHS", histogramHS.get());
+        response.putPOJO("histogramRGB", histogramRGB.get());
+        return ResponseEntity.ok(response);
+    }
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+  }
+
 
 }
