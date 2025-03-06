@@ -37,10 +37,12 @@ public class ImageController {
   private final ImageDao imageDao;
   private final ImageService imageService;
 
+
   @Autowired
   public ImageController(ImageDao imageDao, ImageService imageService) {
     this.imageDao = imageDao;
     this.imageService = imageService;
+
   }
 
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
@@ -67,34 +69,26 @@ public class ImageController {
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
+  /**
+    * Ajout d'une image avec indexation de ses descripteurs (histogrammes)
+  */
   @RequestMapping(value = "/images", method = RequestMethod.POST)
-  public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file,
-      RedirectAttributes redirectAttributes) {
-    boolean is_jpeg = false;
-    if (file.isEmpty())
-      return ResponseEntity.badRequest().body("please select file\n");
-    // MediaType.IMAGE_JPEG_VALUE
-    try (InputStream inputStream = file.getInputStream()) {
-      // Check the first two bytes to see if they are FF D8 (JPEG header)
-      byte[] header = new byte[2];
-      if (inputStream.read(header) != 2) {
-        return ResponseEntity.badRequest().body("Error occured please select JPEG file\n");
-
-      }
-      // JPEG starts with FF D8 and ends with FF D9
-      is_jpeg = header[0] == (byte) 0xFF && header[1] == (byte) 0xD8;
-    } catch (IOException e1) {
-      is_jpeg = false;
+  public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+    if (file.isEmpty()) {
+      return ResponseEntity.badRequest().body("Please select a file\n");
     }
-    if (!is_jpeg)
-      return new ResponseEntity<>("bad file type", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
 
-    try {
-      Image img = new Image(file.getOriginalFilename(), file.getBytes());
+    try (InputStream inputStream = file.getInputStream()) {
+      byte[] fileContent = file.getBytes();
+            
+      // Analyse et indexation de l'image
+      String histogram2D = imageService.compute2DHistogram(imageService.readImage(fileContent)); // Génération de l'histogramme 2D
+      String histogram3D = imageService.compute3DHistogram(imageService.readImage(fileContent)); // Génération de l'histogramme 3D
+            
+      Image img = new Image(file.getOriginalFilename(), fileContent, histogram2D, histogram3D);
       imageDao.create(img);
-      return ResponseEntity
-          .ok("Image added\n");
-    } catch (IOException e2) {
+      return ResponseEntity.ok("Image indexed and added\n");
+    } catch (IOException e) {
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
   }
@@ -109,25 +103,12 @@ public class ImageController {
       img_json.put("name", img.getName());
       img_json.put("id", img.getId());
       img_json.put("url", "http://localhost:8181/images/" + img.getId()); // Ajout de l'URL
+      img_json.put("histogram2D", img.getHistogram2D()); // Ajout de l'histogramme 2D dans la réponse
+      img_json.put("histogram3D", img.getHistogram3D()); // Ajout de l'histogramme 3D dans la réponse
       nodes.add(img_json);
     }
     return nodes;
   }
-  //route pour indexer les images avec son id 
-  @RequestMapping(value = "/images/{id}/descriptors", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-  @ResponseBody
-  public ResponseEntity<ObjectNode> getImageHistogram(@PathVariable("id") long id) {
-    Optional<int[][]> histogramHS = imageService.getHistogramHS(id);
-    Optional<int[][][]> histogramRGB = imageService.getHistogramRGB(id);
-
-    if (histogramHS.isPresent() && histogramRGB.isPresent()) {
-        ObjectNode response = mapper.createObjectNode();
-        response.putPOJO("histogramHS", histogramHS.get());
-        response.putPOJO("histogramRGB", histogramRGB.get());
-        return ResponseEntity.ok(response);
-    }
-    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-  }
-
+  
 
 }

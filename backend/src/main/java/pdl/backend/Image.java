@@ -8,25 +8,16 @@ public class Image {
   private String name;
   private byte[] data;
 
-  private int[][] histogramHS;
-  private int[][][] histogramRGB;
+  private String histogram2D; // Ajout de l'attribut pour stocker l'histogramme 2D Teinte/Saturation
+  private String histogram3D; // Ajout de l'attribut pour stocker l'histogramme 3D RGB
 
-  public Image(final String name, final byte[] data) {
-    id = count++;
+  public Image(String name, byte[] data, String histogram2D, String histogram3D) {
+    this.id = count++;
     this.name = name;
     this.data = data;
-    //descripteur
-    try {
-      ImageDescriptor descriptor = new ImageDescriptor(data);
-      this.histogramHS = descriptor.getHistogramHS();
-      this.histogramRGB = descriptor.getHistogramRGB();
-
-      System.out.println(" Image indexée : " + name);
-      System.out.println(" Histogramme HS : " + Arrays.deepToString(histogramHS));
-      System.out.println(" Histogramme RGB : " + Arrays.deepToString(histogramRGB));
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    this.histogram2D = histogram2D; // Initialisation de l'histogramme 2D
+    this.histogram3D = histogram3D; // Initialisation de l'histogramme 3D
+    
   }
 
   public long getId() {
@@ -47,11 +38,19 @@ public class Image {
   public byte[] getData() {
     return data;
   }
-  public int[][] getHistogramHS() {
-    return histogramHS;
+  public String getHistogram2D() {
+    return histogram2D; // Getter pour récupérer l'histogramme 2D
   }
 
-  public int[][][] getHistogramRGB() {
-    return histogramRGB;
+  public void setHistogram2D(String histogram2D) {
+    this.histogram2D = histogram2D; // Setter pour modifier l'histogramme 2D
+  }
+
+  public String getHistogram3D() {
+    return histogram3D; // Getter pour récupérer l'histogramme 3D
+  }
+
+  public void setHistogram3D(String histogram3D) {
+    this.histogram3D = histogram3D; // Setter pour modifier l'histogramme 3D
   }
 }
