@@ -114,7 +114,7 @@ public class ImageController {
       return new ResponseEntity<>("bad file type", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
 
     try {
-      Image img = new Image(file.getOriginalFilename(), file.getBytes());
+      Image img = new Image(file.getOriginalFilename(), file.getBytes(),"jpeg", 800, 600, "/images/");
       imageDao.create(img);
       return ResponseEntity.ok("Image added successfully.");
         BufferedImage buff_img = ImageIO.read(file.getInputStream());
