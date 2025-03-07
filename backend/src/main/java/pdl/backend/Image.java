@@ -9,7 +9,8 @@ public class Image {
   private String description;
   private byte[] data;
 
-  public Image(final String name, final byte[] data, final String type, long widht, long height, final String desciption) {
+  public Image(final String name, final byte[] data, final String type, long widht, long height,
+      final String desciption) {
     id = count++;
     this.name = name;
     this.type = type;
