@@ -105,6 +105,7 @@ watchEffect(async () => {
       <button @click="downloadImage">Télécharger</button>
       <button @click="handleDeleteImage">Supprimer</button>
     </div>
+    <p v-if="selectedImage">{{selectedImage.description}}</p>
     <br/>
     
     <select v-model="selectedImage">

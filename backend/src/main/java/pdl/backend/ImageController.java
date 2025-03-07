@@ -95,7 +95,8 @@ public class ImageController {
 
     try {
       BufferedImage buff_img = ImageIO.read(file.getInputStream());
-      Image img = new Image(file.getOriginalFilename(), file.getBytes(), file.getContentType(), buff_img.getWidth(),buff_img.getHeight(),
+      Image img = new Image(file.getOriginalFilename(), file.getBytes(), file.getContentType(), buff_img.getWidth(),
+          buff_img.getHeight(),
           file.getResource().getDescription());
       imageDao.create(img);
       FileController.store(file);

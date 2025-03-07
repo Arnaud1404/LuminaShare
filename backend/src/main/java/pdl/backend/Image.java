@@ -10,12 +10,12 @@ public class Image {
   private byte[] data;
 
   public Image(final String name, final byte[] data, final String type, long width, long height,
-      final String desciption) {
+      final String description) {
     id = count++;
     this.name = name;
     this.type = type;
     this.size = width + " x " + height + " pixels";
-    this.description = desciption;
+    this.description = description;
     this.data = data;
   }
 
