@@ -22,9 +22,6 @@ public class Image {
   public long getId() {
     return id;
   }
-  public void setId(final Long id) {
-    this.id = id;
-  }
 
   public void setId(final Long id) {
     this.id = id;

@@ -20,7 +20,8 @@ public class ImageService {
     public ImageService(ImageDao imageDao) {
         this.imageDao = imageDao;
     }
-   /**
+
+    /**
      * Méthode exécutée après l'initialisation de l'application.
      * Charge les images du dossier 'images/' et les stocke dans ImageDao.
      */
@@ -29,7 +30,8 @@ public class ImageService {
         File folder = new File(IMAGE_FOLDER);
         // Vérifie si le dossier 'images/' existe, sinon lève une erreur
         if (!folder.exists() || !folder.isDirectory()) {
-            throw new RuntimeException("Erreur : Le dossier 'images' est introuvable. Assurez-vous qu'il existe dans le répertoire de lancement du serveur.");
+            throw new RuntimeException(
+                    "Erreur : Le dossier 'images' est introuvable. Assurez-vous qu'il existe dans le répertoire de lancement du serveur.");
         }
 
         File[] files = folder.listFiles();
@@ -48,6 +50,7 @@ public class ImageService {
             }
         }
     }
+
     /**
      * Vérifie si l'extension du fichier correspond aux formats supportés.
      */
@@ -55,6 +58,7 @@ public class ImageService {
         String extension = getFileExtension(fileName);
         return SUPPORTED_FORMATS.contains(extension.toLowerCase());
     }
+
     /**
      * Récupère l'extension d'un fichier à partir de son nom.
      */

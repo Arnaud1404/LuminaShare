@@ -95,11 +95,13 @@ public class ImageControllerTests {
 	@Test
 	@Order(9)
 	public void createImageShouldReturnUnsupportedMediaType() throws Exception {
-		ClassPathResource imgFile = new ClassPathResource("images/test.gif");
+		ClassPathResource imgFile = new ClassPathResource("images_test/test.gif");
 		byte[] fileContent;
 		fileContent = Files.readAllBytes(imgFile.getFile().toPath());
 
-		MockMultipartFile file_multipart = new MockMultipartFile("file", "test.gif", "image/gif",new byte[]{(byte) 0x47, (byte) 0x49, (byte) 0x46}); // ici "file" corresponds au nom du paramètre attendu par POST
+		MockMultipartFile file_multipart = new MockMultipartFile("file", "test.gif", "image/gif",
+				new byte[] { (byte) 0x47, (byte) 0x49, (byte) 0x46 }); // ici "file" corresponds au nom du paramètre
+																		// attendu par POST
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart)).andDo(print())
 				.andExpect(status().isUnsupportedMediaType());
 
