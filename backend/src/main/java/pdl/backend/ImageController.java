@@ -74,69 +74,48 @@ public class ImageController {
   }
 
   @RequestMapping(value = "/images", method = RequestMethod.POST)
-  public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file,
-      RedirectAttributes redirectAttributes) {
-    boolean is_jpeg = false;
-    if (file.isEmpty())
-      return ResponseEntity.badRequest().body("please select file\n");
-    // MediaType.IMAGE_JPEG_VALUE
-    try (InputStream inputStream = file.getInputStream()) {
-      // Check the first two bytes to see if they are FF D8 (JPEG header)
-      byte[] header = new byte[2];
-      if (inputStream.read(header) != 2) {
-        return ResponseEntity.badRequest().body("Error occured please select JPEG file\n");
-
-      }
-      // JPEG starts with FF D8 and ends with FF D9
-      is_jpeg = header[0] == (byte) 0xFF && header[1] == (byte) 0xD8;
-    } catch (IOException e1) {
-      is_jpeg = false;
-    }
-  }
   public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file,RedirectAttributes redirectAttributes) {
-    if (file == null || file.getOriginalFilename() == null) {
-        return ResponseEntity.badRequest().body("Invalid file.");
+    // Vérification des erreurs dans un seul bloc
+    if (file == null || file.isEmpty()) {
+        return ResponseEntity.badRequest().body("Veuillez sélectionner un fichier.");
     }
 
-    // Vérifie que l'extension du fichier est jpg, jpeg ou png
+    String contentType = file.getContentType();
     String filename = file.getOriginalFilename();
+
+    if (filename == null || contentType == null || !contentType.startsWith("image/")) {
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .body("Format de fichier non supporté ou nom de fichier invalide.");
+    }
+
     String extension = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
-
-    if (!(extension.equals("jpg") || extension.equals("jpeg") || extension.equals("png"))) {
-        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Only JPG, JPEG, and PNG images are supported.");
+    if (!List.of("jpg", "jpeg", "png").contains(extension)) {
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .body("Seuls les fichiers JPG, JPEG et PNG sont autorisés.");
     }
 
-    // Vérifie que le fichier n'est pas vide après validation du type
-    if (file.isEmpty()) {
-      return ResponseEntity.badRequest().body("Please select a file.");
-    }
-    if (!is_jpeg)
-      return new ResponseEntity<>("bad file type", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
-
-    try {
-      Image img = new Image(file.getOriginalFilename(), file.getBytes(),"jpeg", 800, 600, "/images/");
-      imageDao.create(img);
-      return ResponseEntity.ok("Image added successfully.");
-        BufferedImage buff_img = ImageIO.read(file.getInputStream());
-        if (buff_img == null) {
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Invalid image format.");
+    try (InputStream inputStream = file.getInputStream()) {
+        // Vérification du format JPEG
+        byte[] header = new byte[2];
+        if (inputStream.read(header) != 2 || (header[0] != (byte) 0xFF || header[1] != (byte) 0xD8)) {
+            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Format JPEG invalide.");
         }
 
-        Image img = new Image(
-            file.getOriginalFilename(), 
-            file.getBytes(), 
-            file.getContentType(), 
-            buff_img.getWidth(), 
-            buff_img.getHeight(),
-            file.getResource().getDescription()
-        );
+        // Lecture de l’image
+        BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
+        if (bufferedImage == null) {
+            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Format d'image non valide.");
+        }
 
+        // Création et stockage de l’image
+        Image img = new Image(file.getOriginalFilename(), file.getBytes(), file.getContentType(), 
+                              bufferedImage.getWidth(), bufferedImage.getHeight(), "/images/");
         imageDao.create(img);
         FileController.store(file);
 
-        return ResponseEntity.ok("Image added successfully.");
+        return ResponseEntity.ok("Image ajoutée avec succès.");
     } catch (IOException e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while saving the image.");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'enregistrement de l'image.");
     }
   }
 
@@ -149,7 +128,6 @@ public class ImageController {
       ObjectNode img_json = mapper.createObjectNode();
       img_json.put("id", img.getId());
       img_json.put("name", img.getName());
-      img_json.put("id", img.getId());
       img_json.put("type", img.getType());
       img_json.put("size", img.getSize());
       img_json.put("description", img.getDesciption());

@@ -48,7 +48,7 @@ public class ImageControllerTests {
 	@Test
 	@Order(2)
 	public void getImageShouldReturnNotFound() throws Exception {
-		this.mockMvc.perform(get("/images/1")).andExpect(status().isNotFound());
+		this.mockMvc.perform(get("/images/99999")).andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class ImageControllerTests {
 	@Test
 	@Order(5)
 	public void deleteImageShouldReturnNotFound() throws Exception {
-		this.mockMvc.perform(delete("/images/1")).andExpect(status().isNotFound());
+		this.mockMvc.perform(delete("/images/9999")).andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class ImageControllerTests {
 	@Test
 	@Order(8)
 	public void createImageShouldReturnSuccess() throws Exception {
-		ClassPathResource imgFile = new ClassPathResource("images_test/test.jpg");
+		ClassPathResource imgFile = new ClassPathResource("images/test.jpg");
 
 		MockMultipartFile file_multipart = new MockMultipartFile("file", "test.jpg", MediaType.IMAGE_JPEG_VALUE,
 				imgFile.getInputStream());
@@ -95,12 +95,11 @@ public class ImageControllerTests {
 	@Test
 	@Order(9)
 	public void createImageShouldReturnUnsupportedMediaType() throws Exception {
-		ClassPathResource imgFile = new ClassPathResource("images/montagne.png");
+		ClassPathResource imgFile = new ClassPathResource("images/test.gif");
 		byte[] fileContent;
 		fileContent = Files.readAllBytes(imgFile.getFile().toPath());
 
-		MockMultipartFile file_multipart = new MockMultipartFile("file", "images/test.jpg", MediaType.IMAGE_JPEG_VALUE,
-				fileContent); // ici "file" corresponds au nom du paramètre attendu par POST
+		MockMultipartFile file_multipart = new MockMultipartFile("file", "test.gif", "image/gif",new byte[]{(byte) 0x47, (byte) 0x49, (byte) 0x46}); // ici "file" corresponds au nom du paramètre attendu par POST
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart)).andDo(print())
 				.andExpect(status().isUnsupportedMediaType());
 
