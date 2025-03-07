@@ -29,7 +29,7 @@ public class ImageService {
         File folder = new File(IMAGE_FOLDER);
         // Vérifie si le dossier 'images/' existe, sinon lève une erreur
         if (!folder.exists() || !folder.isDirectory()) {
-            throw new RuntimeException("Erreur : Le dossier 'images' est introuvable. Assurez-vous qu'il existe dans le répertoire de lancement du serveur.");
+          throw new IllegalStateException("Erreur : Le dossier 'images' est introuvable.");
         }
 
         File[] files = folder.listFiles();
@@ -53,7 +53,7 @@ public class ImageService {
      */
     private boolean isValidImage(String fileName) {
         String extension = getFileExtension(fileName);
-        return SUPPORTED_FORMATS.contains(extension.toLowerCase());
+        return extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg") || extension.equalsIgnoreCase("png");
     }
     /**
      * Récupère l'extension d'un fichier à partir de son nom.
