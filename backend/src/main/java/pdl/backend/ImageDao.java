@@ -24,7 +24,7 @@ public class ImageDao implements Dao<Image> {
     * Sauvegarde une image en lui attribuant un ID unique.
   */
   public void saveImage(String fileName, byte[] fileContent) {
-    Image img = new Image(fileName, fileContent);
+    Image img = new Image(fileName, fileContent,"jpeg", 800, 600, "/images/");
     img.setId(idCounter++);
     images.put(img.getId(), img);
   }

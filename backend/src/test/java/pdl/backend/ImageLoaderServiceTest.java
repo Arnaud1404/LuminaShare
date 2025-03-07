@@ -32,12 +32,20 @@ public class ImageLoaderServiceTest {
     void testLoadValidImages() throws IOException {
         File imageFile = new File(tempDir.toFile(), "test.jpg");
         Files.write(imageFile.toPath(), new byte[]{(byte) 0xFF, (byte) 0xD8, (byte) 0xFF}); // Simule un fichier JPEG
-        
-        System.setProperty("images", tempDir.toString());
-        imageLoaderService.loadImagesOnStartup();
+       // Création de plusieurs images valides dans le dossier temporaire
+       String[] validExtensions = {"jpg", "jpeg", "png"};
+       int numImages = 10; // Changez ce nombre pour tester avec plus d'images
 
-        assertEquals(1, imageDao.retrieveAll().size());
-    }
+       for (int i = 1; i <= numImages; i++) {
+           String extension = validExtensions[i % validExtensions.length]; // Alterner jpg, jpeg, png
+           File imageFile = new File(tempDir.toFile(), "image" + i + "." + extension);
+        
+          System.setProperty("images", tempDir.toString());
+          imageLoaderService.loadImagesOnStartup();
+
+          assertEquals(numImages+1, imageDao.retrieveAll().size());
+        }
+    }    
     //Vérifiez que les fichiers non-images sont ignorés .
     @Test
     void testIgnoreInvalidFiles() throws IOException {
@@ -48,5 +56,7 @@ public class ImageLoaderServiceTest {
         imageLoaderService.loadImagesOnStartup();
 
         assertEquals(0, imageDao.retrieveAll().size());
+        // Vérification : Seuls les 5 fichiers images doivent être chargés
+        assertEquals(11, imageDao.retrieveAll().size());//5 c'est plus l'image par défaut 
     }
 }

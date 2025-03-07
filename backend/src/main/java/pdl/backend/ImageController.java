@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.service.invoker.HttpRequestValues.Metadata;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RestController
@@ -64,10 +63,14 @@ public class ImageController {
     Optional<Image> img = imageDao.retrieve(id);
     if (!img.isPresent()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
-
     }
-    imageDao.delete(img.get());
-    return ResponseEntity.ok("Image deleted successfully\n");
+    if (img.isPresent()) {
+      FileController.remove_from_directory(img.get().getName());
+      imageDao.delete(img.get());
+      return ResponseEntity
+          .ok("Image deleted successfully\n");
+    }
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
   }
 
   @RequestMapping(value = "/images", method = RequestMethod.POST)
@@ -89,6 +92,24 @@ public class ImageController {
     } catch (IOException e1) {
       is_jpeg = false;
     }
+  }
+  public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file,RedirectAttributes redirectAttributes) {
+    if (file == null || file.getOriginalFilename() == null) {
+        return ResponseEntity.badRequest().body("Invalid file.");
+    }
+
+    // Vérifie que l'extension du fichier est jpg, jpeg ou png
+    String filename = file.getOriginalFilename();
+    String extension = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
+
+    if (!(extension.equals("jpg") || extension.equals("jpeg") || extension.equals("png"))) {
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Only JPG, JPEG, and PNG images are supported.");
+    }
+
+    // Vérifie que le fichier n'est pas vide après validation du type
+    if (file.isEmpty()) {
+      return ResponseEntity.badRequest().body("Please select a file.");
+    }
     if (!is_jpeg)
       return new ResponseEntity<>("bad file type", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
 
@@ -96,6 +117,24 @@ public class ImageController {
       Image img = new Image(file.getOriginalFilename(), file.getBytes());
       imageDao.create(img);
       return ResponseEntity.ok("Image added successfully.");
+        BufferedImage buff_img = ImageIO.read(file.getInputStream());
+        if (buff_img == null) {
+            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Invalid image format.");
+        }
+
+        Image img = new Image(
+            file.getOriginalFilename(), 
+            file.getBytes(), 
+            file.getContentType(), 
+            buff_img.getWidth(), 
+            buff_img.getHeight(),
+            file.getResource().getDescription()
+        );
+
+        imageDao.create(img);
+        FileController.store(file);
+
+        return ResponseEntity.ok("Image added successfully.");
     } catch (IOException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while saving the image.");
     }
@@ -111,7 +150,11 @@ public class ImageController {
       img_json.put("id", img.getId());
       img_json.put("name", img.getName());
       img_json.put("id", img.getId());
-      img_json.put("src/main/resources/images", "/images/" + img.getId());
+      img_json.put("type", img.getType());
+      img_json.put("size", img.getSize());
+      img_json.put("description", img.getDesciption());
+
+      img_json.put("url", "/images/" + img.getId());
       nodes.add(img_json);
     }
     return nodes;
