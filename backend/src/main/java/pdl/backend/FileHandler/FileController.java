@@ -7,17 +7,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileController {
- // insipré de https://spring.io/guides/gs/uploading-files
+    // insipré de https://spring.io/guides/gs/uploading-files
     private static final Path directory_location = Paths.get("src/main/resources/images");
 
     public static void store(MultipartFile file) {
 
         try {
-
             if (file.isEmpty()) {
                 throw new RuntimeException("file empty");
             }
@@ -39,13 +37,12 @@ public class FileController {
 
     }
 
-    public static void remove_from_directory (String name ) {
+    public static void remove_from_directory(String name) {
 
         Path fileToDelete = Paths.get(directory_location.toString() + "/" + name);
         try {
             Files.delete(fileToDelete);
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

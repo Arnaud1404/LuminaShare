@@ -37,6 +37,9 @@ export async function loadAllImages(): Promise<ImageGallery[]> {
         imageDataUrlArray.push({
             id: image.id,
             name: image.name,
+            type: image.type,
+            size: image.size,
+            description: image.description,
             dataUrl: dataUrl
         });
     }
