@@ -48,9 +48,7 @@ public class ImageControllerTests {
 	@Test
 	@Order(2)
 	public void getImageShouldReturnNotFound() throws Exception {
-       long invalidId = 9999; // Utiliser un ID qui ne sera jamais valide
-       this.mockMvc.perform(get("/images/" + invalidId))
-           .andExpect(status().isNotFound());	
+		this.mockMvc.perform(get("/images/1")).andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -68,7 +66,7 @@ public class ImageControllerTests {
 	@Test
 	@Order(5)
 	public void deleteImageShouldReturnNotFound() throws Exception {
-		this.mockMvc.perform(delete("/images/99999")).andExpect(status().isNotFound());
+		this.mockMvc.perform(delete("/images/1")).andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -97,11 +95,12 @@ public class ImageControllerTests {
 	@Test
 	@Order(9)
 	public void createImageShouldReturnUnsupportedMediaType() throws Exception {
-		ClassPathResource imgFile = new ClassPathResource("images/test.txt");
+		ClassPathResource imgFile = new ClassPathResource("images/montagne.png");
 		byte[] fileContent;
 		fileContent = Files.readAllBytes(imgFile.getFile().toPath());
 
-		MockMultipartFile file_multipart = new MockMultipartFile("file", "test.txt","image/txt",fileContent); // ici "file" corresponds au nom du paramètre attendu par POST
+		MockMultipartFile file_multipart = new MockMultipartFile("file", "images/test.jpg", MediaType.IMAGE_JPEG_VALUE,
+				fileContent); // ici "file" corresponds au nom du paramètre attendu par POST
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart)).andDo(print())
 				.andExpect(status().isUnsupportedMediaType());
 

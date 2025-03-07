@@ -49,22 +49,19 @@ public class ImageController {
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
   public ResponseEntity<?> getImage(@PathVariable("id") long id) throws IOException {
     Optional<Image> img = imageDao.retrieve(id);
-    if (!img.isPresent()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
-
+    if (img.isPresent()) {
+      byte[] bytes = img.get().getData();
+      return ResponseEntity
+          .ok()
+          .contentType(MediaType.IMAGE_JPEG)
+          .body(bytes);
     }
-    byte[] bytes = img.get().getData();
-    return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(bytes);
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
   @RequestMapping(value = "/images/{id}", method = RequestMethod.DELETE)
   public ResponseEntity<?> deleteImage(@PathVariable("id") long id) {
     Optional<Image> img = imageDao.retrieve(id);
-    if (img.isPresent()) {
-      FileController.remove_from_directory(img.get().getName());
-      imageDao.delete(img.get());
-      return ResponseEntity
-          .ok("Image deleted successfully\n");
     if (!img.isPresent()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
 
@@ -76,42 +73,31 @@ public class ImageController {
   @RequestMapping(value = "/images", method = RequestMethod.POST)
   public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file,
       RedirectAttributes redirectAttributes) {
-       if (file == null || file.getOriginalFilename() == null) {
-        return ResponseEntity.badRequest().body("Invalid file.");
-    }
+    boolean is_jpeg = false;
+    if (file.isEmpty())
+      return ResponseEntity.badRequest().body("please select file\n");
+    // MediaType.IMAGE_JPEG_VALUE
+    try (InputStream inputStream = file.getInputStream()) {
+      // Check the first two bytes to see if they are FF D8 (JPEG header)
+      byte[] header = new byte[2];
+      if (inputStream.read(header) != 2) {
+        return ResponseEntity.badRequest().body("Error occured please select JPEG file\n");
 
-    // Vérifie que l'extension du fichier est jpg, jpeg ou png
-    String filename = file.getOriginalFilename();
-    String extension = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
-
-    if (!(extension.equals("jpg") || extension.equals("jpeg") || extension.equals("png"))) {
-        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                             .body("Only JPG, JPEG, and PNG images are supported.");
+      }
+      // JPEG starts with FF D8 and ends with FF D9
+      is_jpeg = header[0] == (byte) 0xFF && header[1] == (byte) 0xD8;
+    } catch (IOException e1) {
+      is_jpeg = false;
     }
-
-    // Vérifie que le fichier n'est pas vide après validation du type
-    if (file.isEmpty()) {
-        return ResponseEntity.badRequest().body("Please select a file.");
-    }
+    if (!is_jpeg)
+      return new ResponseEntity<>("bad file type", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
 
     try {
-      BufferedImage buff_img = ImageIO.read(file.getInputStream());
-      Image img = new Image(file.getOriginalFilename(), file.getBytes(), file.getContentType(), buff_img.getWidth(),buff_img.getHeight(),
-          file.getResource().getDescription());
+      Image img = new Image(file.getOriginalFilename(), file.getBytes());
       imageDao.create(img);
-      FileController.store(file);
-
-      // System.out.println("affiche");
-      // System.out.println("truc :" + "la mort est là");
-      return ResponseEntity
-          .ok("Image added\n");
-    } catch (IOException e2) {
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        Image img = new Image(file.getOriginalFilename(), file.getBytes());
-        imageDao.create(img);
-        return ResponseEntity.ok("Image added successfully.");
+      return ResponseEntity.ok("Image added successfully.");
     } catch (IOException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while saving the image.");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while saving the image.");
     }
   }
 
@@ -124,10 +110,7 @@ public class ImageController {
       ObjectNode img_json = mapper.createObjectNode();
       img_json.put("id", img.getId());
       img_json.put("name", img.getName());
-      img_json.put("type", img.getType());
-      img_json.put("size", img.getSize());
-      img_json.put("description", img.getDesciption());
-
+      img_json.put("id", img.getId());
       img_json.put("src/main/resources/images", "/images/" + img.getId());
       nodes.add(img_json);
     }
