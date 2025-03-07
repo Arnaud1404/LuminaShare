@@ -1,10 +1,6 @@
 <script setup lang="ts">
+import {images} from './images';
 
-import type { ImageGallery } from "./http-api"
-
-defineProps<{
-  images: ImageGallery[]
-}>()
 </script>
 
 <template>
