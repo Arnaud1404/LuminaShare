@@ -9,18 +9,22 @@ public class Image {
   private String description;
   private byte[] data;
 
-  public Image(final String name, final byte[] data, final String type, long widht, long height,
+  public Image(final String name, final byte[] data, final String type, long width, long height,
       final String desciption) {
     id = count++;
     this.name = name;
     this.type = type;
-    this.size = widht + " x " + height + " pixels";
+    this.size = width + " x " + height + " pixels";
     this.description = desciption;
     this.data = data;
   }
 
   public long getId() {
     return id;
+  }
+
+  public void setId(final Long id) {
+    this.id = id;
   }
 
   public String getName() {
