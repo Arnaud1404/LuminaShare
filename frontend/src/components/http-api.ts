@@ -1,11 +1,7 @@
 import axios, { type AxiosResponse } from 'axios';
+import { images, type ImageGallery } from './images';
 
-export interface ImageGallery {
-    id: number;
-    name: string;
-    dataUrl: string | null;
-    
-}
+
 
 export async function getImagesAsJSON() {
     let json: ImageGallery[] = []
@@ -36,13 +32,53 @@ export async function loadAllImages(): Promise<ImageGallery[]> {
     const json = await getImagesAsJSON();
     const imageDataUrlArray: ImageGallery[] = [];
     
-    for (let i = 0; i < json.length; i++) {
-        const dataUrl = await loadImageData(i);
+    for (const image of json) {
+        const dataUrl = await loadImageData(image.id);
         imageDataUrlArray.push({
-            id: json[i].id,
-            name: json[i].name,
+            id: image.id,
+            name: image.name,
             dataUrl: dataUrl
         });
     }
+    images.value = imageDataUrlArray;
     return imageDataUrlArray;
+}
+
+export async function uploadImage(file: File): Promise<boolean> {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+        await axios.post('/images', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        await loadAllImages();
+        return true;
+    } catch (error) {
+        console.error('Upload failed:', error);
+        return false;
+    }
+}
+
+export async function deleteImage(imageID: number): Promise<boolean> {
+    try {
+        await axios.delete(`/images/${imageID}`);
+        
+        images.value = images.value.filter(img => img.id !== imageID);
+        return true;
+    } catch (error) {
+        console.error(`Delete failed for image ${imageID}:`, error);
+        return false;
+    }
+}
+
+export async function refreshImages(): Promise<void> {
+    try {
+        const updatedImages = await loadAllImages();
+        images.value = updatedImages;
+    } catch (error) {
+        console.error('Failed to refresh images:', error);
+    }
 }

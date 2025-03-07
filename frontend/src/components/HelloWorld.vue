@@ -1,28 +1,25 @@
 <script setup lang="ts">
-import axios from 'axios';
 import { onMounted, ref, watchEffect } from 'vue';
-import { loadAllImages, loadImageData, getImagesAsJSON } from "./http-api"
-
-import type { ImageGallery } from "./http-api"
-
+import { loadAllImages, loadImageData, uploadImage, deleteImage } from "./http-api"
 import Gallery from './Gallery.vue'
 
+import { images, type ImageGallery } from "./images.ts";
 
-const images = ref<ImageGallery[]>([]);
+
 const selectedImage = ref<ImageGallery | null>(null);
 const file = ref<File | null>(null);
-
+const isLoading = ref(false);
 // for the gallery
-onMounted(() => loadAllImages()
-      .then(response => images.value = response)
-      .catch(error => console.log(error)))
-
-getImagesAsJSON()
-  .then(result => {
-    console.log(result)
-    images.value = result;
-    console.log(images.value)})
-  .catch(error => console.log(error));
+onMounted(async () => {
+  isLoading.value = true;
+  try {
+    await loadAllImages();
+  } catch (error) {
+    console.error('Failed to load images:', error);
+  } finally {
+    isLoading.value = false;
+  }
+});
 
 const handleFileUpload = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -34,22 +31,17 @@ const handleFileUpload = (event: Event) => {
 const submitFile = async () => {
   if (!file.value) return;
   
-  const formData = new FormData();
-  formData.append('file', file.value);
-  
+  isLoading.value = true;
   try {
-    await axios.post('/images', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-    // Refresh the images list after a successful upload
-    loadAllImages()
-      .then(response => images.value = response)
-      .catch(error => console.log(error));
-    file.value = null;
+    const success = await uploadImage(file.value);
+    
+    if (success) {
+      file.value = null;
+    }
   } catch (error) {
     console.error('Upload failed:', error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -64,6 +56,23 @@ const downloadImage = () => {
   }
 };
 
+const handleDeleteImage = async () => {
+  if (!selectedImage.value) return;
+  
+  if (confirm(`Êtes-vous sûr de vouloir supprimer  "${selectedImage.value.name}"?`)) {
+    isLoading.value = true;
+    try {
+      const success = await deleteImage(selectedImage.value.id);
+      if (success) {
+        selectedImage.value = null;
+      }
+    } catch (error) {
+      console.error('Delete failed:', error);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+};
 
 // used for when the selectedImage changes
 watchEffect(async () => {
@@ -75,25 +84,27 @@ watchEffect(async () => {
 </script>
 
 <template>
-  <h1>Gallery</h1>
+  <h1>LuminaShare - Partage de photos</h1>
 
-  <div class="container">
+  <div class="upload-container">
       <div>
-        <h2>Upload File</h2>
-        <label>File
+        <h2>Téléverser un fichier</h2>
+        <label>Fichier
           <input type="file" @change="handleFileUpload( $event )"/>
         </label>
         <br>
-        <button v-on:click="submitFile()">Submit</button>
+        <button v-on:click="submitFile()">Envoyer</button>
       </div>
   </div>
-
+  <div v-if="isLoading" class="loading-message">Chargement en cours...</div>
   <Gallery :images="images"/>
 
   <div class="select-image">
-    <h3>Choose an image to display</h3>
-    <br/>
-    <button v-if="selectedImage && selectedImage.dataUrl" @click="downloadImage">Save Image</button>
+    <h3>Choisir une image à afficher</h3>
+    <div v-if="selectedImage" class="image-actions">
+      <button @click="downloadImage">Télécharger</button>
+      <button @click="handleDeleteImage">Supprimer</button>
+    </div>
     <br/>
     
     <select v-model="selectedImage">
@@ -102,7 +113,6 @@ watchEffect(async () => {
       </option>
     </select>
     <br/>
-    <!-- Render only if an image has been chosen -->
     <img v-if="selectedImage && selectedImage.dataUrl" :src="selectedImage.dataUrl" :alt="selectedImage.name">
     
 
