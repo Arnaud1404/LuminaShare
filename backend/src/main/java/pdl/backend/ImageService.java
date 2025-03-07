@@ -51,6 +51,31 @@ public class ImageService {
         }
     }
 
+    public void loadImagesOnStartup(String name_folder) {
+        File folder = new File(name_folder);
+        // Vérifie si le dossier 'images/' existe, sinon lève une erreur
+        if (!folder.exists() || !folder.isDirectory()) {
+            throw new RuntimeException(
+                    "Erreur : Le dossier 'images' est introuvable. Assurez-vous qu'il existe dans le répertoire de lancement du serveur.");
+        }
+
+        File[] files = folder.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                // Vérifie que le fichier est une image valide
+                if (file.isFile() && isValidImage(file.getName())) {
+                    try {
+                        byte[] fileContent = Files.readAllBytes(file.toPath());
+                        imageDao.saveImage(file.getName(), fileContent);
+                        System.out.println("Image chargée : " + file.getName());
+                    } catch (IOException e) {
+                        System.err.println("Erreur lors du chargement de l'image : " + file.getName());
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Vérifie si l'extension du fichier correspond aux formats supportés.
      */
