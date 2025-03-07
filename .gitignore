@@ -1,11 +1,8 @@
-HELP.md
 *.zip
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-
-git-cheat-sheet-education
 
 ### STS ###
 .apt_generated
@@ -39,4 +36,9 @@ build/
 ## POM ##
 Projet/Demo/frontend/target/maven-archiver/pom.properties
 
-
+## Project ##
+HELP.md
+backend/src/main/resources/public/static/
+backend/src/main/resources/public/index.html
+backend/target/classes/public/static/
+node_modules
