@@ -39,4 +39,5 @@ Projet/Demo/frontend/target/maven-archiver/pom.properties
 ## Project ##
 backend/src/main/resources/public/static/
 backend/src/main/resources/public/index.html
+backend/src/main/resources/public/index.html
 backend/target/classes/public/static/
