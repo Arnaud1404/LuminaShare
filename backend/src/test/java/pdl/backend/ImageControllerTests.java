@@ -94,7 +94,7 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(5)
+	@Order(6)
 	public void createImageShouldReturnUnsupportedMediaType() throws Exception {
 		ClassPathResource imgFile = new ClassPathResource("images_test/test.gif");
 		byte[] fileContent;
@@ -108,25 +108,25 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(6)
+	@Order(7)
 	public void deleteImagesShouldReturnMethodNotAllowed() throws Exception {
 		this.mockMvc.perform(delete("/images")).andExpect(status().isMethodNotAllowed());
 	}
 
 	@Test
-	@Order(7)
+	@Order(8)
 	public void deleteImageShouldReturnNotFound() throws Exception {
 		this.mockMvc.perform(delete("/images/-1")).andExpect(status().isNotFound());
 	}
 
 	@Test
-	@Order(8)
+	@Order(9)
 	public void deleteImageShouldReturnSuccess() throws Exception {
 		this.mockMvc.perform(delete("/images/1")).andExpect(status().isOk());
 	}
 
 	@Test
-	@Order(9)
+	@Order(10)
 	public void imageShouldNotBeFound() throws Exception {
 		this.mockMvc.perform(get("/images/0")).andExpect(status().isNotFound());
 	}
