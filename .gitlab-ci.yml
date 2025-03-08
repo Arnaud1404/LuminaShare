@@ -12,6 +12,10 @@ build_job:
   stage: build
   before_script:
     - export PATH=/opt/users/Node.js/bin:$PATH
+    - echo "DATABASE_NAME is ${DATABASE_NAME}"
+    - echo "DATABASE_PATH is ${DATABASE_PATH}"
+    - echo "spring.datasource.url=jdbc:postgresql://${DATABASE_PATH}:5432/${DATABASE_NAME}"
+    - echo "spring.datasource.username=${DATABASE_NAME}"
   script:
     - mvn $MAVEN_CLI_OPTS compile
   artifacts:
