@@ -51,7 +51,7 @@ public class ImageService {
     }
 
     public void loadImagesOnStartup(String name_folder) {
-        File folder = new File(IMAGE_FOLDER);
+        File folder = new File(name_folder);
         // Vérifie si le dossier 'images/' existe, sinon lève une erreur
         if (!folder.exists() || !folder.isDirectory()) {
             throw new RuntimeException(
@@ -66,6 +66,7 @@ public class ImageService {
                     try {
                         byte[] fileContent = Files.readAllBytes(file.toPath());
                         imageDao.saveImage(file.getName(), fileContent);
+                        System.out.println("Image chargée : " + file.getName());
                     } catch (IOException e) {
                         throw new RuntimeException("Erreur lors du chargement de l'image : " + file.getName());
                     }

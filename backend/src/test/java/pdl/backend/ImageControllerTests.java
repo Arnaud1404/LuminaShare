@@ -6,8 +6,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.logging.FileHandler;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
@@ -25,6 +27,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import org.springframework.http.MediaType;
 
+import pdl.backend.FileHandler.*;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(OrderAnnotation.class)
@@ -36,7 +40,11 @@ public class ImageControllerTests {
 	@BeforeAll
 	public static void reset() {
 		// reset Image class static counter
-		ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
+		// ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
+		try {
+			FileController.remove_from_directory("test.jpg");
+		} catch (RuntimeException e) {
+		}
 	}
 
 	@Test
@@ -53,38 +61,10 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(3)
-	public void getImageShouldReturnSuccess() throws Exception {
-		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk());
-	}
-
-	@Test
-	@Order(4)
-	public void deleteImagesShouldReturnMethodNotAllowed() throws Exception {
-		this.mockMvc.perform(delete("/images")).andExpect(status().isMethodNotAllowed());
-	}
-
-	@Test
-	@Order(5)
-	public void deleteImageShouldReturnNotFound() throws Exception {
-		this.mockMvc.perform(delete("/images/9999")).andExpect(status().isNotFound());
-	}
-
-	@Test
-	@Order(6)
-	public void deleteImageShouldReturnSuccess() throws Exception {
-		this.mockMvc.perform(delete("/images/0")).andExpect(status().isOk());
-	}
-
-	@Test
-	@Order(7)
-	public void imageShouldNotBeFound() throws Exception {
-		this.mockMvc.perform(get("/images/0")).andExpect(status().isNotFound());
-	}
-
-	@Test
-	@Order(8)
 	public void createImageShouldReturnSuccess() throws Exception {
-		ClassPathResource imgFile = new ClassPathResource("images/test.jpg");
+		ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
+
+		ClassPathResource imgFile = new ClassPathResource("images_test/test_certain_est_test.jpg");
 
 		MockMultipartFile file_multipart = new MockMultipartFile("file", "test.jpg", MediaType.IMAGE_JPEG_VALUE,
 				imgFile.getInputStream());
@@ -93,18 +73,61 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(9)
+	@Order(4)
+	public void getImageShouldReturnSuccess() throws Exception {
+		this.mockMvc.perform(get("/images/1")).andExpect(status().isOk()); // a besoin d'au moins 1 images dans le
+																			// dossier images
+	}
+
+	@Test
+	@Order(5)
+	public void createImageShouldReturnBadRequest() throws Exception {
+		ClassPathResource imgFile = new ClassPathResource("images_test/test.txt");
+		byte[] fileContent;
+		fileContent = Files.readAllBytes(imgFile.getFile().toPath());
+
+		MockMultipartFile file_multipart = new MockMultipartFile("file", fileContent);
+		// attendu par POST
+		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart)).andDo(print())
+				.andExpect(status().isBadRequest());
+
+	}
+
+	@Test
+	@Order(5)
 	public void createImageShouldReturnUnsupportedMediaType() throws Exception {
 		ClassPathResource imgFile = new ClassPathResource("images_test/test.gif");
 		byte[] fileContent;
 		fileContent = Files.readAllBytes(imgFile.getFile().toPath());
 
-		MockMultipartFile file_multipart = new MockMultipartFile("file", "test.gif", "image/gif",
-				new byte[] { (byte) 0x47, (byte) 0x49, (byte) 0x46 }); // ici "file" corresponds au nom du paramètre
-																		// attendu par POST
+		MockMultipartFile file_multipart = new MockMultipartFile("file", fileContent);
+		// attendu par POST
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart)).andDo(print())
 				.andExpect(status().isUnsupportedMediaType());
 
 	}
 
+	@Test
+	@Order(6)
+	public void deleteImagesShouldReturnMethodNotAllowed() throws Exception {
+		this.mockMvc.perform(delete("/images")).andExpect(status().isMethodNotAllowed());
+	}
+
+	@Test
+	@Order(7)
+	public void deleteImageShouldReturnNotFound() throws Exception {
+		this.mockMvc.perform(delete("/images/-1")).andExpect(status().isNotFound());
+	}
+
+	@Test
+	@Order(8)
+	public void deleteImageShouldReturnSuccess() throws Exception {
+		this.mockMvc.perform(delete("/images/1")).andExpect(status().isOk());
+	}
+
+	@Test
+	@Order(9)
+	public void imageShouldNotBeFound() throws Exception {
+		this.mockMvc.perform(get("/images/0")).andExpect(status().isNotFound());
+	}
 }

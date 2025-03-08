@@ -13,7 +13,6 @@ public class ImageLoaderServiceTest {
 
     private ImageDao imageDao;
     private ImageService imageLoaderService;
-    private int NumberImages = 3;
 
     @TempDir
     Path tempDir;
@@ -51,8 +50,8 @@ public class ImageLoaderServiceTest {
         String[] validExtensions = { "jpg", "jpeg", "png" };
         int numImages = 3; // nombre d'extention
 
-        for (int i = 0; i < numImages; i++) {
-            String extension = validExtensions[i]; // Alterner jpg, jpeg, png
+        for (int i = 0; i < numImages; i++) { // pour créer une image de chaque extention
+            String extension = validExtensions[i];
             File tempImage = new File(tempDir.toFile(), "image" + i + "." + extension);
             Files.write(tempImage.toPath(), new byte[] { (byte) 0xFF, (byte) 0xD8, (byte) 0xFF }); // Simule un fichier
                                                                                                    // JPEG
@@ -65,12 +64,12 @@ public class ImageLoaderServiceTest {
         int count = 0;
         if (files != null) {
             for (File file : files) {
-                // Vérifie que le fichier est une image valide
                 if (file.isFile()) {
                     count++;
                 }
             }
         }
+        System.out.println("size avant loading " + imageDao.retrieveAll().size());
 
         assertEquals(numImages + 1, count); // +1 car la ligne 47
     }
@@ -79,12 +78,27 @@ public class ImageLoaderServiceTest {
     @Test
     void testIgnoreInvalidFiles() throws IOException {
         File textFile = new File(tempDir.toFile(), "test.txt");
-        Files.write(textFile.toPath(), "This is not an image".getBytes());
+        Files.write(textFile.toPath(), "ce n'est pas une image".getBytes());
 
-        System.setProperty("images", tempDir.toString());
-        imageLoaderService.loadImagesOnStartup();
+        File imageFile = new File(tempDir.toFile(), "test_service.jpg");
+        Files.write(imageFile.toPath(), new byte[] { (byte) 0xFF, (byte) 0xD8, (byte) 0xFF }); // Simule un fichier JPEG
 
-        // Vérification : Seuls les 5 fichiers images doivent être chargés
-        assertEquals(NumberImages, imageDao.retrieveAll().size());// 5 c'est plus l'image par défaut
+        System.out.println("size avant loading " + imageDao.retrieveAll().size());
+
+        imageLoaderService.loadImagesOnStartup(tempDir.toString());
+
+        File[] files = tempDir.toFile().listFiles();
+        if (files != null) {
+            for (File file : files) {
+                // Vérifie que le fichier est une image valide
+                if (file.isFile()) {
+                    System.out.println("file : " + file.getName());
+                }
+            }
+        }
+        System.out.println("size avant après " + imageDao.retrieveAll().size());
+
+        // Vérification : Seuls les fichiers images doivent être chargés
+        assertEquals(1, imageDao.retrieveAll().size());
     }
 }
