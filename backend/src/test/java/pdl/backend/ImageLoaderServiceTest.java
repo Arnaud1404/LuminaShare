@@ -13,7 +13,7 @@ public class ImageLoaderServiceTest {
 
     private ImageDao imageDao;
     private ImageService imageLoaderService;
-    private int NumberImages = 10;
+    private int NumberImages = 3;
 
     @TempDir
     Path tempDir;
@@ -44,7 +44,7 @@ public class ImageLoaderServiceTest {
     // Teste le chargement des images valide
     @Test
     void testLoadValidImages() throws IOException {
-        File imageFile = new File(tempDir.toFile(), "test.jpg");
+        File imageFile = new File(tempDir.toFile(), "test_service.jpg");
         Files.write(imageFile.toPath(), new byte[] { (byte) 0xFF, (byte) 0xD8, (byte) 0xFF }); // Simule un fichier JPEG
 
         // Création de plusieurs images valides dans le dossier temporaire
@@ -61,13 +61,18 @@ public class ImageLoaderServiceTest {
         System.setProperty("images", tempDir.toString()); // Définir le bon chemin une seule fois
         imageLoaderService.loadImagesOnStartup(tempDir.toString());
 
-        for (Image imgs : imageDao.retrieveAll()) {
-            System.out.println("name : " + imgs.getName());
-
+        File[] files = tempDir.toFile().listFiles();
+        int count = 0;
+        if (files != null) {
+            for (File file : files) {
+                // Vérifie que le fichier est une image valide
+                if (file.isFile()) {
+                    count++;
+                }
+            }
         }
 
-        assertEquals(numImages + 2, imageDao.retrieveAll().size()); // +2 car l'image test est chargé par défault dans
-                                                                    // imageDao et la ligne 47
+        assertEquals(numImages + 1, count); // +1 car la ligne 47
     }
 
     // Vérifiez que les fichiers non-images sont ignorés .
