@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import pdl.backend.FileHandler.*;
+import pdl.backend.Database.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -67,6 +68,8 @@ public class ImageController {
     if (img.isPresent()) {
       FileController.remove_from_directory(img.get().getName());
       imageDao.delete(img.get());
+      // ImageRepository.deleteBBD(img.get());
+
       return ResponseEntity
           .ok("Image deleted successfully\n");
     }
@@ -122,6 +125,7 @@ public class ImageController {
           bufferedImage.getWidth(), bufferedImage.getHeight(), "/images/");
       imageDao.create(img);
       FileController.store(file);
+      // ImageRepository.addDDB(img);
 
       return ResponseEntity.ok("Image ajoutée avec succès.");
     } catch (IOException e) {
