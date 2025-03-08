@@ -2,6 +2,13 @@
 
 Une application de partage de photos développée par Arnaud Gomes, Kamiel De Vos et Soraya Benachour.
 
+## Prérequis
+
+- Java 17
+- Maven
+- PostgreSQL
+- Node.js et npm (pour le frontend)
+
 ## Instructions de Configuration
 
 1. Créez un fichier `.env` dans le dossier backend avec les variables suivantes:
