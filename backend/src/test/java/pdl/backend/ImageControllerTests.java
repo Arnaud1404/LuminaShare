@@ -39,8 +39,6 @@ public class ImageControllerTests {
 
 	@BeforeAll
 	public static void reset() {
-		// reset Image class static counter
-		ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(1));
 		try {
 			FileController.remove_from_directory("test.jpg");
 
@@ -68,6 +66,7 @@ public class ImageControllerTests {
 	@Test
 	@Order(3)
 	public void createImageShouldReturnSuccessJPEG() throws Exception {
+		ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
 
 		ClassPathResource imgFile = new ClassPathResource("images_test/test_certain_est_test.jpg");
 
@@ -80,14 +79,15 @@ public class ImageControllerTests {
 	@Test
 	@Order(4)
 	public void getImageShouldReturnSuccessJPEG() throws Exception {
-		this.mockMvc.perform(get("/images/1")).andExpect(status().isOk()); // a besoin d'au moins 1 images dans le
+		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk()); // a besoin d'au moins 1 images dans le
 																			// dossier images
 	}
 
 	@Test
 	@Order(5)
 	public void deleteImageShouldReturnSuccessJPEG() throws Exception {
-		this.mockMvc.perform(delete("/images/1")).andExpect(status().isOk());
+
+		this.mockMvc.perform(delete("/images/0")).andExpect(status().isOk());
 	}
 
 	@Test
@@ -95,9 +95,9 @@ public class ImageControllerTests {
 	public void createImageShouldReturnSuccessPNG() throws Exception {
 		ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
 
-		ClassPathResource imgFile = new ClassPathResource("images_test/test_certain_est_test.jpg");
+		ClassPathResource imgFile = new ClassPathResource("images_test/test.png");
 
-		MockMultipartFile file_multipart = new MockMultipartFile("file", "test.jpg", MediaType.IMAGE_JPEG_VALUE,
+		MockMultipartFile file_multipart = new MockMultipartFile("file", "test.png", MediaType.IMAGE_JPEG_VALUE,
 				imgFile.getInputStream());
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart)).andDo(print())
 				.andExpect(status().isOk());
@@ -106,14 +106,14 @@ public class ImageControllerTests {
 	@Test
 	@Order(7)
 	public void getImageShouldReturnSuccessPNG() throws Exception {
-		this.mockMvc.perform(get("/images/2")).andExpect(status().isOk()); // a besoin d'au moins 1 images dans le
+		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk()); // a besoin d'au moins 1 images dans le
 																			// dossier images
 	}
 
 	@Test
 	@Order(8)
 	public void deleteImageShouldReturnSuccessPNG() throws Exception {
-		this.mockMvc.perform(delete("/images/2")).andExpect(status().isOk());
+		this.mockMvc.perform(delete("/images/0")).andExpect(status().isOk());
 	}
 
 	@Test
