@@ -2,6 +2,7 @@ variables:
   MAVEN_CLI_OPTS: "--batch-mode"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   DATABASE_LOCATION: "pgsql"
+  DATABASE_NAME: "argomes"
 cache:
   paths:
     - .m2/repository/
