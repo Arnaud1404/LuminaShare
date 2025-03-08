@@ -21,29 +21,11 @@ public class ImageDao implements Dao<Image> {
   private long idCounter = 1L;// Compteur d'ID pour assurer des IDs uniques
 
   /**
-    * Sauvegarde une image en lui attribuant un ID unique.
-  */
+   * Sauvegarde une image en lui attribuant un ID unique.
+   */
   public void saveImage(String fileName, byte[] fileContent) {
-    Image img = new Image(fileName, fileContent,"jpeg", 800, 600, "/images/");
-    img.setId(idCounter++);
+    Image img = new Image(fileName, fileContent, "jpeg", 800, 600, "/images/");
     images.put(img.getId(), img);
-  }
-
-  public ImageDao() {
-    // placez une image test.jpg dans le dossier "src/main/resources" du projet
-    final ClassPathResource imgFile = new ClassPathResource("images_test/test.jpg");
-    byte[] fileContent;
-    try {
-      fileContent = Files.readAllBytes(imgFile.getFile().toPath());
-      String type = "jpeg";
-      BufferedImage buff_img = ImageIO.read(imgFile.getInputStream());
-      Image img = new Image(imgFile.getFile().getName(), fileContent, type, buff_img.getWidth(),buff_img.getHeight(),
-          imgFile.getDescription());
-
-      images.put(img.getId(), img);
-    } catch (final IOException e) {
-      e.printStackTrace();
-    }
   }
 
   @Override
