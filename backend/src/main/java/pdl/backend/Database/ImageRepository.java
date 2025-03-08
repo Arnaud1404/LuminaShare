@@ -15,7 +15,14 @@ public class ImageRepository implements InitializingBean {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public static String images[] = new String[] { "Toto", "Tata", "Bob", "Hello" };
+    RowMapper <Image> rowMapper = (rs,rowNum) -> {
+            Image img = new Image(); // doit pas incrémenter le compteur
+            img.setID(rs.getInt("id")); 
+            img.setName(rs.getString("name"));
+            img.setType(rs.getString("type"));
+            img.setSize(rs.getString("size"));
+            return img; 
+        };
 
     @Override
     @PostConstruct
@@ -27,10 +34,17 @@ public class ImageRepository implements InitializingBean {
                         "CREATE TABLE IF NOT EXISTS images2 (id bigserial PRIMARY KEY, name character varying(255), type character varying(10), size character varying(255),descripteur vector(2))");
     }
 
+
+    public List<Image> list() {
+        String sql = "SELECT id, name, type, size";
+        return jdbcTemplate.query(sql, rowMapper)
+    }
+
     public void addDDB(Image img) {
-        jdbcTemplate.update("INSERT INTO images2 (name) VALUES (?) (type) VALUES (?) (size) VALUES (?)", img.getName(),
+        int insert = jdbcTemplate.update("INSERT INTO images2 (name,type,size) VALUES (?,?,?)", img.getName(),
                 img.getType(),
                 img.getSize());
+
     }
 
     public void deleteBBD(Image img) {
