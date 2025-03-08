@@ -93,12 +93,22 @@ public class ImageController {
       return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
           .body("Seuls les fichiers JPG, JPEG et PNG sont autorisés.");
     }
+    String type_file = file.getContentType();
+    if (type_file == null)
+      return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+          .body("fichier sans type .");
 
-    try (InputStream inputStream = file.getInputStream()) {
+    try {
       // Vérification du format JPEG
-      byte[] header = new byte[2];
-      if (inputStream.read(header) != 2 || (header[0] != (byte) 0xFF || header[1] != (byte) 0xD8)) {
-        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Format JPEG invalide.");
+      switch (type_file) {
+        case MediaType.IMAGE_JPEG_VALUE:
+          break;
+        case MediaType.IMAGE_PNG_VALUE:
+          break;
+
+        default:
+          return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+              .body("Les format accepter sont JPEG et PNG, vérifié que votre image soit conforme .");
       }
 
       // Lecture de l’image

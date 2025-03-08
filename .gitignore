@@ -41,3 +41,6 @@ backend/src/main/resources/public/static/
 backend/src/main/resources/public/index.html
 backend/src/main/resources/public/index.html
 backend/target/classes/public/static/
+
+## Débug ##
+test.txt
