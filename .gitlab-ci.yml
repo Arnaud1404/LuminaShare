@@ -1,7 +1,7 @@
 variables:
   MAVEN_CLI_OPTS: "--batch-mode"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
-
+  DATABASE_LOCATION: "pgsql"
 cache:
   paths:
     - .m2/repository/
@@ -15,12 +15,12 @@ build_job:
     - mvn $MAVEN_CLI_OPTS compile
   artifacts:
     expire_in: 10 min
-    paths: 
+    paths:
       - target/
       - "*/target"
   tags:
-      - shell
-      - Debian
+    - shell
+    - Debian
 
 test_job:
   stage: test
@@ -30,8 +30,8 @@ test_job:
     - find . -name "*.class" -exec touch {} \+
     - mvn $MAVEN_CLI_OPTS test
   tags:
-      - shell
-      - Debian
+    - shell
+    - Debian
 
 ### cleanup project for security issues
 cleanup:
@@ -41,4 +41,4 @@ cleanup:
     - cd ; tree -d -L 5
   when: always
   tags:
-      - shell
+    - shell
