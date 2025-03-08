@@ -19,6 +19,10 @@ public class Image {
     this.data = data;
   }
 
+  public Image() {
+    count--;
+  }
+
   public long getId() {
     return id;
   }
@@ -35,12 +39,20 @@ public class Image {
     return type;
   }
 
+  public void setType(String type) {
+    this.type = type;
+  }
+
   public String getDesciption() {
     return description;
   }
 
   public String getSize() {
     return size;
+  }
+
+  public void setSize(String size) {
+    this.size = size;
   }
 
   public void setName(final String name) {
