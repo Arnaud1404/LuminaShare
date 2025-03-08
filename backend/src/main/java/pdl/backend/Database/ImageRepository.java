@@ -27,4 +27,14 @@ public class ImageRepository implements InitializingBean {
                         "CREATE TABLE IF NOT EXISTS images2 (id bigserial PRIMARY KEY, name character varying(255), type character varying(10), size character varying(255),descripteur vector(2))");
     }
 
+    public void addDDB(Image img) {
+        jdbcTemplate.update("INSERT INTO images2 (name) VALUES (?) (type) VALUES (?) (size) VALUES (?)", img.getName(),
+                img.getType(),
+                img.getSize());
+    }
+
+    public void deleteBBD(Image img) {
+        jdbcTemplate.update("DELETE FROM images2 WHERE id = (?)", img.getId());
+    }
+
 }
