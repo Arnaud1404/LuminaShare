@@ -1,5 +1,6 @@
 package pdl.backend.Database;
 
+import com.pgvector.PGvector;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
