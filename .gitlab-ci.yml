@@ -1,0 +1,45 @@
+variables:
+  MAVEN_CLI_OPTS: "--batch-mode"
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  DATABASE_PATH: "pgsql"
+  DATABASE_NAME: "argomes"
+cache:
+  paths:
+    - .m2/repository/
+    - frontend/node_modules/
+
+build_job:
+  stage: build
+  before_script:
+    - export PATH=/opt/users/Node.js/bin:$PATH
+  script:
+    - mvn $MAVEN_CLI_OPTS compile
+  artifacts:
+    expire_in: 10 min
+    paths:
+      - target/
+      - "*/target"
+  tags:
+    - shell
+    - Debian
+
+test_job:
+  stage: test
+  before_script:
+    - export PATH=/opt/users/Node.js/bin:$PATH
+  script:
+    - find . -name "*.class" -exec touch {} \+
+    - mvn $MAVEN_CLI_OPTS test
+  tags:
+    - shell
+    - Debian
+
+### cleanup project for security issues
+cleanup:
+  stage: .post
+  script:
+    - MYDIR=$(pwd) ; rm -rf $MYDIR ; mkdir $MYDIR
+    - cd ; tree -d -L 5
+  when: always
+  tags:
+    - shell
