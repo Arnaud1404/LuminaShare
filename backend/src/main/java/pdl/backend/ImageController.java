@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.service.invoker.HttpRequestValues.Metadata;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RestController
@@ -62,51 +61,85 @@ public class ImageController {
   @RequestMapping(value = "/images/{id}", method = RequestMethod.DELETE)
   public ResponseEntity<?> deleteImage(@PathVariable("id") long id) {
     Optional<Image> img = imageDao.retrieve(id);
+    if (!img.isPresent()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
+    }
     if (img.isPresent()) {
       FileController.remove_from_directory(img.get().getName());
       imageDao.delete(img.get());
       return ResponseEntity
           .ok("Image deleted successfully\n");
     }
-    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
   }
 
   @RequestMapping(value = "/images", method = RequestMethod.POST)
-  public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file,
-      RedirectAttributes redirectAttributes) {
-    boolean is_jpeg = false;
-    if (file.isEmpty())
-      return ResponseEntity.badRequest().body("please select file\n");
-    // MediaType.IMAGE_JPEG_VALUE
-    try (InputStream inputStream = file.getInputStream()) {
-      // Check the first two bytes to see if they are FF D8 (JPEG header)
-      byte[] header = new byte[2];
-      if (inputStream.read(header) != 2) {
-        return ResponseEntity.badRequest().body("Error occured please select JPEG file\n");
-
-      }
-      // JPEG starts with FF D8 and ends with FF D9
-      is_jpeg = header[0] == (byte) 0xFF && header[1] == (byte) 0xD8;
-    } catch (IOException e1) {
-      is_jpeg = false;
+  public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+    // Vérification des erreurs dans un seul bloc
+    if (file == null || file.isEmpty()) {
+      return ResponseEntity.badRequest().body("Veuillez sélectionner un fichier.");
     }
-    if (!is_jpeg)
-      return new ResponseEntity<>("bad file type", HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+
+    String contentType = file.getContentType();
+    String filename = file.getOriginalFilename();
+
+    if (filename == null || contentType == null || !contentType.startsWith("image/")) {
+      return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+          .body("Format de fichier non supporté ou nom de fichier invalide.");
+    }
+
+    String extension = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
+    if (!List.of("jpg", "jpeg", "png").contains(extension)) {
+      return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+          .body("Seuls les fichiers JPG, JPEG et PNG sont autorisés.");
+    }
+    String type_file = file.getContentType();
+    if (type_file == null)
+      return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+          .body("fichier sans type .");
 
     try {
-      BufferedImage buff_img = ImageIO.read(file.getInputStream());
-      Image img = new Image(file.getOriginalFilename(), file.getBytes(), file.getContentType(), buff_img.getWidth(),
-          buff_img.getHeight(),
-          file.getResource().getDescription());
+      // Vérification du format JPEG
+      switch (type_file) {
+        case MediaType.IMAGE_JPEG_VALUE:
+          break;
+        case MediaType.IMAGE_PNG_VALUE:
+          break;
+
+        default:
+          return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+              .body("Les format accepter sont JPEG et PNG, vérifié que votre image soit conforme .");
+      }
+
+      // Lecture de l’image
+      BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
+      if (bufferedImage == null) {
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Format d'image non valide.");
+      }
+
+      boolean duplicateExists = false;
+      List<Image> existingImages = imageDao.retrieveAll();
+      for (Image existingImage : existingImages) {
+        if (existingImage.getName().equals(file.getOriginalFilename())) {
+          duplicateExists = true;
+          break;
+        }
+      }
+
+      if (duplicateExists) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+            .body("Une image avec ce nom existe déjà.");
+      }
+      // Création et stockage de l’image
+      Image img = new Image(file.getOriginalFilename(), file.getBytes(), file.getContentType(),
+          bufferedImage.getWidth(), bufferedImage.getHeight(), "/images/");
       imageDao.create(img);
       FileController.store(file);
 
-      // System.out.println("affiche");
-      // System.out.println("truc :" + "la mort est là");
-      return ResponseEntity
-          .ok("Image added\n");
-    } catch (IOException e2) {
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+      return ResponseEntity.ok("Image ajoutée avec succès.");
+    } catch (IOException e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("Erreur lors de l'enregistrement de l'image.");
     }
   }
 
@@ -123,6 +156,7 @@ public class ImageController {
       img_json.put("size", img.getSize());
       img_json.put("description", img.getDesciption());
 
+      img_json.put("url", "/images/" + img.getId());
       nodes.add(img_json);
     }
     return nodes;

@@ -1,7 +1,7 @@
 package pdl.backend;
 
 public class Image {
-  private static Long count = Long.valueOf(0);
+  private static Long count = Long.valueOf(1);
   private Long id;
   private String name;
   private String type;
