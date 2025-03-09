@@ -117,6 +117,19 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Format d'image non valide.");
       }
 
+      boolean duplicateExists = false;
+      List<Image> existingImages = imageDao.retrieveAll();
+      for (Image existingImage : existingImages) {
+        if (existingImage.getName().equals(file.getOriginalFilename())) {
+          duplicateExists = true;
+          break;
+        }
+      }
+
+      if (duplicateExists) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+            .body("Une image avec ce nom existe déjà.");
+      }
       // Création et stockage de l’image
       Image img = new Image(file.getOriginalFilename(), file.getBytes(), file.getContentType(),
           bufferedImage.getWidth(), bufferedImage.getHeight(), "/images/");
