@@ -1,13 +1,25 @@
 <script setup lang="ts">
-import {images} from './images';
+import { images, type ImageGallery } from "./images";
 
+defineProps<{ images: ImageGallery[] }>();
+const emit = defineEmits(["select"]);
+
+// Simple click handler
+function selectImage(image: ImageGallery) {
+  emit("select", image);
+}
 </script>
 
 <template>
-    <div class="image-grid">
-    <div v-for="img in images" :key="img.id" class="image-container">
-     <img v-if="img.dataUrl" :src="img.dataUrl" :alt="img.name">
-      <p>{{ img.name }}</p>
+  <div class="image-grid">
+    <div
+      v-for="image in images"
+      :key="image.id"
+      class="image-container"
+      @click="selectImage(image)"
+    >
+      <img v-if="image.dataUrl" :src="image.dataUrl" :alt="image.name" />
+      <p>{{ image.name }}</p>
     </div>
   </div>
 </template>
@@ -15,6 +27,7 @@ import {images} from './images';
 <style scoped>
 img:hover {
   transform: scale(1.02);
+  cursor: pointer;
 }
 .image-grid {
   display: grid;

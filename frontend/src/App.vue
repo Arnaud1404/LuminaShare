@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-
+import LuminaShare from "./components/LuminaShare.vue";
 </script>
 
 <template>
-  <HelloWorld/>
-
+  <LuminaShare />
 </template>

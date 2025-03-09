@@ -1,15 +1,14 @@
 body {
-    background: linear-gradient(rgba(0, 0, 0, 0.85),
-            rgba(0, 0, 0, 0.85));
-    font-family: "Arial", Times, serif;
-    margin: 0;
-    min-height: 100vh;
-    color: white;
+  background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85));
+  font-family: "Arial", Times, serif;
+  margin: 0;
+  min-height: 100vh;
+  color: white;
 }
 
 #app {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
 }
