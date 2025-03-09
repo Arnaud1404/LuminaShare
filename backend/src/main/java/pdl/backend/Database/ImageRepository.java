@@ -32,7 +32,7 @@ public class ImageRepository implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
 
         // Create table
-        this.jdbcTemplate
+        jdbcTemplate
                 .execute(
                         "CREATE TABLE IF NOT EXISTS images2 (id bigserial PRIMARY KEY, name character varying(255), type character varying(10), size character varying(255),descripteur vector(2))");
     }
