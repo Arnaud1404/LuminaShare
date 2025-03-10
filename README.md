@@ -11,12 +11,12 @@ Une application de partage de photos développée par Arnaud Gomes, Kamiel De Vo
 
 ## Instructions de Configuration
 
-1. Créez un fichier `.env` dans le dossier backend avec les variables suivantes:
+1. Créez un fichier `.env` dans le dossier `backend` avec les variables suivantes:
 
    ```
    DATABASE_NAME=<nom>
    DATABASE_PASSWORD=<motdepasse>
-   DATABASE_PATH=localhost
+   DATABASE_PATH=pgsql # pour le CREMI, ou localhost pour un environnement local
    ```
 
 2. Installez et lancez l'application:

@@ -1,5 +1,7 @@
 package pdl.backend.Database;
 
+import pdl.backend.Image;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,29 +15,26 @@ public class ImageRepository implements InitializingBean {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public static String images[] = new String[] { "Toto", "Tata", "Bob", "Hello" };
-
     @Override
     @PostConstruct
     public void afterPropertiesSet() throws Exception {
 
-        jdbcTemplate.execute("DROP TABLE IF EXISTS images");
-
         // Create table
         this.jdbcTemplate
-                .execute("CREATE TABLE IF NOT EXISTS images (id bigserial PRIMARY KEY, name character varying(255))");
-
-        // Insert rows
-        jdbcTemplate.update("INSERT INTO images (name) VALUES (?), (?), (?), (?)", (Object[]) images);
+                .execute(
+                        "CREATE TABLE IF NOT EXISTS images2 (id bigserial PRIMARY KEY, name character varying(255), type character varying(10), size character varying(255),descripteur vector(2))");
     }
 
-    @SuppressWarnings("null")
-    public int getNbImages() {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM images", Integer.class);
+    public void addDatabase(Image img) {
+        jdbcTemplate.update(
+                "INSERT INTO images2 (name, type, size) VALUES (?, ?, ?)",
+                img.getName(),
+                img.getType(),
+                img.getSize());
     }
 
-    public String getImageId(long id) {
-        return jdbcTemplate.queryForObject("SELECT name FROM images WHERE id = ?", String.class, id);
+    public void deleteDatabase(Image img) {
+        jdbcTemplate.update("DELETE FROM images2 WHERE id = (?)", img.getId());
     }
 
 }

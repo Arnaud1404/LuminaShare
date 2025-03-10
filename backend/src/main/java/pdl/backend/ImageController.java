@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import pdl.backend.Database.ImageRepository;
 import pdl.backend.FileHandler.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,9 @@ public class ImageController {
   private ObjectMapper mapper;
 
   private final ImageDao imageDao;
+
+  @Autowired
+  private ImageRepository imageRepository;
 
   @Autowired
   public ImageController(ImageDao imageDao) {
@@ -108,7 +112,7 @@ public class ImageController {
 
         default:
           return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-              .body("Les format accepter sont JPEG et PNG, vérifié que votre image soit conforme .");
+              .body("Les formats acceptés sont JPEG et PNG, vérifiez que votre image soit conforme.");
       }
 
       // Lecture de l’image
@@ -135,7 +139,7 @@ public class ImageController {
           bufferedImage.getWidth(), bufferedImage.getHeight(), "/images/");
       imageDao.create(img);
       FileController.store(file);
-
+      imageRepository.addDatabase(img);
       return ResponseEntity.ok("Image ajoutée avec succès.");
     } catch (IOException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
