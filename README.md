@@ -38,7 +38,7 @@ La documentation sera disponible dans `docs/api/index.html`
 Si vous n'avez pas Javadoc d'installé, installez tout le JDK
 
 ```
-Sur Linux:
+Sur Ubuntu/Debian:
 sudo apt-get install openjdk-17-jdk
 ```
 
