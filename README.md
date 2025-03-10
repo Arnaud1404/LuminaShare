@@ -25,6 +25,16 @@ Une application de partage de photos développée par Arnaud Gomes, Kamiel De Vo
    mvn --projects backend spring-boot:run
    ```
 
+## Documentation
+
+Pour générer la documentation Javadoc, exécutez la commande suivante:
+
+```
+mvn javadoc:javadoc
+```
+
+La documentation sera disponible dans backend/target/site/javadoc/index.html
+
 ## Testé Sur
 
 ### Systèmes d'exploitation
