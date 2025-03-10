@@ -51,10 +51,10 @@ export async function uploadImage(file: File): Promise<boolean> {
   formData.append("file", file);
 
   try {
-    const fileNameExists = images.value.some(img => img.name === file.name);
-    if (fileNameExists) {
-      throw new Error("Une image avec ce nom existe déjà. Veuillez renommer votre fichier.");
-    }
+  //   const fileNameExists = images.value.some(img => img.name === file.name);
+  //   if (fileNameExists) {
+  //     throw new Error("Une image avec ce nom existe déjà. Veuillez renommer votre fichier.");
+  //   }
     await axios.post("/images", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
