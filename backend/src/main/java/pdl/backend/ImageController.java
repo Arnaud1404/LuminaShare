@@ -49,6 +49,14 @@ public class ImageController {
     this.imageDao = imageDao;
   }
 
+  /**
+   * Récupère une image à partir de son identifiant.
+   * 
+   * @param id L'identifiant de l'image à récupérer
+   * @return Une réponse HTTP contenant l'image au format JPEG si elle existe,
+   *         ou un statut 404 si l'image n'existe pas
+   * @throws IOException En cas d'erreur lors de la lecture des données de l'image
+   */
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
   public ResponseEntity<?> getImage(@PathVariable("id") long id) throws IOException {
     Optional<Image> img = imageDao.retrieve(id);
