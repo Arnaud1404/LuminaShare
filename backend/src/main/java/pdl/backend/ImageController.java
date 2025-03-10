@@ -62,9 +62,10 @@ public class ImageController {
     Optional<Image> img = imageDao.retrieve(id);
     if (img.isPresent()) {
       byte[] bytes = img.get().getData();
+      MediaType mediaType = MediaType.parseMediaType(img.get().getType());
       return ResponseEntity
           .ok()
-          .contentType(MediaType.IMAGE_JPEG)
+          .contentType(mediaType)
           .body(bytes);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
