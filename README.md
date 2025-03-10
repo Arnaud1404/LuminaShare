@@ -24,3 +24,15 @@ Une application de partage de photos développée par Arnaud Gomes, Kamiel De Vo
    mvn clean install
    mvn --projects backend spring-boot:run
    ```
+
+## Testé Sur
+
+### Systèmes d'exploitation
+
+- Ubuntu 22.04 LTS
+- Debian Bookworm
+
+### Navigateurs
+
+- Google Chrome
+- Mozilla Firefox
