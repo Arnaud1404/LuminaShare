@@ -33,12 +33,13 @@ Pour générer la documentation Javadoc, exécutez la commande suivante:
 mvn javadoc:javadoc
 ```
 
-La documentation sera disponible dans backend/target/site/javadoc/index.html
+La documentation sera disponible dans `docs/api/index.html`
 
 Si vous n'avez pas Javadoc d'installé, installez tout le JDK
 
 ```
-Sur Linux: `sudo apt-get install openjdk-17-jdk
+Sur Linux:
+sudo apt-get install openjdk-17-jdk
 ```
 
 ## Testé Sur

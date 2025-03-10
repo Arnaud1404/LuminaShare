@@ -97,6 +97,17 @@
                   <show>private</show> 
                   <nohelp>true</nohelp>
                   <quiet>true</quiet>
+
+                  <!-- Le French -->
+                  <locale>fr_FR</locale>
+                  <charset>UTF-8</charset>
+                  <docencoding>UTF-8</docencoding>
+                  <encoding>UTF-8</encoding>
+
+                  <reportOutputDirectory>${project.basedir}/../docs</reportOutputDirectory>
+                  <destDir>api</destDir> 
+                  <doctitle>LuminaShare API Documentation</doctitle>
+                  <windowtitle>LuminaShare API</windowtitle>
               </configuration>
             </plugin>
 
