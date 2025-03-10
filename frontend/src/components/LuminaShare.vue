@@ -265,10 +265,6 @@ img {
   transition: transform 0.2s ease;
 }
 
-img:hover {
-  transform: scale(1.02);
-}
-
 button {
   background-color: #4a4a4a;
   color: white;
