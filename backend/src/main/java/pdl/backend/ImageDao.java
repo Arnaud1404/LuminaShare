@@ -1,8 +1,8 @@
 package pdl.backend;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -20,8 +20,21 @@ public class ImageDao implements Dao<Image> {
   private final Map<Long, Image> images = new HashMap<>();
 
   public void saveImage(String fileName, byte[] fileContent) {
-    Image img = new Image(fileName, fileContent, "jpeg", 800, 600, "/images/");
-    this.create(img);
+    try {
+      BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(fileContent));
+
+      int width = bufferedImage.getWidth();
+      int height = bufferedImage.getHeight();
+
+      MediaType type = ImageService.parseMediaTypeFromFilename(fileName);
+
+      Image img = new Image(fileName, fileContent, type, width, height, "TODO");
+
+      this.create(img);
+
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to process image");
+    }
   }
 
   @Override

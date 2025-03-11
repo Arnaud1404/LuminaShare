@@ -47,3 +47,6 @@ backend/src/main/resources/images_test/
 ## Débug ##
 *.txt
 note.txt
+
+## Docs ##
+docs/

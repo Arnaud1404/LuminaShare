@@ -11,17 +11,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ImageLoaderServiceTest {
 
-    private ImageDao imageDao;
-    private ImageService imageLoaderService;
+  private ImageDao imageDao;
+  private ImageService imageLoaderService;
 
-    @TempDir
-    Path tempDir;
+  @TempDir
+  Path tempDir;
 
-    @BeforeEach
-    void setUp() {
-        imageDao = new ImageDao();
-        imageLoaderService = new ImageService(imageDao);
-    }
+  @BeforeEach
+  void setUp() {
+   imageDao = new ImageDao();
+   imageLoaderService = new ImageService(imageDao);
+  }
 
     // Test si le dossier images n'existe pas
     @Test
@@ -51,8 +51,8 @@ public class ImageLoaderServiceTest {
         testFolder.delete();
     }
 
-    // Teste le chargement des images valide
-    @Test
+   //Teste le chargement des images valide
+   @Test
     void testLoadValidImages() throws IOException {
         File imageFile = new File(tempDir.toFile(), "test_service.jpg");
         Files.write(imageFile.toPath(), new byte[] { (byte) 0xFF, (byte) 0xD8, (byte) 0xFF }); // Simule un fichier JPEG
@@ -62,10 +62,9 @@ public class ImageLoaderServiceTest {
         int numImages = 3; // nombre d'extention
 
         for (int i = 0; i < numImages; i++) { // pour créer une image de chaque extention
-            String extension = validExtensions[i];
-            File tempImage = new File(tempDir.toFile(), "image" + i + "." + extension);
-            Files.write(tempImage.toPath(), new byte[] { (byte) 0xFF, (byte) 0xD8, (byte) 0xFF }); // Simule un fichier
-                                                                                                   // JPEG
+           String extension = validExtensions[i];
+           File tempImage = new File(tempDir.toFile(), "image" + i + "." + extension);
+          Files.write(tempImage.toPath(), new byte[] { (byte) 0xFF, (byte) 0xD8, (byte)0xFF }); // Simule un fichier JPEG
         }
 
         System.setProperty("images", tempDir.toString()); // Définir le bon chemin une seule fois
@@ -76,11 +75,11 @@ public class ImageLoaderServiceTest {
         if (files != null) {
             for (File file : files) {
                 if (file.isFile()) {
-                    count++;
+                   count++;
                 }
             }
         }
-        System.out.println("size avant loading " + imageDao.retrieveAll().size());
+       System.out.println("size avant loading " + imageDao.retrieveAll().size());
 
         assertEquals(numImages + 1, count); // +1 car la ligne 47
     }
@@ -92,7 +91,7 @@ public class ImageLoaderServiceTest {
         Files.write(textFile.toPath(), "ce n'est pas une image".getBytes());
 
         File imageFile = new File(tempDir.toFile(), "test_service.jpg");
-        Files.write(imageFile.toPath(), new byte[] { (byte) 0xFF, (byte) 0xD8, (byte) 0xFF }); // Simule un fichier JPEG
+        Files.write(imageFile.toPath(), new byte[] { (byte) 0xFF, (byte) 0xD8, (byte)0xFF }); // Simule un fichier JPEG
 
         System.out.println("size avant loading " + imageDao.retrieveAll().size());
 
