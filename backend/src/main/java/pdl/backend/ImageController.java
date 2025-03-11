@@ -120,10 +120,8 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Format d'image non valide.");
       }
 
-      String originalFilename = file.getOriginalFilename();
-      MediaType type = originalFilename != null && originalFilename.toLowerCase().endsWith(".png")
-          ? MediaType.IMAGE_PNG
-          : MediaType.IMAGE_JPEG;
+      MediaType type = ImageService.parseMediaTypeFromFile(file);
+
       FileController.store(file);
       Image img = new Image(
           file.getOriginalFilename(),

@@ -16,7 +16,7 @@ Une application de partage de photos développée par Arnaud Gomes, Kamiel De Vo
    ```
    DATABASE_NAME=<nom>
    DATABASE_PASSWORD=<motdepasse>
-   DATABASE_PATH=localhost # pour un environnement local, ou pgsql au CREMI
+   DATABASE_PATH=pgsql # au CREMI, ou localhost pour un environnement local
    ```
 
 2. Installez et lancez l'application:

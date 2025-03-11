@@ -81,7 +81,7 @@ public class ImageService {
     /**
      * Vérifie si l'extension du fichier correspond aux formats supportés.
      */
-    private static boolean isValidImage(String fileName) {
+    private boolean isValidImage(String fileName) {
         String extension = getFileExtension(fileName);
         return SUPPORTED_FORMATS.contains(extension.toLowerCase());
     }
@@ -94,27 +94,20 @@ public class ImageService {
         return (lastDotIndex == -1) ? "" : fileName.substring(lastDotIndex + 1);
     }
 
-    public static MediaType parseMediaTypeFromFilename(String filename) {
-        if (!isValidImage(filename))
-            return null;
-        String lowerFilename = filename.toLowerCase();
-        String extension = getFileExtension(lowerFilename);
-        switch (extension) {
-            case "png":
-                return MediaType.IMAGE_PNG;
-            case "jpeg":
-            case "jpg":
-                return MediaType.IMAGE_JPEG;
-            default:
-                return null;
-        }
-    }
-
     public static MediaType parseMediaTypeFromFile(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
-
-        MediaType mediaType = parseMediaTypeFromFilename(originalFilename);
-        return mediaType;
+        return parseMediaTypeFromFilename(originalFilename);
     }
 
+    public static MediaType parseMediaTypeFromFilename(String fileName) {
+        if (fileName != null) {
+            String extension = getFileExtension(fileName).toLowerCase();
+            if ("png".equals(extension)) {
+                return MediaType.IMAGE_PNG;
+            } else if ("jpg".equals(extension) || "jpeg".equals(extension)) {
+                return MediaType.IMAGE_JPEG;
+            }
+        }
+        return null;
+    }
 }
