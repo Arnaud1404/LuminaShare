@@ -4,7 +4,6 @@ import { images, type ImageGallery } from "./images";
 defineProps<{ images: ImageGallery[] }>();
 const emit = defineEmits(["select"]);
 
-// Simple click handler
 function selectImage(image: ImageGallery) {
   emit("select", image);
 }

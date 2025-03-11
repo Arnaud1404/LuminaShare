@@ -20,7 +20,11 @@ const file = ref<File | null>(null);
 const isLoading = ref(false);
 const allowedFileTypes = ["image/jpeg", "image/png"];
 const isFileValid = ref(false);
+const isFullscreen = ref(false);
 
+function toggleFullscreen() {
+  isFullscreen.value = !isFullscreen.value;
+}
 function formatErrorMessage(error: any): string {
   if (!error) return "Erreur inconnue";
 
@@ -192,96 +196,246 @@ watchEffect(async () => {
 </script>
 
 <template>
-  <Notification ref="notification"/>
+  <Notification ref="notification" />
   <h1>LuminaShare - Partage de photos</h1>
-  
-  <div class="layout-container">
-    <!-- Main content area (left side) -->
-    <div class="main-content">
-      <!-- Upload section -->
-      <div class="upload-container">
-        <div>
-          <h2>Téléverser un fichier</h2>
-          <label>Fichier
-            <input type="file" @change="handleFileUpload($event)"/>
-          </label>
-          <br>
-          <button v-on:click="submitFile()" :disabled="!isFileValid">Envoyer</button>
+<div v-if="isFullscreen" class="fullscreen-overlay" @click="toggleFullscreen">
+    <img 
+      v-if="selectedImage && selectedImage.dataUrl" 
+      :src="selectedImage.dataUrl" 
+      :alt="selectedImage.name" 
+    />
+  </div>
+  <div class="two-column-layout">
+    <!-- LEFT COLUMN - 60% width -->
+    <div class="left-column">
+      <!-- Selected Image Area - 50% height -->
+      <div class="selected-image-container">
+        <h2>Image sélectionnée</h2>
+        <div v-if="selectedImage" class="image-display">
+          <img v-if="selectedImage.dataUrl" :src="selectedImage.dataUrl" :alt="selectedImage.name" @click="toggleFullscreen"
+            style="cursor: pointer;"/>
+          <p v-else>Chargement de l'image...</p>
         </div>
+        <p v-else>Aucune image sélectionnée</p>
       </div>
-      
-      <div v-if="isLoading" class="loading-message">Chargement en cours...</div>
-      
-      <!-- Selected image display -->
-      <div v-if="selectedImage" class="selected-image-container">
-        <h3>{{ selectedImage.name }}</h3>
-        <p v-if="selectedImage.description">{{ selectedImage.description }}</p>
-        <img v-if="selectedImage.dataUrl" :src="selectedImage.dataUrl" :alt="selectedImage.name" class="selected-image">
-        <div class="image-actions">
+
+      <!-- Metadata Area - 20% height -->
+      <div class="metadata-area">
+        <h3>Métadonnées</h3>
+        <div v-if="selectedImage">
+          <p><strong>Nom:</strong> {{ selectedImage.name }}</p>
+          <p><strong>Type:</strong> {{ selectedImage.type }}</p>
+          <p><strong>Taille:</strong> {{ selectedImage.size }}</p>
+        </div>
+        <p v-else>Sélectionnez une image pour voir ses métadonnées</p>
+      </div>
+
+      <!-- Similar Images Selector - 10% height -->
+      <div class="similar-selector">
+        <h3>Filtres de similarité</h3>
+        <p>TODO</p>
+      </div>
+
+      <!-- Similar Images - 20% height -->
+      <div class="similar-images">
+        <h3>Images similaires</h3>
+        <p>TODO</p>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN - 40% width -->
+    <div class="right-column">
+      <!-- Image Actions - 10% height -->
+      <div class="image-actions">
+        <h3>Actions</h3>
+        <div v-if="selectedImage">
           <button @click="downloadImage">Télécharger</button>
           <button @click="handleDeleteImage" class="delete-button">Supprimer</button>
         </div>
+        <p v-else>Sélectionnez une image pour voir les actions disponibles</p>
       </div>
-      
-      <div v-else class="no-selection">
-        <p>Sélectionnez une image dans la galerie</p>
+
+      <!-- Upload Area - 10% height -->
+      <div class="upload-area">
+        <h3>Téléverser une image</h3>
+        <div style="display: flex; gap: 10px;">
+          <input type="file" @change="handleFileUpload" :disabled="isLoading" style="flex: 1;" />
+          <button @click="submitFile" :disabled="!file || isLoading">
+            {{ isLoading ? "Téléversement..." : "Téléverser" }}
+          </button>
+        </div>
       </div>
-    </div>
-    
-    <!-- J'essaye faire une section tiktok scroll mais bon -->
-    <div class="sidebar">
-      <h2>Galerie d'images</h2>
-      <div class="scrollable-gallery">
-        <Gallery :images="images" @select="handleImageSelect" />
+
+      <!-- Gallery - 80% height, scrollable -->
+      <div class="gallery-container">
+        <h3>Galerie</h3>
+        <div class="scrollable-gallery">
+          <Gallery :images="images" @select="handleImageSelect" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
+
 <style scoped>
-body {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6));
-}
-h1,
-h2,
-h3 {
-  color: #ffffff;
-  margin-bottom: 1.5rem;
+.fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
 }
 
-.select-image {
-  margin-top: 2rem;
-  padding: 1.5rem;
+.fullscreen-overlay img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.two-column-layout {
+  display: flex;
+  height: 85vh;
+  width: 100%;
+}
+.left-column {
+  width: 60%;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.selected-image-container {
+  height: 50%;
   background-color: #2a2a2a;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin-bottom: 10px;
+  overflow: hidden;
 }
 
-img {
+.image-display {
+  height: 85%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-display img {
   max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.metadata-area {
+  height: 20%;
+  background-color: #2a2a2a;
   border-radius: 8px;
-  margin-top: 1.5rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease;
+  padding: 10px;
+  margin-bottom: 10px;
+  overflow: auto;
+}
+
+.similar-selector {
+  height: 10%;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.similar-images {
+  height: 20%;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.right-column {
+  width: 40%;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.image-actions {
+  height: 10%;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.image-actions button {
+  margin-right: 10px;
+  margin-top: 5px;
+}
+
+.upload-area {
+  height: 10%;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.upload-area input {
+  margin-bottom: 5px;
+}
+
+.gallery-container {
+  height: 80%;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.scrollable-gallery {
+  height: 90%;
+  overflow-y: auto;
+}
+
+.delete-button {
+  background-color: #c42121;
 }
 
 button {
   background-color: #4a4a4a;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
   border-radius: 4px;
+  padding: 5px 10px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
 button:hover {
-  background-color: #666;
+  background-color: #5a5a5a;
 }
 
 button:disabled {
-  background-color: #2a2a2a;
-  color: #666;
+  background-color: #3a3a3a;
   cursor: not-allowed;
+}
+
+h1, h2, h3 {
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: 10px;
+
 }
 </style>
