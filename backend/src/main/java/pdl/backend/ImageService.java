@@ -14,7 +14,7 @@ import java.util.List;
 public class ImageService {
 
     private final ImageDao imageDao;
-    private static final String IMAGE_FOLDER = "src/main/resources/images_test";
+    private static final String IMAGE_FOLDER = "src/main/resources/images";
     private static final List<String> SUPPORTED_FORMATS = Arrays.asList("jpg", "jpeg", "png");
 
     public ImageService(ImageDao imageDao) {
