@@ -14,7 +14,7 @@ import java.util.List;
 public class ImageService {
 
     private final ImageDao imageDao;
-    private static final String IMAGE_FOLDER = "src/main/resources/images";
+    private static final String IMAGE_FOLDER = "src/main/resources/images_test";
     private static final List<String> SUPPORTED_FORMATS = Arrays.asList("jpg", "jpeg", "png");
 
     public ImageService(ImageDao imageDao) {
@@ -30,8 +30,10 @@ public class ImageService {
         File folder = new File(IMAGE_FOLDER);
         // Vérifie si le dossier 'images/' existe, sinon lève une erreur
         if (!folder.exists() || !folder.isDirectory()) {
-            throw new RuntimeException(
-                    "Erreur : Le dossier 'images' est introuvable. Assurez-vous qu'il existe dans le répertoire de lancement du serveur.");
+            System.out.println("Le dossier '" + IMAGE_FOLDER + "' n'existe pas. Création en cours...");
+            folder.mkdirs(); // Crée le dossier s'il n'existe pas
+            System.out.println("Dossier 'images' créé : " + IMAGE_FOLDER);
+            return; // Pas de fichiers à charger immédiatement après création
         }
 
         File[] files = folder.listFiles();
@@ -54,8 +56,10 @@ public class ImageService {
         File folder = new File(name_folder);
         // Vérifie si le dossier 'images/' existe, sinon lève une erreur
         if (!folder.exists() || !folder.isDirectory()) {
-            throw new RuntimeException(
-                    "Erreur : Le dossier 'images' est introuvable. Assurez-vous qu'il existe dans le répertoire de lancement du serveur.");
+            System.out.println("Le dossier '" + IMAGE_FOLDER + "' n'existe pas. Création en cours...");
+            folder.mkdirs(); // Crée le dossier s'il n'existe pas
+            System.out.println("Dossier 'images' créé : " + IMAGE_FOLDER);
+            return; // Pas de fichiers à charger immédiatement après création
         }
 
         File[] files = folder.listFiles();
