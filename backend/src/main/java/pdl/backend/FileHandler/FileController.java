@@ -1,6 +1,7 @@
 package pdl.backend.FileHandler;
 
 import java.awt.Image;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -45,5 +46,10 @@ public class FileController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static File get_file(String name) {
+        Path fileToGet = Paths.get(directory_location.toString() + "/" + name);
+        return fileToGet.toFile();
     }
 }
