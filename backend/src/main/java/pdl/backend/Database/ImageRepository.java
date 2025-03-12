@@ -55,9 +55,9 @@ public class ImageRepository implements InitializingBean {
     }
 
     public void addDatabase(Image img) {
-        BufferedImage input = UtilImageIO.loadImage(img.getPath() + "/" + img.getName());
-        // GrayU8 img_final = new GrayU8();
-        // PGvector vector_img;
+
+        BufferedImage input = UtilImageIO.loadImage(img.getPath() + "/" +
+                img.getName());
 
         Planar<GrayU8> image = ConvertBufferedImage.convertFromPlanar(input, null, true, GrayU8.class);
         PGvector histo3Drgb = ImagePGVector.createRgbHistogram(image, 8);
@@ -68,17 +68,12 @@ public class ImageRepository implements InitializingBean {
         // hueSaturation = ImagePGVector.convertGrayU8ToVector(img_final);
         // Object[] vector = new Object[] { hueSaturation };
 
-        Object[] insertParams = new Object[] {
-                new PGvector(new float[] { 1, 1, 1 }),
-                new PGvector(new float[] { 2, 2, 2 }),
-                new PGvector(new float[] { 1, 1, 2 }),
-                null
-        };
-
-        jdbcTemplate.update("INSERT INTO imageDatabase2 (name,type,size,embedding) VALUES (?), (?), (?), (?))", "test",
-                "png", "251x532",
-                insertParams[0]);
-
+        jdbcTemplate.update(
+                "INSERT INTO databasearnaud (name, type, size, rgbcube ) VALUES (?, ?, ?, ?)",
+                img.getName(),
+                img.getType().toString(),
+                img.getSize(),
+                histo3Drgb);
     }
 
     public List<Image> list() {
@@ -92,12 +87,13 @@ public class ImageRepository implements InitializingBean {
         try {
             jdbcTemplate.queryForObject(sql, rowMapper, name);
             img = (Image) rowMapper;
+            System.out.println(rowMapper);
+            return Optional.ofNullable(img);
 
         } catch (DataAccessException ex) {
             return Optional.ofNullable(img);
         }
 
-        return Optional.ofNullable(img);
     }
 
     public void deleteDatabase(Image img) {

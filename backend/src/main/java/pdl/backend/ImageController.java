@@ -134,8 +134,10 @@ public class ImageController {
           "TODO");
       imageDao.create(img);
 
-      System.out.println("BONJOUR " + img.getPath());
       imageRepository.addDatabase(img);
+      Image img2 = imageRepository.GetImage("cat.jpg").get();
+
+      System.out.println("img2 name = " + img2.getName());
 
       return ResponseEntity.ok("Image ajoutée avec succès.");
     } catch (IOException e) {
