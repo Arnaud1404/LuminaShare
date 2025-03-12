@@ -48,3 +48,5 @@ backend/src/main/resources/images_test/
 ## Débug ##
 *.txt
 note.txt
+backend/src/main/resources/public/favicon.ico
+backend/src/main/resources/public/index.html
