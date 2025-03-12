@@ -125,6 +125,7 @@ public class ImageController {
 
       FileController.store(file);
       Image img = new Image(
+          FileController.directory_location.toString(),
           file.getOriginalFilename(),
           file.getBytes(),
           type,

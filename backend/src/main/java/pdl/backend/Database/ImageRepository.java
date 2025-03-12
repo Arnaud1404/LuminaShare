@@ -1,14 +1,11 @@
 package pdl.backend.Database;
 
 import pdl.backend.Image;
+import pdl.backend.imageProcessing.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import pdl.backend.Image;
-
-import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +14,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import com.pgvector.PGvector;
+
+import boofcv.io.image.ConvertBufferedImage;
+import boofcv.io.image.UtilImageIO;
+import boofcv.struct.image.GrayU8;
 import jakarta.annotation.PostConstruct;
+
+import java.awt.image.BufferedImage;
 
 @Repository
 public class ImageRepository implements InitializingBean {
@@ -29,7 +33,7 @@ public class ImageRepository implements InitializingBean {
         Image img = new Image(); // doit pas incrémenter le compteur
         img.setId((long) rs.getInt("id"));
         img.setName(rs.getString("name"));
-        img.setType(rs.getString("type"));
+        img.setType(MediaType.valueOf(rs.getString("type")));
         img.setSize(rs.getString("size"));
         return img;
     };
@@ -45,8 +49,17 @@ public class ImageRepository implements InitializingBean {
     }
 
     public void addDatabase(Image img) {
+        // BufferedImage input = UtilImageIO.loadImage(img.getPath() + "/" +
+        // img.getName());
+        // GrayU8 img_final = new GrayU8();
+        // PGvector vector_img;
+
+        // ConvertBufferedImage.convertFrom(input, img_final);
+        // vector_img = ImageVectorConversion.convertGrayU8ToVector(img_final);
+        // Object[] vector = new Object[] { vector_img };
+
         jdbcTemplate.update(
-                "INSERT INTO imageDatabase (name, type, size) VALUES (?, ?, ?)",
+                "INSERT INTO imageDatabase (name, type, size ) VALUES (?, ?, ?)",
                 img.getName(),
                 img.getType().toString(),
                 img.getSize());

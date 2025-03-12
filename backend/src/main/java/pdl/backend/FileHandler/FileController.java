@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class FileController {
     // insipré de https://spring.io/guides/gs/uploading-files
-    private static final Path directory_location = Paths.get("src/main/resources/images");
+    public static final Path directory_location = Paths.get("src/main/resources/images");
 
     public static void store(MultipartFile file) {
 
