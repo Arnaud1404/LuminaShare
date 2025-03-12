@@ -87,7 +87,7 @@ public class ImageService {
      */
     private static boolean isValidImage(String fileName) {
         String extension = getFileExtension(fileName);
-        return SUPPORTED_FORMATS.contains(extension.toLowerCase());
+        return extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg") || extension.equalsIgnoreCase("png");
     }
 
     /**
