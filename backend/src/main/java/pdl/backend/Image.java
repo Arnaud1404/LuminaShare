@@ -1,20 +1,24 @@
 package pdl.backend;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
+
 public class Image {
   private static Long count = Long.valueOf(1);
   private Long id;
   private String name;
-  private String type;
+  private MediaType type;
   private String size;
   private String description;
   private byte[] data;
 
-  public Image(final String name, final byte[] data, final String type, long width, long height,
+  public Image(final String name, final byte[] data,
+      MediaType type, long width, long height,
       final String description) {
     id = count++;
     this.name = name;
     this.type = type;
-    this.size = width + " x " + height + " pixels";
+    this.size = width + "*" + height;
     this.description = description;
     this.data = data;
   }
@@ -35,7 +39,7 @@ public class Image {
     return name;
   }
 
-  public String getType() {
+  public MediaType getType() {
     return type;
   }
 

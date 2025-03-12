@@ -1,29 +1,24 @@
 package pdl.backend;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
-import javax.imageio.plugins.jpeg.JPEGImageReadParam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import pdl.backend.Database.ImageRepository;
 import pdl.backend.FileHandler.*;
 import pdl.backend.Database.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -42,18 +37,31 @@ public class ImageController {
   private final ImageDao imageDao;
 
   @Autowired
+  private ImageRepository imageRepository;
+
+  @Autowired
   public ImageController(ImageDao imageDao) {
     this.imageDao = imageDao;
   }
 
-  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+  /**
+   * Récupère une image à partir de son identifiant.
+   * 
+   * @param id L'identifiant de l'image à récupérer
+   * @return Une réponse HTTP contenant l'image au format JPEG si elle existe,
+   *         ou un statut 404 si l'image n'existe pas
+   * @throws IOException En cas d'erreur lors de la lecture des données de l'image
+   */
+  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = { MediaType.IMAGE_JPEG_VALUE,
+      MediaType.IMAGE_PNG_VALUE })
   public ResponseEntity<?> getImage(@PathVariable("id") long id) throws IOException {
     Optional<Image> img = imageDao.retrieve(id);
     if (img.isPresent()) {
       byte[] bytes = img.get().getData();
+      MediaType mediaType = img.get().getType();
       return ResponseEntity
           .ok()
-          .contentType(MediaType.IMAGE_JPEG)
+          .contentType(mediaType)
           .body(bytes);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -68,8 +76,7 @@ public class ImageController {
     if (img.isPresent()) {
       FileController.remove_from_directory(img.get().getName());
       imageDao.delete(img.get());
-      // ImageRepository.deleteBBD(img.get());
-
+      imageRepository.deleteDatabase(img.get());
       return ResponseEntity
           .ok("Image deleted successfully\n");
     }
@@ -99,19 +106,13 @@ public class ImageController {
     String type_file = file.getContentType();
     if (type_file == null)
       return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-          .body("fichier sans type .");
+          .body("fichier sans type.");
 
     try {
-      // Vérification du format JPEG
-      switch (type_file) {
-        case MediaType.IMAGE_JPEG_VALUE:
-          break;
-        case MediaType.IMAGE_PNG_VALUE:
-          break;
-
-        default:
-          return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-              .body("Les format accepter sont JPEG et PNG, vérifié que votre image soit conforme .");
+      MediaType mediaType = ImageService.parseMediaTypeFromFile(file);
+      if (mediaType == null) {
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+            .body("Les formats acceptés sont JPEG et PNG, vérifiez que votre image soit conforme.");
       }
 
       // Lecture de l’image
@@ -120,13 +121,18 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Format d'image non valide.");
       }
 
-      // Création et stockage de l’image
-      Image img = new Image(file.getOriginalFilename(), file.getBytes(), file.getContentType(),
-          bufferedImage.getWidth(), bufferedImage.getHeight(), "/images/");
-      imageDao.create(img);
-      FileController.store(file);
-      // ImageRepository.addDDB(img);
+      MediaType type = ImageService.parseMediaTypeFromFile(file);
 
+      FileController.store(file);
+      Image img = new Image(
+          file.getOriginalFilename(),
+          file.getBytes(),
+          type,
+          bufferedImage.getWidth(),
+          bufferedImage.getHeight(),
+          "TODO");
+      imageDao.create(img);
+      imageRepository.addDatabase(img);
       return ResponseEntity.ok("Image ajoutée avec succès.");
     } catch (IOException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -143,7 +149,7 @@ public class ImageController {
       ObjectNode img_json = mapper.createObjectNode();
       img_json.put("id", img.getId());
       img_json.put("name", img.getName());
-      img_json.put("type", img.getType());
+      img_json.put("type", img.getType().toString());
       img_json.put("size", img.getSize());
       img_json.put("description", img.getDesciption());
 

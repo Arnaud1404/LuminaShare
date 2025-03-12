@@ -1,6 +1,9 @@
 package pdl.backend;
 
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
@@ -86,8 +89,25 @@ public class ImageService {
     /**
      * Récupère l'extension d'un fichier à partir de son nom.
      */
-    private String getFileExtension(String fileName) {
+    private static String getFileExtension(String fileName) {
         int lastDotIndex = fileName.lastIndexOf('.');
         return (lastDotIndex == -1) ? "" : fileName.substring(lastDotIndex + 1);
+    }
+
+    public static MediaType parseMediaTypeFromFile(MultipartFile file) {
+        String originalFilename = file.getOriginalFilename();
+        return parseMediaTypeFromFilename(originalFilename);
+    }
+
+    public static MediaType parseMediaTypeFromFilename(String fileName) {
+        if (fileName != null) {
+            String extension = getFileExtension(fileName).toLowerCase();
+            if ("png".equals(extension)) {
+                return MediaType.IMAGE_PNG;
+            } else if ("jpg".equals(extension) || "jpeg".equals(extension)) {
+                return MediaType.IMAGE_JPEG;
+            }
+        }
+        return null;
     }
 }

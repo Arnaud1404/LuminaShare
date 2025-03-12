@@ -2,10 +2,17 @@ package pdl.backend.Database;
 
 import pdl.backend.Image;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import pdl.backend.Image;
+
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -32,9 +39,17 @@ public class ImageRepository implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
 
         // Create table
-        jdbcTemplate
+        this.jdbcTemplate
                 .execute(
-                        "CREATE TABLE IF NOT EXISTS images2 (id bigserial PRIMARY KEY, name character varying(255), type character varying(10), size character varying(255),descripteur vector(2))");
+                        "CREATE TABLE IF NOT EXISTS imageDatabase (id bigserial PRIMARY KEY, name character varying(255), type character varying(10), size character varying(255),descripteur vector(2))");
+    }
+
+    public void addDatabase(Image img) {
+        jdbcTemplate.update(
+                "INSERT INTO imageDatabase (name, type, size) VALUES (?, ?, ?)",
+                img.getName(),
+                img.getType().toString(),
+                img.getSize());
     }
 
     public List<Image> list() {
@@ -42,15 +57,7 @@ public class ImageRepository implements InitializingBean {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public void addDDB(Image img) {
-        jdbcTemplate.update("INSERT INTO images2 (name,type,size) VALUES (?,?,?)", img.getName(),
-                img.getType(),
-                img.getSize());
-
+    public void deleteDatabase(Image img) {
+        jdbcTemplate.update("DELETE FROM imageDatabase WHERE id = (?)", img.getId());
     }
-
-    public void deleteBBD(Image img) {
-        jdbcTemplate.update("DELETE FROM images2 WHERE id = (?)", img.getId());
-    }
-
 }
