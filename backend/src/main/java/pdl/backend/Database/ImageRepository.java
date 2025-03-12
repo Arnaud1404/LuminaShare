@@ -47,7 +47,7 @@ public class ImageRepository implements InitializingBean {
         // Create table
         this.jdbcTemplate
                 .execute(
-                        "CREATE TABLE IF NOT EXISTS imageDatabase (id bigserial PRIMARY KEY, name character varying(255), type character varying(10), size character varying(255),descripteur vector(2) published_on timestamp not null)");
+                        "CREATE TABLE IF NOT EXISTS imageDatabase (id bigserial PRIMARY KEY, name character varying(255), type character varying(10), size character varying(255),descripteur vector(2))");
     }
 
     public void addDatabase(Image img) {
