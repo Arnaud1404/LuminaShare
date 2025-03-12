@@ -14,6 +14,8 @@ import javax.imageio.ImageIO;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 
+import pdl.backend.FileHandler.FileController;
+
 @Repository
 public class ImageDao implements Dao<Image> {
 
@@ -28,7 +30,8 @@ public class ImageDao implements Dao<Image> {
 
       MediaType type = ImageService.parseMediaTypeFromFilename(fileName);
 
-      Image img = new Image(fileName, fileContent, type, width, height, "TODO");
+      Image img = new Image(FileController.directory_location.toString(), fileName, fileContent, type, width, height,
+          "TODO");
 
       this.create(img);
 
