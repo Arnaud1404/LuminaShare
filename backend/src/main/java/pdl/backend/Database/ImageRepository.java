@@ -72,19 +72,19 @@ public class ImageRepository implements InitializingBean {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    // public Optional<Image> GetImage(String name) {
-    // String sql = "SELECT name, type, size FROM imageDatabase WHERE name = ?";
-    // Image img = new Image();
-    // try {
-    // jdbcTemplate.queryForObject(sql, rowMapper, name);
-    // img = (Image) rowMapper;
+    public Optional<Image> GetImage(String name) {
+        String sql = "SELECT name, type, size FROM imageDatabase WHERE name = ?";
+        Image img = new Image();
+        try {
+            jdbcTemplate.queryForObject(sql, rowMapper, name);
+            img = (Image) rowMapper;
 
-    // } catch (DataAccessException ex) {
-    // return Optional.ofNullable(img);
-    // }
+        } catch (DataAccessException ex) {
+            return Optional.ofNullable(img);
+        }
 
-    // return Optional.ofNullable(img);
-    // }
+        return Optional.ofNullable(img);
+    }
 
     public void deleteDatabase(Image img) {
         jdbcTemplate.update("DELETE FROM imageDatabase WHERE id = (?)", img.getId());
