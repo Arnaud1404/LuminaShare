@@ -21,6 +21,7 @@ import com.pgvector.PGvector;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.io.image.UtilImageIO;
 import boofcv.struct.image.GrayU8;
+import boofcv.struct.image.Planar;
 import jakarta.annotation.PostConstruct;
 
 import java.awt.image.BufferedImage;
@@ -58,9 +59,14 @@ public class ImageRepository implements InitializingBean {
         // GrayU8 img_final = new GrayU8();
         // PGvector vector_img;
 
+        Planar<GrayU8> image = ConvertBufferedImage.convertFromPlanar(input, null, true, GrayU8.class);
+        PGvector histo3Drgb = ImagePGVector.createRgbHistogram(image, 8);
+
+        // GrayU8 img_final = new GrayU8();
+        // PGvector hueSaturation;
         // ConvertBufferedImage.convertFrom(input, img_final);
-        // vector_img = ImageVectorConversion.convertGrayU8ToVector(img_final);
-        // Object[] vector = new Object[] { vector_img };
+        // hueSaturation = ImagePGVector.convertGrayU8ToVector(img_final);
+        // Object[] vector = new Object[] { hueSaturation };
 
         Object[] insertParams = new Object[] {
                 new PGvector(new float[] { 1, 1, 1 }),
@@ -76,7 +82,7 @@ public class ImageRepository implements InitializingBean {
     }
 
     public List<Image> list() {
-        String sql = "SELECT id, name, type, size";
+        String sql = "SELECT id, name, type, size FROM databasearnaud";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
@@ -95,6 +101,6 @@ public class ImageRepository implements InitializingBean {
     }
 
     public void deleteDatabase(Image img) {
-        jdbcTemplate.update("DELETE FROM imageDatabase WHERE id = (?)", img.getId());
+        jdbcTemplate.update("DELETE FROM databasearnaud WHERE id = (?)", img.getId());
     }
 }

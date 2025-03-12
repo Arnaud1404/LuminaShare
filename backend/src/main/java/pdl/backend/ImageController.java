@@ -133,7 +133,10 @@ public class ImageController {
           bufferedImage.getHeight(),
           "TODO");
       imageDao.create(img);
+
+      System.out.println("BONJOUR " + img.getPath());
       imageRepository.addDatabase(img);
+
       return ResponseEntity.ok("Image ajoutée avec succès.");
     } catch (IOException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
