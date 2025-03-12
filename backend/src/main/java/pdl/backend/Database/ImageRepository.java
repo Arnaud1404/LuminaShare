@@ -6,9 +6,11 @@ import pdl.backend.imageProcessing.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -45,7 +47,7 @@ public class ImageRepository implements InitializingBean {
         // Create table
         this.jdbcTemplate
                 .execute(
-                        "CREATE TABLE IF NOT EXISTS imageDatabase (id bigserial PRIMARY KEY, name character varying(255), type character varying(10), size character varying(255),descripteur vector(2))");
+                        "CREATE TABLE IF NOT EXISTS imageDatabase (id bigserial PRIMARY KEY, name character varying(255), type character varying(10), size character varying(255),descripteur vector(2) published_on timestamp not null)");
     }
 
     public void addDatabase(Image img) {
@@ -69,6 +71,20 @@ public class ImageRepository implements InitializingBean {
         String sql = "SELECT id, name, type, size";
         return jdbcTemplate.query(sql, rowMapper);
     }
+
+    // public Optional<Image> GetImage(String name) {
+    // String sql = "SELECT name, type, size FROM imageDatabase WHERE name = ?";
+    // Image img = new Image();
+    // try {
+    // jdbcTemplate.queryForObject(sql, rowMapper, name);
+    // img = (Image) rowMapper;
+
+    // } catch (DataAccessException ex) {
+    // return Optional.ofNullable(img);
+    // }
+
+    // return Optional.ofNullable(img);
+    // }
 
     public void deleteDatabase(Image img) {
         jdbcTemplate.update("DELETE FROM imageDatabase WHERE id = (?)", img.getId());
