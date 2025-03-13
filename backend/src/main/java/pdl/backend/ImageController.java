@@ -172,6 +172,7 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le paramètre 'number' doit être supérieur à 0");
       }
 
+      // TODO:Replace this with the actual similar images
       List<Image> similarImages = imageRepository.list();
       ArrayNode nodes = mapper.createArrayNode();
       for (Image img : similarImages) {
