@@ -23,6 +23,7 @@ public class ImageVectorConversion {
                 vector[index++] = image.get(x, y);
             }
         }
+
         return new PGvector(vector);
     }
 }

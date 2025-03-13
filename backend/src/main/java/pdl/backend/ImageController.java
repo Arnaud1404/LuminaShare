@@ -151,6 +151,21 @@ public class ImageController {
     return nodes;
   }
 
+
+  /**Point de terminaison GET /images/{id}/similar?n={n} .
+   Acceptez un paramètre id (ID de l'image cible) et n (nombre d'images similaires à retourner).
+   Utilisez imageService.findSimilarImages pour obtenir la liste, puis la formater en JSON comme getImageList .
+   Retourne 404 si l'image cible n'existe pas. 
+  */
+  @RequestMapping(value = "/images/{id}/similar", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  @ResponseBody
+  public ResponseEntity<?> getSimilarImages(@PathVariable("id") long id,@RequestParam("number") int n,@RequestParam("descriptor") String descriptor) {
+    try {
+        if (n <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le paramètre 'number' doit être supérieur à 0");
+        }
+>>>>>>> 985397d (issue18 apres modification)
+
   /**
    * Point de terminaison GET /images/{id}/similar?n={n} .
    * Acceptez un paramètre id (ID de l'image cible) et n (nombre d'images
@@ -184,10 +199,11 @@ public class ImageController {
       return ResponseEntity.ok(nodes);
     } catch (IllegalArgumentException e) {
       if (e.getMessage().contains("non trouvée")) {
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
       } else {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-      }
+      } 
     }
   }
 }
