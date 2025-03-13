@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.pgvector.PGvector;
@@ -28,6 +29,7 @@ import pdl.backend.Database.ImageRepository;
 import pdl.backend.imageProcessing.ImagePGVector;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @TestMethodOrder(OrderAnnotation.class)
 public class DatabaseTests {
 
@@ -65,7 +67,7 @@ public class DatabaseTests {
         Planar<GrayU8> image = ConvertBufferedImage.convertFromPlanar(
                 testBufferedImage, null, true, GrayU8.class);
 
-        PGvector histogram = ImagePGVector.createRgbHistogram(image, 8);
+        PGvector histogram = ImagePGVector.createRgb(image, 8);
 
         rgbArray = histogram.toArray();
         assertEquals(512, rgbArray.length);
