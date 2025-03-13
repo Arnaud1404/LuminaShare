@@ -2,6 +2,7 @@ package pdl.backend;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
+import com.pgvector.PGvector; // Ajouté explicitement
 
 public class Image {
   private static Long count = Long.valueOf(1);
@@ -11,6 +12,7 @@ public class Image {
   private String size;
   private String description;
   private byte[] data;
+  private PGvector descriptor; // champ pour stocker le descripteur
 
   public Image(final String name, final byte[] data,
       MediaType type, long width, long height,
@@ -21,6 +23,7 @@ public class Image {
     this.size = width + "*" + height;
     this.description = description;
     this.data = data;
+    this.descriptor = null; // Initialisé à null, sera calculé plus tard
   }
 
   public long getId() {
@@ -53,5 +56,12 @@ public class Image {
 
   public byte[] getData() {
     return data;
+  }
+  // Nouveau getter et setter pour le descripteur
+  public PGvector getDescriptor() { 
+    return descriptor;
+  }
+  public void setDescriptor(PGvector descriptor) { 
+    this.descriptor = descriptor; 
   }
 }

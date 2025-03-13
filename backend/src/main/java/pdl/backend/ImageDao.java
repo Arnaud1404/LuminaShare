@@ -14,26 +14,40 @@ import javax.imageio.ImageIO;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 
+import boofcv.io.image.ConvertBufferedImage; // Ajouté pour conversion
+import boofcv.struct.image.GrayU8; // Ajouté pour GrayU8
+import pdl.backend.imageProcessing.ImageVectorConversion; // Ajouté pour calcul du vecteur
+import com.pgvector.PGvector; // Ajouté
+
 @Repository
 public class ImageDao implements Dao<Image> {
 
   private final Map<Long, Image> images = new HashMap<>();
 
   public void saveImage(String fileName, byte[] fileContent) {
+    BufferedImage bufferedImage = null;
     try {
-      BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(fileContent));
+        bufferedImage = ImageIO.read(new ByteArrayInputStream(fileContent));
+        if (bufferedImage == null) {
+            throw new RuntimeException("Failed to read image: " + fileName);
+        }
 
-      int width = bufferedImage.getWidth();
-      int height = bufferedImage.getHeight();
+        int width = bufferedImage.getWidth();
+        int height = bufferedImage.getHeight();
+        MediaType type = ImageService.parseMediaTypeFromFilename(fileName);
 
-      MediaType type = ImageService.parseMediaTypeFromFilename(fileName);
+        GrayU8 grayImage = ConvertBufferedImage.convertFrom(bufferedImage, (GrayU8) null);
+        PGvector descriptor = ImageVectorConversion.convertGrayU8ToVector(grayImage);
 
-      Image img = new Image(fileName, fileContent, type, width, height, "TODO");
-
-      this.create(img);
-
+        Image img = new Image(fileName, fileContent, type, width, height, "TODO");
+        img.setDescriptor(descriptor);
+        this.create(img);
     } catch (IOException e) {
-      throw new RuntimeException("Failed to process image");
+        throw new RuntimeException("Failed to process image: " + fileName, e);
+    } finally {
+        if (bufferedImage != null) {
+            bufferedImage.flush(); // Libère la mémoire explicitement
+        }
     }
   }
 

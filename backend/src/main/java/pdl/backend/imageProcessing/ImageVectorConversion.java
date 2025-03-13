@@ -10,14 +10,19 @@ import java.awt.image.BufferedImage;
 
 public class ImageVectorConversion {
     public static PGvector convertGrayU8ToVector(GrayU8 image) {
-        float[] vector = new float[image.width * image.height];
-        int i = 0;
-        for (int y = 0; y < image.height; y++) {
-            for (int x = 0; x < image.width; x++) {
-                vector[i] = image.get(x, y) / 255.0f;
-                i++;
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int sampleSize = 100; // Réduire la résolution (1 valeur tous les 10 pixels)
+        int reducedWidth = Math.max(1, width / sampleSize);
+        int reducedHeight = Math.max(1, height / sampleSize);
+        float[] vector = new float[reducedWidth * reducedHeight];
+        int index = 0;
+
+        for (int y = 0; y < height && index < vector.length; y += sampleSize) {
+            for (int x = 0; x < width && index < vector.length; x += sampleSize) {
+                vector[index++] = image.get(x, y);
             }
         }
-        return new PGvector(vector);
+      return new PGvector(vector);
     }
 }

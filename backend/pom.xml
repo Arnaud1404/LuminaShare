@@ -47,7 +47,6 @@
     			<groupId>org.postgresql</groupId>
     			<artifactId>postgresql</artifactId>
           <version>42.7.1</version>
-    			<scope>runtime</scope>
     		</dependency>
 
         <dependency>
@@ -73,13 +72,17 @@
           <artifactId>pgvector</artifactId>
           <version>0.1.4</version>
         </dependency>
-
         <dependency>
           <groupId>org.boofcv</groupId>
           <artifactId>boofcv-core</artifactId>
           <version>1.1.2</version>
         </dependency>
-
+        <!-- Mockito (optionnel, inclus dans spring-boot-starter-test) -->
+        <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-core</artifactId>
+          <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -110,7 +113,15 @@
                   <windowtitle>LuminaShare API</windowtitle>
               </configuration>
             </plugin>
-
+            <!-- Plugin pour exécuter les tests -->
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <version>3.1.2</version>
+              <configuration>
+                <argLine>-Xmx2048m</argLine>
+              </configuration>
+            </plugin>
 
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
