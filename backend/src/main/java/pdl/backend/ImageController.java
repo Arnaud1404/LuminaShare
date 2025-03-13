@@ -162,4 +162,35 @@ public class ImageController {
     return nodes;
   }
 
+  @RequestMapping(value = "/images/{id}/similar", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  @ResponseBody
+  public ResponseEntity<?> getSimilarImages(@PathVariable("id") long id, @RequestParam("number") int n,
+      @RequestParam("descriptor") String descriptor) {
+    try {
+
+      if (n <= 0) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le paramètre 'number' doit être supérieur à 0");
+      }
+
+      List<Image> similarImages = imageRepository.list();
+      ArrayNode nodes = mapper.createArrayNode();
+      for (Image img : similarImages) {
+        ObjectNode img_json = mapper.createObjectNode();
+        img_json.put("id", img.getId());
+        img_json.put("name", img.getName());
+        img_json.put("type", img.getType().toString());
+        img_json.put("size", img.getSize());
+        img_json.put("description", img.getDesciption());
+        img_json.put("url", "/images/" + img.getId());
+        nodes.add(img_json);
+      }
+      return ResponseEntity.ok(nodes);
+    } catch (IllegalArgumentException e) {
+      if (e.getMessage().contains("non trouvée")) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+      } else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+      }
+    }
+  }
 }
