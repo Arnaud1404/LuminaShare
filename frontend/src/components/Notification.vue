@@ -54,15 +54,15 @@ defineExpose({
 }
 
 .info {
-  background-color: #2196f3;
+  background-color: rgb(33, 150, 243);
 }
 
 .success {
-  background-color: #4caf50;
+  background-color: rgb(76, 175, 80);
 }
 
 .error {
-  background-color: #f44336;
+  background-color: rgb(244, 67, 54);
 }
 
 button {

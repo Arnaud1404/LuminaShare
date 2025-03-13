@@ -18,7 +18,6 @@ function selectImage(image: ImageGallery) {
       @click="selectImage(image)"
     >
       <img v-if="image.dataUrl" :src="image.dataUrl" :alt="image.name" />
-      <p>{{ image.name }}</p>
     </div>
   </div>
 </template>
@@ -44,9 +43,5 @@ img:hover {
   max-height: 200px;
   object-fit: cover;
   border-radius: 4px;
-}
-
-.image-container p {
-  margin-top: 0.5rem;
 }
 </style>

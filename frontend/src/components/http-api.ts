@@ -1,19 +1,19 @@
 import axios, { type AxiosResponse } from "axios";
 import { images, type ImageGallery } from "./images";
 
-export async function getImagesAsJSON() {
+export async function getAllImagesAsJSON() {
   let json: ImageGallery[] = [];
   await axios
     .get("/images")
-    // Writes the id and name attributes but not dataUrl
+    // Writes all fields except byte[]
     .then((response) => (json = response.data))
     .catch((error) => console.error(error));
   return json;
 }
 
-export async function loadImageData(imageID: number): Promise<string> {
+export async function loadImageData(id: number): Promise<string> {
   return axios
-    .get(`/images/${imageID}`, { responseType: "blob" })
+    .get(`/images/${id}`, { responseType: "blob" })
     .then(function (response: AxiosResponse) {
       return new Promise<string>((resolve) => {
         const reader = new window.FileReader();
@@ -27,8 +27,19 @@ export async function loadImageData(imageID: number): Promise<string> {
     });
 }
 
-export async function loadAllImages(): Promise<ImageGallery[]> {
-  const json = await getImagesAsJSON();
+export async function getSimilarImages(id: number, n:number, descr:string): Promise<ImageGallery[]> {
+  try {
+    const response = await axios.get(`/images/${id}/similar?number=${n}&descriptor=${descr}`);
+    const similarImagesJSON = response.data;
+    const similarImages: ImageGallery[] = await loadFromJSON(similarImagesJSON);
+    return similarImages;
+  } catch (error) {
+    console.error("Failed to get similar images:", error);
+    return [];
+  }
+}
+
+export async function loadFromJSON(json:ImageGallery[]): Promise<ImageGallery[]> {
   const imageDataUrlArray: ImageGallery[] = [];
 
   for (const image of json) {
@@ -42,8 +53,17 @@ export async function loadAllImages(): Promise<ImageGallery[]> {
       dataUrl: dataUrl,
     });
   }
-  images.value = imageDataUrlArray;
   return imageDataUrlArray;
+}
+
+export async function loadAllImages(): Promise<ImageGallery[]> {
+  try {
+    const json = await getAllImagesAsJSON();
+    return await loadFromJSON(json);
+  } catch (error) {
+    console.error("Failed to load all images:", error);
+    return [];
+  }
 }
 
 export async function uploadImage(file: File): Promise<boolean> {
@@ -51,6 +71,7 @@ export async function uploadImage(file: File): Promise<boolean> {
   formData.append("file", file);
 
   try {
+  
   //   const fileNameExists = images.value.some(img => img.name === file.name);
   //   if (fileNameExists) {
   //     throw new Error("Une image avec ce nom existe déjà. Veuillez renommer votre fichier.");
@@ -60,7 +81,8 @@ export async function uploadImage(file: File): Promise<boolean> {
         "Content-Type": "multipart/form-data",
       },
     });
-    await loadAllImages();
+    images.value.push()
+
     return true;
   } catch (error) {
     console.error("Upload failed:", error);
