@@ -136,7 +136,7 @@ public class ImageController {
 
       imageRepository.addDatabase(img);
 
-      return ResponseEntity.ok("Image ajoutée avec succès.");
+      return ResponseEntity.status(HttpStatus.CREATED).body("Image ajoutée avec succès.");
     } catch (IOException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body("Erreur lors de l'enregistrement de l'image.");
