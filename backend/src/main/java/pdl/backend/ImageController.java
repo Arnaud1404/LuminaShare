@@ -76,7 +76,7 @@ public class ImageController {
     if (img.isPresent()) {
       FileController.remove_from_directory(img.get().getName());
       imageDao.delete(img.get());
-      imageRepository.deleteDatabase(img.get());
+      imageRepository.deleteDatabase(id);
       return ResponseEntity
           .ok("Image deleted successfully\n");
     }
@@ -133,7 +133,9 @@ public class ImageController {
           bufferedImage.getHeight(),
           "TODO");
       imageDao.create(img);
+
       imageRepository.addDatabase(img);
+
       return ResponseEntity.ok("Image ajoutée avec succès.");
     } catch (IOException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

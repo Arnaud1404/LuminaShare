@@ -3,6 +3,8 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   DATABASE_PATH: "pgsql"
   DATABASE_NAME: "argomes"
+  DATABASE_TABLE: "GitCI"
+  DATABASE_RESET: "true"
 cache:
   paths:
     - .m2/repository/

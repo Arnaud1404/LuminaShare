@@ -1,10 +1,12 @@
 package pdl.backend;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -23,6 +25,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import org.springframework.http.MediaType;
@@ -40,14 +43,14 @@ public class ImageControllerTests {
 	@BeforeAll
 	public static void reset() {
 		try {
-			FileController.remove_from_directory("test.jpg");
+			Files.createDirectories(FileController.directory_location);
 
-		} catch (RuntimeException e) {
-		}
-		try {
+			FileController.remove_from_directory("test.jpg");
 			FileController.remove_from_directory("test.png");
 
-		} catch (RuntimeException e) {
+			ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
+		} catch (Exception e) {
+			System.err.println("Error in test setup: " + e.getMessage());
 		}
 	}
 
@@ -79,15 +82,16 @@ public class ImageControllerTests {
 	@Test
 	@Order(4)
 	public void getImageShouldReturnSuccessJPEG() throws Exception {
-		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk()); // a besoin d'au moins 1 images dans le
-																			// dossier images
+		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk());
+
 	}
 
 	@Test
 	@Order(5)
 	public void deleteImageShouldReturnSuccessJPEG() throws Exception {
-
+		assertTrue(FileController.file_exists("test.jpg"));
 		this.mockMvc.perform(delete("/images/0")).andExpect(status().isOk());
+		assertFalse(FileController.file_exists("test.jpg"));
 	}
 
 	@Test
@@ -113,11 +117,21 @@ public class ImageControllerTests {
 	@Test
 	@Order(8)
 	public void deleteImageShouldReturnSuccessPNG() throws Exception {
+		assertTrue(FileController.file_exists("test.png"));
 		this.mockMvc.perform(delete("/images/0")).andExpect(status().isOk());
+		assertFalse(FileController.file_exists("test.png"));
+
 	}
 
 	@Test
 	@Order(9)
+	public void testSystemSynchronization() throws Exception {
+		// TODO : Check dao, database and physical files are in sync
+		return;
+	}
+
+	@Test
+	@Order(10)
 	public void createImageShouldReturnBadRequest() throws Exception {
 		ClassPathResource imgFile = new ClassPathResource("images_test/test.txt");
 		byte[] fileContent;
@@ -131,7 +145,7 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(10)
+	@Order(11)
 	public void createImageShouldReturnUnsupportedMediaType() throws Exception {
 		ClassPathResource imgFile = new ClassPathResource("images_test/test.gif");
 		byte[] fileContent;
@@ -145,19 +159,19 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(11)
+	@Order(12)
 	public void deleteImagesShouldReturnMethodNotAllowed() throws Exception {
 		this.mockMvc.perform(delete("/images")).andExpect(status().isMethodNotAllowed());
 	}
 
 	@Test
-	@Order(12)
+	@Order(13)
 	public void deleteImageShouldReturnNotFound() throws Exception {
 		this.mockMvc.perform(delete("/images/-1")).andExpect(status().isNotFound());
 	}
 
 	@Test
-	@Order(13)
+	@Order(14)
 	public void imageShouldNotBeFound() throws Exception {
 		this.mockMvc.perform(get("/images/0")).andExpect(status().isNotFound());
 	}

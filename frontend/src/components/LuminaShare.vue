@@ -222,7 +222,7 @@ watchEffect(async () => {
         </div>
         <p v-else>Aucune image sélectionnée</p>
       </div>
-
+      
       <!-- Similar Images Selector - 10% height -->
       <div class="similar-selector">
         <h3 >Filtres de similarité</h3>
