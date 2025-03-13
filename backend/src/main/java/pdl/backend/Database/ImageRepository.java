@@ -75,7 +75,26 @@ public class ImageRepository implements InitializingBean {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
+    public Image getById(long id) {
+        try {
+            String sql = "SELECT id, name, type, size FROM databasearnaud WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, Image.class, id);
+        } catch (Exception e) {
+            return null; // Non trouvé
+        }
+    }
+
     public void deleteDatabase(long id) {
         jdbcTemplate.update("DELETE FROM databasearnaud WHERE id = (?)", id);
+    }
+
+    public long getImageCount() {
+        try {
+            Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM databasearnaud", Long.class);
+            return count != null ? count : 0;
+        } catch (Exception e) {
+            return -1; // Non trouvé
+        }
+
     }
 }
