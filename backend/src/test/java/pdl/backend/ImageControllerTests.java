@@ -76,7 +76,7 @@ public class ImageControllerTests {
 		MockMultipartFile file_multipart = new MockMultipartFile("file", "test.jpg", MediaType.IMAGE_JPEG_VALUE,
 				imgFile.getInputStream());
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart)).andDo(print())
-				.andExpect(status().isOk());
+				.andExpect(status().isCreated());
 	}
 
 	@Test
@@ -104,7 +104,7 @@ public class ImageControllerTests {
 		MockMultipartFile file_multipart = new MockMultipartFile("file", "test.png", MediaType.IMAGE_JPEG_VALUE,
 				imgFile.getInputStream());
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart)).andDo(print())
-				.andExpect(status().isOk());
+				.andExpect(status().isCreated());
 	}
 
 	@Test

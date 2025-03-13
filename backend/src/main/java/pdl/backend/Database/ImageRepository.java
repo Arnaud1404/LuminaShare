@@ -27,7 +27,7 @@ import java.awt.image.BufferedImage;
 
 /**
  * Handles database operations for images with vector similarity search.
- * 
+ *
  * IMPORTANT: Only manages database records. Doesn't handle physical files or
  * in-memory records.
  * Synchronization with physical files and memory should be done by
@@ -89,7 +89,7 @@ public class ImageRepository implements InitializingBean {
     }
 
     /**
-     * Adds an image to the database with its descriptors
+     * Adds an image to the database with its descriptors (3D histogram and 2D)
      * 
      * @param image image to add to the database
      * @return 1 if the image was added, else 0
