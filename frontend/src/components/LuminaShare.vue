@@ -252,6 +252,7 @@ watchEffect(async () => {
       <div v-if="showMetadata && selectedImage" class="metadata-popup">
         <div class="metadata-content">
           <h3>Métadonnées</h3>
+          <p><strong>Identifiant:</strong> {{ selectedImage.id }}</p>
           <p><strong>Nom:</strong> {{ selectedImage.name }}</p>
           <p><strong>Type:</strong> {{ selectedImage.type }}</p>
           <p><strong>Taille:</strong> {{ selectedImage.size }}</p>
