@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import pdl.backend.Database.ImageRepository;
 import pdl.backend.FileHandler.*;
+import pdl.backend.Database.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -75,7 +76,7 @@ public class ImageController {
     if (img.isPresent()) {
       FileController.remove_from_directory(img.get().getName());
       imageDao.delete(img.get());
-      imageRepository.deleteDatabase(img.get());
+      imageRepository.deleteDatabase(id);
       return ResponseEntity
           .ok("Image deleted successfully\n");
     }
@@ -124,6 +125,7 @@ public class ImageController {
 
       FileController.store(file);
       Image img = new Image(
+          FileController.directory_location.toString(),
           file.getOriginalFilename(),
           file.getBytes(),
           type,
@@ -131,7 +133,9 @@ public class ImageController {
           bufferedImage.getHeight(),
           "TODO");
       imageDao.create(img);
+
       imageRepository.addDatabase(img);
+
       return ResponseEntity.ok("Image ajoutée avec succès.");
     } catch (IOException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

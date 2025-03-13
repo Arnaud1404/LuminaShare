@@ -21,7 +21,11 @@ const isLoading = ref(false);
 const allowedFileTypes = ["image/jpeg", "image/png"];
 const isFileValid = ref(false);
 const isFullscreen = ref(false);
+const showMetadata = ref(false);
 
+function toggleMetadata() {
+  showMetadata.value = !showMetadata.value;
+}
 function toggleFullscreen() {
   isFullscreen.value = !isFullscreen.value;
 }
@@ -206,9 +210,9 @@ watchEffect(async () => {
     />
   </div>
   <div class="two-column-layout">
-    <!-- LEFT COLUMN - 60% width -->
+    <!-- LEFT COLUMN - 50% width -->
     <div class="left-column">
-      <!-- Selected Image Area - 50% height -->
+      <!-- Selected Image Area - 60% height -->
       <div class="selected-image-container">
         <h2>Image sélectionnée</h2>
         <div v-if="selectedImage" class="image-display">
@@ -218,25 +222,14 @@ watchEffect(async () => {
         </div>
         <p v-else>Aucune image sélectionnée</p>
       </div>
-
-      <!-- Metadata Area - 20% height -->
-      <div class="metadata-area">
-        <h3>Métadonnées</h3>
-        <div v-if="selectedImage">
-          <p><strong>Nom:</strong> {{ selectedImage.name }}</p>
-          <p><strong>Type:</strong> {{ selectedImage.type }}</p>
-          <p><strong>Taille:</strong> {{ selectedImage.size }}</p>
-        </div>
-        <p v-else>Sélectionnez une image pour voir ses métadonnées</p>
-      </div>
-
+      
       <!-- Similar Images Selector - 10% height -->
       <div class="similar-selector">
-        <h3>Filtres de similarité</h3>
+        <h3 >Filtres de similarité</h3>
         <p>TODO</p>
       </div>
 
-      <!-- Similar Images - 20% height -->
+      <!-- Similar Images - 30% height -->
       <div class="similar-images">
         <h3>Images similaires</h3>
         <p>TODO</p>
@@ -248,11 +241,22 @@ watchEffect(async () => {
       <!-- Image Actions - 10% height -->
       <div class="image-actions">
         <h3>Actions</h3>
-        <div v-if="selectedImage">
+        <div class="action-buttons" v-if="selectedImage">
           <button @click="downloadImage">Télécharger</button>
+          <button @click="toggleMetadata">Métadonnées</button>
           <button @click="handleDeleteImage" class="delete-button">Supprimer</button>
         </div>
         <p v-else>Sélectionnez une image pour voir les actions disponibles</p>
+      </div>
+
+      <div v-if="showMetadata && selectedImage" class="metadata-popup">
+        <div class="metadata-content">
+          <h3>Métadonnées</h3>
+          <p><strong>Nom:</strong> {{ selectedImage.name }}</p>
+          <p><strong>Type:</strong> {{ selectedImage.type }}</p>
+          <p><strong>Taille:</strong> {{ selectedImage.size }}</p>
+          <button @click="toggleMetadata" class="close-button">Fermer</button>
+        </div>
       </div>
 
       <!-- Upload Area - 10% height -->
@@ -310,15 +314,16 @@ watchEffect(async () => {
   height: 85vh;
   width: 100%;
 }
+
 .left-column {
-  width: 60%;
+  width: 50%;
   padding: 10px;
   display: flex;
   flex-direction: column;
 }
 
 .selected-image-container {
-  height: 50%;
+  height: 60%;
   background-color: #2a2a2a;
   border-radius: 8px;
   padding: 10px;
@@ -341,7 +346,7 @@ watchEffect(async () => {
 }
 
 .metadata-area {
-  height: 20%;
+  height: 10%;
   background-color: #2a2a2a;
   border-radius: 8px;
   padding: 10px;
@@ -358,14 +363,14 @@ watchEffect(async () => {
 }
 
 .similar-images {
-  height: 20%;
+  height: 30%;
   background-color: #2a2a2a;
   border-radius: 8px;
   padding: 10px;
 }
 
 .right-column {
-  width: 40%;
+  width: 50%;
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -379,11 +384,32 @@ watchEffect(async () => {
   margin-bottom: 10px;
 }
 
-.image-actions button {
-  margin-right: 10px;
-  margin-top: 5px;
+.metadata-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
+.metadata-content {
+  background-color: #2a2a2a;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
 .upload-area {
   height: 10%;
   background-color: #2a2a2a;
@@ -438,4 +464,5 @@ h1, h2, h3 {
   margin-bottom: 10px;
 
 }
+
 </style>

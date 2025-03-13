@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class Image {
   private static Long count = Long.valueOf(1);
+  private String path;
   private Long id;
   private String name;
   private MediaType type;
@@ -12,15 +13,19 @@ public class Image {
   private String description;
   private byte[] data;
 
-  public Image(final String name, final byte[] data,
+  public Image(String path, String name, byte[] data,
       MediaType type, long width, long height,
-      final String description) {
+      String description) {
     id = count++;
+    this.path = path;
     this.name = name;
     this.type = type;
     this.size = width + "*" + height;
     this.description = description;
     this.data = data;
+  }
+
+  public Image() {
   }
 
   public long getId() {
@@ -31,6 +36,10 @@ public class Image {
     this.id = id;
   }
 
+  public String getPath() {
+    return path;
+  }
+
   public String getName() {
     return name;
   }
@@ -39,12 +48,20 @@ public class Image {
     return type;
   }
 
+  public void setType(MediaType type) {
+    this.type = type;
+  }
+
   public String getDesciption() {
     return description;
   }
 
   public String getSize() {
     return size;
+  }
+
+  public void setSize(String size) {
+    this.size = size;
   }
 
   public void setName(final String name) {
