@@ -45,15 +45,5 @@ public class ImageRepository implements InitializingBean {
     public void deleteDatabase(Image img) {
         jdbcTemplate.update("DELETE FROM imageDatabase WHERE id = (?)", img.getId());
     }
-    private float[] reduceToRGBMean(PGvector descriptor) {
-        float[] vector = descriptor.toArray();
-        float rSum = 0, gSum = 0, bSum = 0;
-        int pixelCount = vector.length / 3;
-        for (int i = 0; i < vector.length; i += 3) {
-            rSum += vector[i];
-            gSum += vector[i + 1];
-            bSum += vector[i + 2];
-        }
-        return new float[]{rSum / pixelCount, gSum / pixelCount, bSum / pixelCount};
-    }
+   
 }
