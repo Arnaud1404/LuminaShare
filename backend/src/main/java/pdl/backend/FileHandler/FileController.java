@@ -38,6 +38,27 @@ public class FileController {
 
     }
 
+    public static void store(MultipartFile file, Path directory) {
+
+        try {
+            if (file.isEmpty()) {
+                throw new RuntimeException("file empty");
+            }
+            Path destinationFile = directory.resolve(
+                    Paths.get(file.getOriginalFilename()))
+                    .normalize().toAbsolutePath();
+
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, destinationFile);
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+
+        }
+
+    }
+
     public static void remove_from_directory(String name) {
 
         Path fileToDelete = Paths.get(directory_location.toString() + "/" + name);
@@ -48,8 +69,23 @@ public class FileController {
         }
     }
 
+    public static void remove_from_directory(String name, Path directory) {
+
+        Path fileToDelete = Paths.get(directory.toString() + "/" + name);
+        try {
+            Files.delete(fileToDelete);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static File get_file(String name) {
         Path fileToGet = Paths.get(directory_location.toString() + "/" + name);
+        return fileToGet.toFile();
+    }
+
+    public static File get_file(String name, String directory) {
+        Path fileToGet = Paths.get(directory + "/" + name);
         return fileToGet.toFile();
     }
 }

@@ -31,7 +31,6 @@ public class ImageService {
     @PostConstruct
     public void loadImagesOnStartup() {
         File folder = new File(IMAGE_FOLDER);
-        // Vérifie si le dossier 'images/' existe, sinon lève une erreur
         if (!folder.exists() || !folder.isDirectory()) {
             throw new RuntimeException(
                     "Erreur : Le dossier 'images' est introuvable. Assurez-vous qu'il existe dans le répertoire de lancement du serveur.");
@@ -40,7 +39,6 @@ public class ImageService {
         File[] files = folder.listFiles();
         if (files != null) {
             for (File file : files) {
-                // Vérifie que le fichier est une image valide
                 if (file.isFile() && isValidImage(file.getName())) {
                     try {
                         byte[] fileContent = Files.readAllBytes(file.toPath());
@@ -55,16 +53,15 @@ public class ImageService {
 
     public void loadImagesOnStartup(String name_folder) {
         File folder = new File(name_folder);
-        // Vérifie si le dossier 'images/' existe, sinon lève une erreur
         if (!folder.exists() || !folder.isDirectory()) {
             throw new RuntimeException(
-                    "Erreur : Le dossier 'images' est introuvable. Assurez-vous qu'il existe dans le répertoire de lancement du serveur.");
+                    "Erreur : Le dossier " + name_folder
+                            + " est introuvable. Assurez-vous qu'il existe dans le répertoire de lancement du serveur.");
         }
 
         File[] files = folder.listFiles();
         if (files != null) {
             for (File file : files) {
-                // Vérifie que le fichier est une image valide
                 if (file.isFile() && isValidImage(file.getName())) {
                     try {
                         byte[] fileContent = Files.readAllBytes(file.toPath());
@@ -89,7 +86,7 @@ public class ImageService {
     /**
      * Récupère l'extension d'un fichier à partir de son nom.
      */
-    private static String getFileExtension(String fileName) {
+    public static String getFileExtension(String fileName) {
         int lastDotIndex = fileName.lastIndexOf('.');
         return (lastDotIndex == -1) ? "" : fileName.substring(lastDotIndex + 1);
     }

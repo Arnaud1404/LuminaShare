@@ -76,7 +76,7 @@ public class ImageController {
     if (img.isPresent()) {
       FileController.remove_from_directory(img.get().getName());
       imageDao.delete(img.get());
-      imageRepository.deleteDatabase(img.get());
+      // imageRepository.deleteDatabase(img.get());
       return ResponseEntity
           .ok("Image deleted successfully\n");
     }
@@ -134,10 +134,10 @@ public class ImageController {
           "TODO");
       imageDao.create(img);
 
-      imageRepository.addDatabase(img);
-      Image img2 = imageRepository.GetImage(img.getName()).get();
+      // imageRepository.addDatabase(img);
+      // Image img2 = imageRepository.GetImage(img.getName()).get();
 
-      System.out.println("img2 name = " + img2.getName());
+      // System.out.println("img2 name = " + img2.getName());
 
       return ResponseEntity.ok("Image ajoutée avec succès.");
     } catch (IOException e) {

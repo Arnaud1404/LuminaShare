@@ -1,111 +1,116 @@
-// package pdl.backend;
+package pdl.backend;
 
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.junit.jupiter.api.io.TempDir;
-// import java.io.File;
-// import java.io.IOException;
-// import java.nio.file.Files;
-// import java.nio.file.Path;
-// import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
-// public class ImageLoaderServiceTest {
+import pdl.backend.FileHandler.FileController;
 
-// private ImageDao imageDao;
-// private ImageService imageLoaderService;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.logging.FileHandler;
 
-// @TempDir
-// Path tempDir;
+import static org.junit.jupiter.api.Assertions.*;
 
-// @BeforeEach
-// void setUp() {
-// imageDao = new ImageDao();
-// imageLoaderService = new ImageService(imageDao);
-// }
+public class ImageLoaderServiceTest {
 
-// // Test si le dossier images n'existe pas
-// @Test
-// void testFolderNotFound() {
-// File imagesFolder = new File("src/main/resources/images"); // Remplace par le
-// chemin correct si nécessaire
+    private ImageDao imageDao;
+    private ImageService imageLoaderService;
 
-// if (!imagesFolder.exists()) {
-// RuntimeException exception = assertThrows(RuntimeException.class,
-// () -> imageLoaderService.loadImagesOnStartup());
-// assertEquals(
-// "Erreur : Le dossier 'images' est introuvable. Assurez-vous qu'il existe dans
-// le répertoire de lancement du serveur.",
-// exception.getMessage());
-// } else {
-// // Si le dossier existe, on ne teste pas l'exception
-// assertDoesNotThrow(() -> imageLoaderService.loadImagesOnStartup());
-// }
-// }
+    @TempDir
+    Path tempDir;
 
-// // Teste le chargement des images valide
-// @Test
-// void testLoadValidImages() throws IOException {
-// File imageFile = new File(tempDir.toFile(), "test_service.jpg");
-// Files.write(imageFile.toPath(), new byte[] { (byte) 0xFF, (byte) 0xD8, (byte)
-// 0xFF }); // Simule un fichier JPEG
+    @BeforeEach
+    void setUp() {
+        imageDao = new ImageDao();
+        imageLoaderService = new ImageService(imageDao);
+    }
 
-// // Création de plusieurs images valides dans le dossier temporaire
-// String[] validExtensions = { "jpg", "jpeg", "png" };
-// int numImages = 3; // nombre d'extention
+    // Test si le dossier images n'existe pas
+    @Test
+    void testFolderNotFound() {
+        File imagesFolder = new File("src/main/resources/images"); // Remplace par le chemin correct si nécessaire
 
-// for (int i = 0; i < numImages; i++) { // pour créer une image de chaque
-// extention
-// String extension = validExtensions[i];
-// File tempImage = new File(tempDir.toFile(), "image" + i + "." + extension);
-// Files.write(tempImage.toPath(), new byte[] { (byte) 0xFF, (byte) 0xD8, (byte)
-// 0xFF }); // Simule un fichier
-// // JPEG
-// }
+        if (!imagesFolder.exists()) {
+            RuntimeException exception = assertThrows(RuntimeException.class,
+                    () -> imageLoaderService.loadImagesOnStartup());
+            assertEquals(
+                    "Erreur : Le dossier 'images' est introuvable. Assurez-vous qu'il existe dans le répertoire de lancement du serveur.",
+                    exception.getMessage());
+        } else {
+            // Si le dossier existe, on ne teste pas l'exception
+            assertDoesNotThrow(() -> imageLoaderService.loadImagesOnStartup());
+        }
+    }
 
-// System.setProperty("images", tempDir.toString()); // Définir le bon chemin
-// une seule fois
-// imageLoaderService.loadImagesOnStartup(tempDir.toString());
+    // Teste le chargement des images valide
+    @Test
+    void testLoadValidImages() throws IOException {
 
-// File[] files = tempDir.toFile().listFiles();
-// int count = 0;
-// if (files != null) {
-// for (File file : files) {
-// if (file.isFile()) {
-// count++;
-// }
-// }
-// }
-// System.out.println("size avant loading " + imageDao.retrieveAll().size());
+        File imageFile = FileController.get_file("test_certain_est_test.jpg", "src/main/resources/images_test");
+        // FileController.get_file("test.png", "src/main/resources/images_test")
+        System.out.println("dossier temp " + tempDir.toFile().exists());
+        InputStream input = new FileInputStream(imageFile);
 
-// assertEquals(numImages + 1, count); // +1 car la ligne 47
-// }
+        Files.copy(input, tempDir, StandardCopyOption.REPLACE_EXISTING);
 
-// // Vérifiez que les fichiers non-images sont ignorés .
-// @Test
-// void testIgnoreInvalidFiles() throws IOException {
-// File textFile = new File(tempDir.toFile(), "test.txt");
-// Files.write(textFile.toPath(), "ce n'est pas une image".getBytes());
+        System.out.println("dossier temp " + tempDir.toFile().exists());
+        System.out.println("chemin " + tempDir.toString());
 
-// File imageFile = new File(tempDir.toFile(), "test_service.jpg");
-// Files.write(imageFile.toPath(), new byte[] { (byte) 0xFF, (byte) 0xD8, (byte)
-// 0xFF }); // Simule un fichier JPEG
+        System.out.println("chemin apres" + tempDir.toString());
+        imageLoaderService.loadImagesOnStartup(tempDir.toString());
 
-// System.out.println("size avant loading " + imageDao.retrieveAll().size());
+        File[] files = tempDir.toFile().listFiles();
+        int count = 0;
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    count++;
+                }
+            }
+        }
+        System.out.println("size avant loading " + imageDao.retrieveAll().size());
 
-// imageLoaderService.loadImagesOnStartup(tempDir.toString());
-
-// File[] files = tempDir.toFile().listFiles();
-// if (files != null) {
-// for (File file : files) {
-// // Vérifie que le fichier est une image valide
-// if (file.isFile()) {
-// System.out.println("file : " + file.getName());
-// }
-// }
-// }
-// System.out.println("size avant après " + imageDao.retrieveAll().size());
-
-// // Vérification : Seuls les fichiers images doivent être chargés
-// assertEquals(1, imageDao.retrieveAll().size());
-// }
-// }
+        assertEquals(1, count);
+    }
+    /*
+     * // Vérifiez que les fichiers non-images sont ignorés .
+     * 
+     * @Test
+     * void testIgnoreInvalidFiles() throws IOException {
+     * File textFile = new File(tempDir.toFile(), "test.txt");
+     * Files.write(textFile.toPath(), "ce n'est pas une image".getBytes());
+     * 
+     * File imageFile = new File(tempDir.toFile(), "test_service.jpg");
+     * Files.write(imageFile.toPath(), new byte[] { (byte) 0xFF, (byte) 0xD8, (byte)
+     * 0xFF }); // Simule un fichier JPEG
+     * 
+     * System.out.println("size avant loading " + imageDao.retrieveAll().size());
+     * 
+     * imageLoaderService.loadImagesOnStartup(tempDir.toString());
+     * 
+     * File[] files = tempDir.toFile().listFiles();
+     * if (files != null) {
+     * for (File file : files) {
+     * // Vérifie que le fichier est une image valide
+     * if (file.isFile()) {
+     * System.out.println("file : " + file.getName());
+     * }
+     * }
+     * }
+     * System.out.println("size avant après " + imageDao.retrieveAll().size());
+     * 
+     * // Vérification : Seuls les fichiers images doivent être chargés
+     * assertEquals(1, imageDao.retrieveAll().size());
+     * }
+     */
+}
