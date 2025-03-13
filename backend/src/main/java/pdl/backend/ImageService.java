@@ -101,7 +101,8 @@ public class ImageService {
      */
     private boolean isValidImage(String fileName) {
         String extension = getFileExtension(fileName);
-        return extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg") || extension.equalsIgnoreCase("png");
+        return extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg")
+                || extension.equalsIgnoreCase("png");
     }
 
     /**
