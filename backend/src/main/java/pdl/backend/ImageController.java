@@ -28,6 +28,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+/**
+ * Handles HTTP requests for image operations.
+ * 
+ * IMPORTANT: Coordinates synchronization between ImageDao (memory storage),
+ * ImageRepository (database storage), and FileController (filesystem storage).
+ * All image operations should go through this controller to maintain
+ * consistency across the three storage systems.
+ */
 @RestController
 public class ImageController {
 
@@ -45,12 +53,11 @@ public class ImageController {
   }
 
   /**
-   * Récupère une image à partir de son identifiant.
+   * Gets an image from its id
    * 
-   * @param id L'identifiant de l'image à récupérer
-   * @return Une réponse HTTP contenant l'image au format JPEG si elle existe,
-   *         ou un statut 404 si l'image n'existe pas
-   * @throws IOException En cas d'erreur lors de la lecture des données de l'image
+   * @param id The ID of the image
+   * @return An HTTP Response with the image bytes, or NOT_FOUND if image doesn't
+   *         exist
    */
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = { MediaType.IMAGE_JPEG_VALUE,
       MediaType.IMAGE_PNG_VALUE })
@@ -67,6 +74,12 @@ public class ImageController {
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
+  /**
+   * Deletes an image by its id from all three storage systems
+   * 
+   * @param id The ID of the image to delete
+   * @return OK if deletion succeeded, NOT_FOUND if image doesn't exist
+   */
   @RequestMapping(value = "/images/{id}", method = RequestMethod.DELETE)
   public ResponseEntity<?> deleteImage(@PathVariable("id") long id) {
     Optional<Image> img = imageDao.retrieve(id);
@@ -83,6 +96,14 @@ public class ImageController {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
   }
 
+  /**
+   * Adds a new image from an uploaded file
+   * Stores the image in memory, database, and filesystem
+   * 
+   * @param file               The uploaded image file
+   * @param redirectAttributes Spring redirect attributes
+   * @return OK if successful, BAD_REQUEST if file is invalid
+   */
   @RequestMapping(value = "/images", method = RequestMethod.POST)
   public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
     // Vérification des erreurs dans un seul bloc
@@ -143,6 +164,11 @@ public class ImageController {
     }
   }
 
+  /**
+   * Lists all images in memory
+   * 
+   * @return JSON array with image metadata
+   */
   @RequestMapping(value = "/images", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   @ResponseBody
   public ArrayNode getImageList() { // format attendu

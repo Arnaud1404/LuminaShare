@@ -61,7 +61,7 @@ public class ImageRepository implements InitializingBean {
         this.jdbcTemplate
                 .execute(
                         "CREATE TABLE IF NOT EXISTS " + databaseTable
-                                + " (id bigserial PRIMARY KEY, name character varying(255) UNIQUE, type character varying(10), size character varying(255), rgbcube vector(512), hueSat vector(101))");
+                                + " (id bigserial PRIMARY KEY, name character varying(255) UNIQUE, type character varying(10), size character varying(255), rgbcube vector(512), huesat vector(101))");
     }
 
     /**
@@ -101,12 +101,12 @@ public class ImageRepository implements InitializingBean {
             }
 
             PGvector rgbcube = createRgbHistogramFromImage(img);
-            PGvector hueSat = createHueSaturationHistogramFromImage(img);
+            PGvector huesat = createHueSaturationHistogramFromImage(img);
 
-            if (rgbcube == null || hueSat == null) {
+            if (rgbcube == null || huesat == null) {
                 return 0;
             }
-            return insertImageRecord(img, rgbcube, hueSat);
+            return insertImageRecord(img, rgbcube, huesat);
         } catch (Exception e) {
             System.err.println("Error adding image to database: " + e.getMessage());
             return 0;
@@ -130,7 +130,7 @@ public class ImageRepository implements InitializingBean {
      */
     public Image getById(long id) {
         try {
-            String sql = "SELECT id, name, type, size, rgbcube, hueSat FROM " + databaseTable + " WHERE id = ?";
+            String sql = "SELECT id, name, type, size, rgbcube, huesat FROM " + databaseTable + " WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, Image.class, id);
         } catch (Exception e) {
             return null; // Non trouvé
@@ -239,19 +239,19 @@ public class ImageRepository implements InitializingBean {
      *                insert
      * @param rgbcube The PGvector containing the RGB histogram data for
      *                similarity search
-     * @param hueSat  The PGvector containing the Hue-Saturation histogram
+     * @param huesat  The PGvector containing the Hue-Saturation histogram
      *                data for similarity search
      * @return 1 if insertion was successful, 0 if it failed
      */
-    private int insertImageRecord(Image img, PGvector rgbcube, PGvector hueSat) {
+    private int insertImageRecord(Image img, PGvector rgbcube, PGvector huesat) {
         try {
             jdbcTemplate.update(
-                    "INSERT INTO " + databaseTable + " (name, type, size, rgbcube, hueSat) VALUES (?, ?, ?, ?, ?)",
+                    "INSERT INTO " + databaseTable + " (name, type, size, rgbcube, huesat) VALUES (?, ?, ?, ?, ?)",
                     img.getName(),
                     img.getType().toString(),
                     img.getSize(),
                     rgbcube,
-                    hueSat);
+                    huesat);
             return 1;
         } catch (Exception e) {
             System.err.println("Database insertion failed: " + e.getMessage());
