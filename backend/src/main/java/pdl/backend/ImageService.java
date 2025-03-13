@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.annotation.PostConstruct;
+import pdl.backend.Database.ImageRepository;
+import pdl.backend.FileHandler.FileController;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,11 +20,13 @@ import java.util.List;
 public class ImageService {
 
     private final ImageDao imageDao;
+    private final ImageRepository imageRepository;
     private static final String IMAGE_FOLDER = "src/main/resources/images";
     private static final List<String> SUPPORTED_FORMATS = Arrays.asList("jpg", "jpeg", "png");
 
-    public ImageService(ImageDao imageDao) {
+    public ImageService(ImageDao imageDao, ImageRepository imageRepository) {
         this.imageDao = imageDao;
+        this.imageRepository = imageRepository;
     }
 
     /**
@@ -44,7 +49,12 @@ public class ImageService {
                 if (file.isFile() && isValidImage(file.getName())) {
                     try {
                         byte[] fileContent = Files.readAllBytes(file.toPath());
-                        imageDao.saveImage(file.getName(), fileContent);
+                        Image image = imageDao.saveImage(file.getName(), fileContent);
+
+                        if (!imageRepository.imageExists(file.getName())) {
+                            imageRepository.addDatabase(image);
+                        }
+                        System.out.println("Image chargée : " + file.getName());
                     } catch (IOException e) {
                         throw new RuntimeException("Erreur lors du chargement de l'image : " + file.getName());
                     }
@@ -68,7 +78,11 @@ public class ImageService {
                 if (file.isFile() && isValidImage(file.getName())) {
                     try {
                         byte[] fileContent = Files.readAllBytes(file.toPath());
-                        imageDao.saveImage(file.getName(), fileContent);
+                        Image image = imageDao.saveImage(file.getName(), fileContent);
+
+                        if (!imageRepository.imageExists(file.getName())) {
+                            imageRepository.addDatabase(image);
+                        }
                         System.out.println("Image chargée : " + file.getName());
                     } catch (IOException e) {
                         throw new RuntimeException("Erreur lors du chargement de l'image : " + file.getName());
