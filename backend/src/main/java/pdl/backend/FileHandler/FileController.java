@@ -10,8 +10,15 @@ import java.nio.file.Paths;
 
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * Handles file system operations for images.
+ * 
+ * IMPORTANT: Only manages physical files. Doesn't handle database or in-memory
+ * records.
+ * Synchronization with database and memory should be done by ImageController.
+ */
 public class FileController {
-    // insipré de https://spring.io/guides/gs/uploading-files
+    // inspiré de https://spring.io/guides/gs/uploading-files
     public static final Path directory_location = Paths.get("src/main/resources/images");
 
     public static void store(MultipartFile file) {

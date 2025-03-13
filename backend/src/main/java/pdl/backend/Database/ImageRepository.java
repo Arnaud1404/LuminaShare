@@ -26,16 +26,12 @@ import jakarta.annotation.PostConstruct;
 import java.awt.image.BufferedImage;
 
 /**
- * Repository for image storage and similarity search using pgvector.
+ * Handles database operations for images with vector similarity search.
  * 
- * IMPORTANT: This repository only manages database records, not physical image
- * files.
- * The application must manually maintain synchronization between:
- * 1. Images stored in the filesystem
- * 2. Corresponding entries in this database
- * 
- * This class uses pgvector to store histogram file descriptors for efficient
- * similarity search.
+ * IMPORTANT: Only manages database records. Doesn't handle physical files or
+ * in-memory records.
+ * Synchronization with physical files and memory should be done by
+ * ImageController.
  */
 @Repository
 public class ImageRepository implements InitializingBean {

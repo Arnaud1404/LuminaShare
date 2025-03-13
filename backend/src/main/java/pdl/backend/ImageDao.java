@@ -16,6 +16,13 @@ import org.springframework.stereotype.Repository;
 
 import pdl.backend.FileHandler.FileController;
 
+/**
+ * Handles in-memory image collection.
+ * 
+ * IMPORTANT: Only manages in-memory image objects. Doesn't manage database
+ * records or filesystem. Synchronization with database and physical files
+ * should be done by ImageController.
+ */
 @Repository
 public class ImageDao implements Dao<Image> {
 
