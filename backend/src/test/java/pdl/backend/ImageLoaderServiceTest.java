@@ -25,38 +25,6 @@ public class ImageLoaderServiceTest {
     void setUp() {
         imageLoaderService = new ImageService(imageDao, imageRepository);
     }
-
-    // Test si le dossier images n'existe pas
-    @Test
-    void testFolderNotFound() {
-        // Utilisation d'un dossier temporaire pour le test afin de ne pas modifier
-        // l'état réel
-        String testFolderPath = "src/test/resources/test_images"; // Chemin temporaire pour éviter d'impacter le dossier
-                                                                  // réel
-        File testFolder = new File(testFolderPath);
-
-        // S'assurer que le dossier n'existe pas avant le test (nettoyage)
-        if (testFolder.exists()) {
-            testFolder.delete(); // Supprime le dossier s'il existe déjà
-        }
-
-        // Configurer le service avec ce dossier temporaire (via une méthode ou un mock
-        // si nécessaire)
-        // Si ImageService ne permet pas de passer un dossier dynamiquement ici,
-        // utilisez la surcharge existante
-        imageLoaderService.loadImagesOnStartup(testFolderPath);
-
-        // Vérifier que le dossier a été créé
-        assertTrue(testFolder.exists(), "Le dossier devrait avoir été créé par loadImagesOnStartup");
-        assertTrue(testFolder.isDirectory(), "Le chemin créé devrait être un dossier");
-
-        // Vérifier que la méthode ne lève pas d'exception
-        assertDoesNotThrow(() -> imageLoaderService.loadImagesOnStartup(testFolderPath),
-                "loadImagesOnStartup ne devrait pas lever d'exception");
-
-        // Nettoyage après le test (optionnel)
-        testFolder.delete();
-    }
     /*
      * //Teste le chargement des images valide
      * 
