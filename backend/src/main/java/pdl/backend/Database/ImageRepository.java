@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -25,18 +26,22 @@ import jakarta.annotation.PostConstruct;
 import java.awt.image.BufferedImage;
 
 /**
- * Repository for image storage and similarity search.
+ * Repository for image storage and similarity search using pgvector.
  * 
- * This class manages the database of images and their vector descriptors for
+ * IMPORTANT: This repository only manages database records, not physical image
+ * files.
+ * The application must manually maintain synchronization between:
+ * 1. Images stored in the filesystem
+ * 2. Corresponding entries in this database
+ * 
+ * This class uses pgvector to store histogram file descriptors for efficient
  * similarity search.
- * It maintains a synchronized relationship between the database entries and
- * image files in the filesystem. When adding or deleting images, the database
- * and filesystem should be kept in sync.
- * It uses pgvector to store histograms as file descriptors for similarity
- * search.
  */
 @Repository
 public class ImageRepository implements InitializingBean {
+
+    @Value("${DATABASE_TABLE:imageDatabase}")
+    private String databaseTable;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -57,7 +62,8 @@ public class ImageRepository implements InitializingBean {
         // Create table
         this.jdbcTemplate
                 .execute(
-                        "CREATE TABLE IF NOT EXISTS databasearnaud (id bigserial PRIMARY KEY, name character varying(255), type character varying(10), size character varying(255), rgbcube vector(512))");
+                        "CREATE TABLE IF NOT EXISTS " + databaseTable
+                                + " (id bigserial PRIMARY KEY, name character varying(255), type character varying(10), size character varying(255), rgbcube vector(512))");
     }
 
     /**
@@ -106,7 +112,7 @@ public class ImageRepository implements InitializingBean {
             // Object[] vector = new Object[] { hueSaturation };
 
             jdbcTemplate.update(
-                    "INSERT INTO databasearnaud (name, type, size, rgbcube ) VALUES (?, ?, ?, ?)",
+                    "INSERT INTO " + databaseTable + " (name, type, size, rgbcube) VALUES (?, ?, ?, ?)",
                     img.getName(),
                     img.getType().toString(),
                     img.getSize(),
@@ -125,7 +131,7 @@ public class ImageRepository implements InitializingBean {
      * @return A List<Image> with the images from the database
      */
     public List<Image> list() {
-        String sql = "SELECT id, name, type, size, rgbcube FROM databasearnaud";
+        String sql = "SELECT id, name, type, size FROM " + databaseTable;
         return jdbcTemplate.query(sql, rowMapper);
     }
 
@@ -136,7 +142,7 @@ public class ImageRepository implements InitializingBean {
      */
     public Image getById(long id) {
         try {
-            String sql = "SELECT id, name, type, size, rgbcube FROM databasearnaud WHERE id = ?";
+            String sql = "SELECT id, name, type, size, rgbcube FROM " + databaseTable + " WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, Image.class, id);
         } catch (Exception e) {
             return null; // Non trouvé
@@ -148,18 +154,31 @@ public class ImageRepository implements InitializingBean {
      * This function does not delete an image server-side
      * 
      * @param id The ID of the image to delete
-     * @return Number of rows affected (1 if successful, else 0)
+     * @return Number of rows affected (1 if successful)
      */
     public int deleteDatabase(long id) {
-        return jdbcTemplate.update("DELETE FROM databasearnaud WHERE id = (?)", id);
+        return jdbcTemplate.update("DELETE FROM " + databaseTable + " WHERE id = ?", id);
+    }
+
+    /**
+     * Deletes an image from the database
+     * This function does not delete an image server-side
+     * 
+     * @param img The Image
+     * @return Number of rows affected (1 if successful)
+     */
+    public int deleteDatabase(Image img) {
+        return jdbcTemplate.update("DELETE FROM " + databaseTable + " WHERE id = ?", img.getId());
     }
 
     /**
      * Gets the number of images in the database
+     * 
+     * @return The number of images in the database
      */
     public long getImageCount() {
         try {
-            Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM databasearnaud", Long.class);
+            Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + databaseTable, Long.class);
             return count != null ? count : 0;
         } catch (Exception e) {
             return -1; // Non trouvé

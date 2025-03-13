@@ -78,7 +78,7 @@ public class DatabaseTests {
 
     // @Test
     // @Order(2)
-    // // TODO : A TESTER AVEC LE NB DE FICHIERS DANS LE DOSSIER, COMPTER LES
+    // TODO : A TESTER AVEC LE NB DE FICHIERS DANS LE DOSSIER, COMPTER LES
     // FICHIER JPEG, JPG ET PNG
     // void testGetImageCount() {
     // assertEquals(imageRepository.getImageCount(), imageDao.getImageCount(););
