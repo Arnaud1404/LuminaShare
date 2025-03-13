@@ -2,8 +2,14 @@ package pdl.backend;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
-import com.pgvector.PGvector; // Ajouté explicitement
-
+import com.pgvector.PGvector; 
+/**
+ * Represents an image entity with metadata and binary data.
+ * 
+ * This class encapsulates the properties of an image, including its identifier,
+ * name, media type, dimensions, description, binary content, and descriptor for
+ * similarity analysis. It uses a static counter to assign unique IDs to instances.
+ */
 public class Image {
   private static Long count = Long.valueOf(1);
   private Long id;
@@ -12,8 +18,22 @@ public class Image {
   private String size;
   private String description;
   private byte[] data;
-  private PGvector descriptor; // champ pour stocker le descripteur
+  private PGvector descriptor; // Vector descriptor for similarity comparisons
 
+   /**
+    * Constructs an Image instance with the specified properties.
+    * 
+    * Initializes the image with a unique ID (incremented from a static counter),
+    * name, binary data, media type, dimensions, and description. The descriptor
+    * is initially set to null and can be computed or set later.
+    * 
+    * @param name The name of the image file
+    * @param data The binary content of the image
+    * @param type The MIME type of the image (e.g., IMAGE_PNG, IMAGE_JPEG)
+    * @param width The width of the image in pixels
+    * @param height The height of the image in pixels
+    * @param description A description or additional metadata for the image
+    */
   public Image(final String name, final byte[] data,
       MediaType type, long width, long height,
       final String description) {
@@ -57,7 +77,6 @@ public class Image {
   public byte[] getData() {
     return data;
   }
-  // Nouveau getter et setter pour le descripteur
   public PGvector getDescriptor() { 
     return descriptor;
   }

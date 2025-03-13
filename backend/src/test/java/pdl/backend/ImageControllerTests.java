@@ -110,8 +110,7 @@ public class ImageControllerTests {
 		Image mockImage = new Image("test.jpg", null, MediaType.IMAGE_JPEG, 100, 100, "test");
         mockImage.setId(0L);
         when(imageDao.retrieve(0L)).thenReturn(Optional.of(mockImage));
-		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk()); // a besoin d'au moins 1 images dans le
-																			// dossier images
+		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk()); // a besoin d'au moins 1 images dans le dossier images
 	}
 
 	@Test

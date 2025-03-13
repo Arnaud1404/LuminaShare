@@ -9,6 +9,17 @@ import boofcv.struct.image.Planar;
 import java.awt.image.BufferedImage;
 
 public class ImageVectorConversion {
+    /**
+     * Converts a grayscale image into a PGvector for similarity analysis.
+     * 
+     * The method samples the image at fixed intervals (sampleSize = 100) to create
+     * a vector representation. The resulting vector length depends on the image
+     * dimensions (width / sampleSize * height / sampleSize), allowing for variable-length
+     * descriptors tailored to each image's size.
+     * 
+     * @param image The grayscale image (GrayU8) to convert into a vector
+     * @return A PGvector containing the sampled pixel values, or null if conversion fails
+     */
     public static PGvector convertGrayU8ToVector(GrayU8 image) {
         int width = image.getWidth();
         int height = image.getHeight();
