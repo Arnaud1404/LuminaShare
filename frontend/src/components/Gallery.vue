@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { images, type ImageGallery } from "./images";
+import { images, type ImageGallery } from './images';
 
 defineProps<{ images: ImageGallery[] }>();
-const emit = defineEmits(["select"]);
+const emit = defineEmits(['select']);
 
 function selectImage(image: ImageGallery) {
-  emit("select", image);
+  emit('select', image);
 }
 </script>
 
@@ -18,7 +18,6 @@ function selectImage(image: ImageGallery) {
       @click="selectImage(image)"
     >
       <img v-if="image.dataUrl" :src="image.dataUrl" :alt="image.name" />
-      <p>{{ image.name }}</p>
     </div>
   </div>
 </template>

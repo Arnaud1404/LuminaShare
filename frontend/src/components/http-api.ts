@@ -1,19 +1,34 @@
-import axios, { type AxiosResponse } from "axios";
-import { images, type ImageGallery } from "./images";
+import axios, { type AxiosResponse } from 'axios';
+import { images, type ImageGallery } from './images';
 
 export async function getImagesAsJSON() {
   let json: ImageGallery[] = [];
   await axios
-    .get("/images")
+    .get('/images')
     // Writes the id and name attributes but not dataUrl
     .then((response) => (json = response.data))
     .catch((error) => console.error(error));
   return json;
 }
-
+export async function getSimilarImagesAsJSON(
+  id: number,
+  count: number = 5,
+  descriptor: string = 'rgbcube'
+): Promise<ImageGallery[]> {
+  let json: ImageGallery[] = [];
+  try {
+    const response = await axios.get(
+      `/images/${id}/similar?number=${count}&descriptor=${descriptor}`
+    );
+    json = response.data;
+  } catch (error) {
+    console.error(error);
+  }
+  return json;
+}
 export async function loadImageData(imageID: number): Promise<string> {
   return axios
-    .get(`/images/${imageID}`, { responseType: "blob" })
+    .get(`/images/${imageID}`, { responseType: 'blob' })
     .then(function (response: AxiosResponse) {
       return new Promise<string>((resolve) => {
         const reader = new window.FileReader();
@@ -27,43 +42,69 @@ export async function loadImageData(imageID: number): Promise<string> {
     });
 }
 
-export async function loadAllImages(): Promise<ImageGallery[]> {
-  const json = await getImagesAsJSON();
+/**
+ * Loads data URLs for an array of image metadata
+ * @param jsonImages Array of image metadata without data URLs
+ * @returns Array of complete images with data URLs
+ */
+async function loadImageDataUrls(
+  jsonImages: ImageGallery[]
+): Promise<ImageGallery[]> {
   const imageDataUrlArray: ImageGallery[] = [];
 
-  for (const image of json) {
-    const dataUrl = await loadImageData(image.id);
-    imageDataUrlArray.push({
-      id: image.id,
-      name: image.name,
-      type: image.type,
-      size: image.size,
-      description: image.description,
-      dataUrl: dataUrl,
-    });
+  for (const image of jsonImages) {
+    try {
+      const dataUrl = await loadImageData(image.id);
+      imageDataUrlArray.push({
+        id: image.id,
+        name: image.name,
+        type: image.type,
+        size: image.size,
+        description: image.description,
+        dataUrl: dataUrl,
+      });
+    } catch (error) {
+      console.error(`Failed to load image data for ID ${image.id}:`, error);
+    }
   }
-  images.value = imageDataUrlArray;
+
   return imageDataUrlArray;
+}
+
+export async function loadAllImages(): Promise<ImageGallery[]> {
+  const json = await getImagesAsJSON();
+  const completeImages = await loadImageDataUrls(json);
+  images.value = completeImages;
+  return completeImages;
+}
+
+export async function getSimilarImages(
+  id: number,
+  count: number = 5,
+  descriptor: string = 'rgbcube'
+): Promise<ImageGallery[]> {
+  const json = await getSimilarImagesAsJSON(id, count, descriptor);
+  return await loadImageDataUrls(json);
 }
 
 export async function uploadImage(file: File): Promise<boolean> {
   const formData = new FormData();
-  formData.append("file", file);
+  formData.append('file', file);
 
   try {
-  //   const fileNameExists = images.value.some(img => img.name === file.name);
-  //   if (fileNameExists) {
-  //     throw new Error("Une image avec ce nom existe déjà. Veuillez renommer votre fichier.");
-  //   }
-    await axios.post("/images", formData, {
+    //   const fileNameExists = images.value.some(img => img.name === file.name);
+    //   if (fileNameExists) {
+    //     throw new Error("Une image avec ce nom existe déjà. Veuillez renommer votre fichier.");
+    //   }
+    await axios.post('/images', formData, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data',
       },
     });
     await loadAllImages();
     return true;
   } catch (error) {
-    console.error("Upload failed:", error);
+    console.error('Upload failed:', error);
     throw error;
   }
 }
@@ -85,6 +126,6 @@ export async function refreshImages(): Promise<void> {
     const updatedImages = await loadAllImages();
     images.value = updatedImages;
   } catch (error) {
-    console.error("Failed to refresh images:", error);
+    console.error('Failed to refresh images:', error);
   }
 }
