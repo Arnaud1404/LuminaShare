@@ -5,6 +5,7 @@ import {
   loadImageData,
   uploadImage,
   deleteImage,
+  getSimilarImages
 } from "./http-api";
 import Gallery from "./Gallery.vue";
 import { images, type ImageGallery } from "./images.ts";
@@ -22,6 +23,35 @@ const allowedFileTypes = ["image/jpeg", "image/png"];
 const isFileValid = ref(false);
 const isFullscreen = ref(false);
 const showMetadata = ref(false);
+const descriptor = ref("rgbcube");
+const similarCount = ref(3);
+const similarImages = ref<ImageGallery[]>([]);
+
+const fetchSimilarImages = async () => {
+  if (!selectedImage.value) return;
+  
+  isLoading.value = true;
+  try {
+    similarImages.value = await getSimilarImages(
+      selectedImage.value.id,
+      similarCount.value,
+      descriptor.value
+    );
+    notification.value?.showNotification(
+      `${similarImages.value.length} images similaires trouvées`,
+      "success"
+    );
+  } catch (error: any) {
+    console.error("Failed to get similar images:", error);
+    const errorMessage = formatErrorMessage(error);
+    notification.value?.showNotification(
+      `Échec de recherche: ${errorMessage}`,
+      "error"
+    );
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 function toggleMetadata() {
   showMetadata.value = !showMetadata.value;
@@ -222,11 +252,16 @@ watchEffect(async () => {
         </div>
         <p v-else>Aucune image sélectionnée</p>
       </div>
-      
+
       <!-- Similar Images Selector - 10% height -->
       <div class="similar-selector">
-        <h3 >Filtres de similarité</h3>
-        <p>TODO</p>
+        <h3>Filtres de similarité</h3>
+        <select v-model="descriptor">
+          <option value="rgbcube">3D RGB</option>
+          <option value="huesat">2D Teinte Saturation</option>
+        </select>
+        <input type="number" v-model="similarCount" min="0" max="10" placeholder="Nombre d'images similaires">
+        <button @click="fetchSimilarImages">Rechercher</button>
       </div>
 
       <!-- Similar Images - 30% height -->
