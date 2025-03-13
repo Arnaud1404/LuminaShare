@@ -183,7 +183,7 @@ public class ImageRepository implements InitializingBean {
             }
 
             Planar<GrayU8> image = ConvertBufferedImage.convertFromPlanar(input, null, true, GrayU8.class);
-            return ImagePGVector.createRgbHistogram(image, 8);
+            return ImagePGVector.createRgb(image, 8);
         } catch (Exception e) {
             System.err.println("Failed to create histogram: " + e.getMessage());
             return null;
@@ -196,7 +196,7 @@ public class ImageRepository implements InitializingBean {
      * @param imageName The name of the image to check in the database
      * @return true if an image with this name exists, false otherwise
      */
-    private boolean imageExists(String imageName) {
+    public boolean imageExists(String imageName) {
         Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM " + databaseTable + " WHERE name = ?",
                 Integer.class, imageName);

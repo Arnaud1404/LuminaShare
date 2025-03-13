@@ -13,19 +13,22 @@ import boofcv.struct.image.Planar;
  */
 public class ImagePGVector {
     /**
-     * Converts a GrayU8 image to a PGVector
+     * Creates a Hue-Saturation histogram from an image
      * 
-     * @param input GrayU8 image
-     * @return PGvector representing the input image
+     * @param input RGB image of type Planar<GrayU8>
+     * @return PGvector representing the sum of each line (101 lines in total)
      */
-    public static PGvector convertGrayU8ToVector(GrayU8 image) {
-        float[] vector = new float[image.width * image.height];
+    public static PGvector createHueSaturation(Planar<GrayU8> input) {
+        GrayU8 image = ColorProcessing.histo_2d_hue_saturation(input);
+        float[] vector = new float[image.height];
+
         int i = 0;
         for (int y = 0; y < image.height; y++) {
+            int rowSum = 0;
             for (int x = 0; x < image.width; x++) {
-                vector[i] = image.get(x, y) / 255.0f;
-                i++;
+                rowSum += image.get(x, y);
             }
+            vector[i++] = (float) rowSum / image.height;
         }
         return new PGvector(vector);
     }
@@ -38,7 +41,7 @@ public class ImagePGVector {
      *              total)
      * @return PGvector representing the normalized RGB histogram
      */
-    public static PGvector createRgbHistogram(Planar<GrayU8> input, int bins) {
+    public static PGvector createRgb(Planar<GrayU8> input, int bins) {
         int[][][] colorCube = new int[bins][bins][bins];
         int binSize = 256 / bins;
 
