@@ -18,7 +18,6 @@ type NotificationRef = {
 const notification = ref<NotificationRef | null>(null);
 const selectedImage = ref<ImageGallery | null>(null);
 const file = ref<File | null>(null);
-const isLoading = ref(false);
 const allowedFileTypes = ["image/jpeg", "image/png"];
 const isFileValid = ref(false);
 const isFullscreen = ref(false);
@@ -29,18 +28,27 @@ const similarImages = ref<ImageGallery[]>([]);
 
 const fetchSimilarImages = async () => {
   if (!selectedImage.value) return;
-  
-  isLoading.value = true;
   try {
     similarImages.value = await getSimilarImages(
       selectedImage.value.id,
       similarCount.value,
       descriptor.value
     );
-    notification.value?.showNotification(
-      `${similarImages.value.length} images similaires trouvées`,
+    let n = 
+      similarImages.value.length;
+    if (n == 0) {
+      notification.value?.showNotification(
+      `Aucune image similaire trouvée`,
+      "error"
+    );
+    }
+    else {
+      notification.value?.showNotification(
+      `${n} images similaires trouvées`,
       "success"
     );
+    }
+    
   } catch (error: any) {
     console.error("Failed to get similar images:", error);
     const errorMessage = formatErrorMessage(error);
@@ -48,8 +56,6 @@ const fetchSimilarImages = async () => {
       `Échec de recherche: ${errorMessage}`,
       "error"
     );
-  } finally {
-    isLoading.value = false;
   }
 };
 
@@ -105,7 +111,6 @@ watchEffect(() => {
 });
 
 onMounted(async () => {
-  isLoading.value = true;
   try {
     await loadAllImages();
     notification.value?.showNotification(
@@ -119,9 +124,7 @@ onMounted(async () => {
       `Échec du chargement des images: ${errorMessage}`,
       "error",
     );
-  } finally {
-    isLoading.value = false;
-  }
+  } 
 });
 
 const handleFileUpload = (event: Event) => {
@@ -134,7 +137,6 @@ const handleFileUpload = (event: Event) => {
 const submitFile = async () => {
   if (!file.value) return;
 
-  isLoading.value = true;
   try {
     await uploadImage(file.value);
     file.value = null;
@@ -154,7 +156,6 @@ const submitFile = async () => {
     isFileValid.value = false;
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
-    isLoading.value = false;
   }
 };
 
@@ -182,7 +183,6 @@ const handleDeleteImage = async () => {
       `Êtes-vous sûr de vouloir supprimer  "${selectedImage.value.name}"?`,
     )
   ) {
-    isLoading.value = true;
     try {
       const success = await deleteImage(selectedImage.value.id);
       if (success) {
@@ -204,9 +204,7 @@ const handleDeleteImage = async () => {
         `Impossible de charger l'image: ${errorMessage}`,
         "error",
       );
-    } finally {
-      isLoading.value = false;
-    }
+    } 
   }
 };
 
@@ -299,9 +297,9 @@ watchEffect(async () => {
       <div class="upload-area">
         <h3>Téléverser une image</h3>
         <div style="display: flex; gap: 10px;">
-          <input type="file" @change="handleFileUpload" :disabled="isLoading" style="flex: 1;" />
-          <button @click="submitFile" :disabled="!file || isLoading">
-            {{ isLoading ? "Téléversement..." : "Téléverser" }}
+          <input type="file" @change="handleFileUpload" style="flex: 1;" />
+          <button @click="submitFile">
+            Téléverser
           </button>
         </div>
       </div>
