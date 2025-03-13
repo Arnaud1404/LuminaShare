@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { images, type ImageGallery } from './images';
+import { type ImageGallery } from './images';
 
 defineProps<{ images: ImageGallery[] }>();
 const emit = defineEmits(['select']);

@@ -265,7 +265,7 @@ watchEffect(async () => {
       <!-- Similar Images - 30% height -->
       <div class="similar-images">
         <h3>Images similaires</h3>
-        <p>TODO</p>
+        <Gallery :images="similarImages" @select="handleImageSelect"/>
       </div>
     </div>
 
@@ -323,7 +323,7 @@ watchEffect(async () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: hsla(0, 0%, 0%, 0.9);
   z-index: 1000;
   display: flex;
   justify-content: center;
@@ -343,6 +343,24 @@ watchEffect(async () => {
   padding: 0;
 }
 
+select {
+  background: hsl(0, 0%, 20%);
+  color: white;
+  border: 1px solid hsl(0, 0%, 33%);
+  padding: 5px;
+  border-radius: 4px;
+  min-width: 120px;
+}
+
+input[type="number"] {
+  background: hsl(0, 0%, 20%);
+  color: white;
+  border: 1px solid hsl(0, 0%, 33%);
+  padding: 5px;
+  border-radius: 4px;
+  width: 60px;
+}
+
 .two-column-layout {
   display: flex;
   height: 85vh;
@@ -358,7 +376,7 @@ watchEffect(async () => {
 
 .selected-image-container {
   height: 60%;
-  background-color: #2a2a2a;
+  background-color: hsl(0, 0%, 16%);
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 10px;
@@ -381,7 +399,7 @@ watchEffect(async () => {
 
 .metadata-area {
   height: 10%;
-  background-color: #2a2a2a;
+  background-color: hsl(0, 0%, 16%);
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 10px;
@@ -390,7 +408,7 @@ watchEffect(async () => {
 
 .similar-selector {
   height: 10%;
-  background-color: #2a2a2a;
+  background-color: hsl(0, 0%, 16%);
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 10px;
@@ -398,7 +416,7 @@ watchEffect(async () => {
 
 .similar-images {
   height: 30%;
-  background-color: #2a2a2a;
+  background-color: hsl(0, 0%, 16%);
   border-radius: 8px;
   padding: 10px;
 }
@@ -412,7 +430,7 @@ watchEffect(async () => {
 
 .image-actions {
   height: 10%;
-  background-color: #2a2a2a;
+  background-color: hsl(0, 0%, 16%);
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 10px;
@@ -432,7 +450,7 @@ watchEffect(async () => {
 }
 
 .metadata-content {
-  background-color: #2a2a2a;
+  background-color: hsl(0, 0%, 16%);
   padding: 20px;
   border-radius: 8px;
   max-width: 500px;
@@ -460,7 +478,7 @@ watchEffect(async () => {
 
 .gallery-container {
   height: 80%;
-  background-color: #2a2a2a;
+  background-color: hsl(0, 0%, 16%);
   border-radius: 8px;
   padding: 10px;
 }
@@ -471,11 +489,11 @@ watchEffect(async () => {
 }
 
 .delete-button {
-  background-color: #c42121;
+  background-color: rgb(196, 33, 33);
 }
 
 button {
-  background-color: #4a4a4a;
+  background-color: hsl(0, 0%, 29%);
   color: white;
   border: none;
   border-radius: 4px;
@@ -484,11 +502,11 @@ button {
 }
 
 button:hover {
-  background-color: #5a5a5a;
+  background-color: hsl(0, 0%, 35%);
 }
 
 button:disabled {
-  background-color: #3a3a3a;
+  background-color: hsl(0, 0%, 23%);
   cursor: not-allowed;
 }
 
