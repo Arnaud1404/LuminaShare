@@ -110,8 +110,7 @@ public class ImageControllerTests {
 	@Test
 	@Order(7)
 	public void getImageShouldReturnSuccessPNG() throws Exception {
-		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk()); // a besoin d'au moins 1 images dans le
-																			// dossier images
+		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk()); // a besoin d'au moins 1 images dans le dossier images
 	}
 
 	@Test
