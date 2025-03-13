@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import pdl.backend.Database.ImageRepository;
-import pdl.backend.FileHandler.*;
+import pdl.backend.FileHandler.FileController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,10 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RestController
 public class ImageController {
@@ -59,9 +55,9 @@ public class ImageController {
    *         ou un statut 404 si l'image n'existe pas
    * @throws IOException En cas d'erreur lors de la lecture des données de l'image
    */
-   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = { MediaType.IMAGE_JPEG_VALUE,
+  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = { MediaType.IMAGE_JPEG_VALUE,
       MediaType.IMAGE_PNG_VALUE })
-    public ResponseEntity<?> getImage(@PathVariable("id") long id) throws IOException {
+  public ResponseEntity<?> getImage(@PathVariable("id") long id) throws IOException {
     Optional<Image> img = imageDao.retrieve(id);
     if (img.isPresent()) {
       byte[] bytes = img.get().getData();
@@ -115,24 +111,24 @@ public class ImageController {
       return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
           .body("fichier sans type.");
 
-   try {
-        MediaType mediaType = ImageService.parseMediaTypeFromFile(file);
-        if (mediaType == null) {
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                .body("Les formats acceptés sont JPEG et PNG, vérifiez que votre image soit conforme.");
-        }
+    try {
+      MediaType mediaType = ImageService.parseMediaTypeFromFile(file);
+      if (mediaType == null) {
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+            .body("Les formats acceptés sont JPEG et PNG, vérifiez que votre image soit conforme.");
+      }
 
-        BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
-        if (bufferedImage == null) {
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Format d'image non valide.");
-        }
+      BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
+      if (bufferedImage == null) {
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Format d'image non valide.");
+      }
 
-        FileController.store(file);
-        imageDao.saveImage(file.getOriginalFilename(), file.getBytes()); // Changed to saveImage
-        return ResponseEntity.ok("Image ajoutée avec succès.");
+      FileController.store(file);
+      imageDao.saveImage(file.getOriginalFilename(), file.getBytes()); // Changed to saveImage
+      return ResponseEntity.ok("Image ajoutée avec succès.");
     } catch (IOException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body("Erreur lors de l'enregistrement de l'image.");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("Erreur lors de l'enregistrement de l'image.");
     }
   }
 
@@ -154,38 +150,43 @@ public class ImageController {
     }
     return nodes;
   }
-  /**Point de terminaison GET /images/{id}/similar?n={n} .
-   Acceptez un paramètre id (ID de l'image cible) et n (nombre d'images similaires à retourner).
-   Utilisez imageService.findSimilarImages pour obtenir la liste, puis la formater en JSON comme getImageList .
-   Retourne 404 si l'image cible n'existe pas. 
-  */
-  @RequestMapping(value = "/images/{id}/similar", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-  @ResponseBody
-  public ResponseEntity<?> getSimilarImages(@PathVariable("id") long id,@RequestParam("number") int n,@RequestParam("descriptor") String descriptor) {
-    try {
-        // Vérifier que n est positif
-        if (n <= 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le paramètre 'number' doit être supérieur à 0");
-        }
 
-        List<Image> similarImages = imageService.findSimilarImages(id, n, descriptor);
-        ArrayNode nodes = mapper.createArrayNode();
-        for (Image img : similarImages) {
-            ObjectNode img_json = mapper.createObjectNode();
-            img_json.put("id", img.getId());
-            img_json.put("name", img.getName());
-            img_json.put("type", img.getType().toString());
-            img_json.put("size", img.getSize());
-            img_json.put("description", img.getDesciption());
-            img_json.put("url", "/images/" + img.getId());
-            nodes.add(img_json);
-        }
-        return ResponseEntity.ok(nodes);
+  /**
+   * Point de terminaison GET /images/{id}/similar?n={n} .
+   * Acceptez un paramètre id (ID de l'image cible) et n (nombre d'images
+   * similaires à retourner).
+   * Utilisez imageService.findSimilarImages pour obtenir la liste, puis la
+   * formater en JSON comme getImageList .
+   * Retourne 404 si l'image cible n'existe pas.
+   */
+  @RequestMapping(value = "/images/id/similar?number=N&descriptor=DESCR", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  @ResponseBody
+  public ResponseEntity<?> getSimilarImages(@PathVariable("id") long id, @RequestParam("number") int n,
+      @RequestParam String descriptor) {
+    try {
+      // Vérifier que n est positif
+      if (n <= 0) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le paramètre 'number' doit être supérieur à 0");
+      }
+
+      List<Image> similarImages = imageService.findSimilarImages(id, n, descriptor);
+      ArrayNode nodes = mapper.createArrayNode();
+      for (Image img : similarImages) {
+        ObjectNode img_json = mapper.createObjectNode();
+        img_json.put("id", img.getId());
+        img_json.put("name", img.getName());
+        img_json.put("type", img.getType().toString());
+        img_json.put("size", img.getSize());
+        img_json.put("description", img.getDesciption());
+        img_json.put("url", "/images/" + img.getId());
+        nodes.add(img_json);
+      }
+      return ResponseEntity.ok(nodes);
     } catch (IllegalArgumentException e) {
       if (e.getMessage().contains("non trouvée")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } else {
-          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+      } else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
       }
     }
   }
