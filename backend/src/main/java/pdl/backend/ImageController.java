@@ -135,7 +135,7 @@ public class ImageController {
       imageDao.create(img);
 
       imageRepository.addDatabase(img);
-      Image img2 = imageRepository.GetImage("cat.jpg").get();
+      Image img2 = imageRepository.GetImage(img.getName()).get();
 
       System.out.println("img2 name = " + img2.getName());
 

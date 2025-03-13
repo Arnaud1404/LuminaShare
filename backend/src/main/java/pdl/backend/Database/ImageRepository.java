@@ -47,10 +47,10 @@ public class ImageRepository implements InitializingBean {
 
         // Create table
         jdbcTemplate.execute("CREATE EXTENSION IF NOT EXISTS vector");
-        jdbcTemplate.execute("DROP TABLE IF EXISTS imageDatabase2");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS Images");
 
         jdbcTemplate.execute(
-                "CREATE TABLE imageDatabase2 (id bigserial PRIMARY KEY, name character varying(255),type character varying(255),size character varying(255), embedding vector(3))");
+                "CREATE TABLE Images (id bigserial PRIMARY KEY, name character varying(255),type character varying(255),size character varying(255), embedding vector(3))");
 
     }
 
@@ -69,7 +69,7 @@ public class ImageRepository implements InitializingBean {
         // Object[] vector = new Object[] { hueSaturation };
 
         jdbcTemplate.update(
-                "INSERT INTO databasearnaud (name, type, size, rgbcube ) VALUES (?, ?, ?, ?)",
+                "INSERT INTO Images (name, type, size, rgbcube ) VALUES (?, ?, ?, ?)",
                 img.getName(),
                 img.getType().toString(),
                 img.getSize(),
@@ -77,7 +77,7 @@ public class ImageRepository implements InitializingBean {
     }
 
     public List<Image> list() {
-        String sql = "SELECT id, name, type, size FROM databasearnaud";
+        String sql = "SELECT id, name, type, size FROM Images";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
@@ -97,6 +97,6 @@ public class ImageRepository implements InitializingBean {
     }
 
     public void deleteDatabase(Image img) {
-        jdbcTemplate.update("DELETE FROM databasearnaud WHERE id = (?)", img.getId());
+        jdbcTemplate.update("DELETE FROM Images WHERE id = (?)", img.getId());
     }
 }

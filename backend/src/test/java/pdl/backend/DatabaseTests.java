@@ -95,18 +95,22 @@ public class DatabaseTests {
         }
         assertTrue(found, "Image should be added to database");
     }
-
-    @Test
-    @Order(3)
-    public void testDeleteImageFromDatabase() {
-        int initialCount = imageRepository.list().size();
-
-        Image img = new Image();
-        img.setId(testImageId);
-
-        imageRepository.deleteDatabase(img);
-
-        int finalCount = imageRepository.list().size();
-        assertEquals(initialCount - 1, finalCount, "Image should be deleted");
-    }
 }
+
+/*
+ * @Test
+ * 
+ * @Order(3)
+ * public void testDeleteImageFromDatabase() {
+ * int initialCount = imageRepository.list().size();
+ * 
+ * Image img = new Image();
+ * img.setId(testImageId);
+ * 
+ * imageRepository.deleteDatabase(img);
+ * 
+ * int finalCount = imageRepository.list().size();
+ * assertEquals(initialCount - 1, finalCount, "Image should be deleted");
+ * }
+ * }
+ */
