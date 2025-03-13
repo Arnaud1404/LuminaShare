@@ -66,7 +66,10 @@
           <version>4.11</version>
           <scope>test</scope>
         </dependency>
-    
+        <dependency>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+        </dependency>
         <dependency>
           <groupId>com.pgvector</groupId>
           <artifactId>pgvector</artifactId>

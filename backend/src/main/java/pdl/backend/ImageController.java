@@ -27,6 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 @RestController
 public class ImageController {
 
@@ -178,9 +182,11 @@ public class ImageController {
         }
         return ResponseEntity.ok(nodes);
     } catch (IllegalArgumentException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image avec ID " + id + " non trouvée");
-    } catch (IllegalDescriptorException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Descripteur invalide : " + descriptor);
+      if (e.getMessage().contains("non trouvée")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } else {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+      }
     }
   }
 }

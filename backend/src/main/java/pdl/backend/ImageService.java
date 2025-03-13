@@ -1,6 +1,7 @@
 package pdl.backend;
-
+import pdl.backend.imageProcessing.ImageVectorConversion;
 import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,9 +14,17 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
-import java.util.Optional; // Ajouté
-import java.util.stream.Collectors; // Ajouté pour stream
-import com.pgvector.PGvector; // Ajouté pour manipuler les vecteurs
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.util.Optional; 
+import java.util.stream.Collectors; 
+import com.pgvector.PGvector; 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import boofcv.struct.image.GrayU8;
+import boofcv.io.image.ConvertBufferedImage;
+import javax.imageio.ImageIO;
 
 @Service
 public class ImageService {
@@ -115,7 +124,7 @@ public class ImageService {
         Image targetImage = targetImageOpt.get();
         PGvector targetDescriptor = getDescriptorByType(targetImage, descriptorType);
         if (targetDescriptor == null) {
-            throw new IllegalDescriptorException("Descripteur invalide : " + descriptorType);
+            throw new IllegalArgumentException("Descripteur invalide : " + descriptorType);
         }
 
         List<Image> allImages = imageDao.retrieveAll();
@@ -133,14 +142,14 @@ public class ImageService {
             case "gray":
                 return image.getDescriptor(); // Descripteur actuel (niveaux de gris)
             case "rgb":
-                return computeRGBDescriptor(image); // À implémenter si besoin
+                return computeRGBDescriptor(image); // calcul RGB
             default:
                 return null; // Déclenchera une exception
         }
     }
 
     private PGvector computeRGBDescriptor(Image image) {
-        // Exemple : Calculer un descripteur RGB (à adapter selon tes besoins)
+        //  exemple de calcul  un descripteur RGB (à adapter selon tes besoins)
         try {
             BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(image.getData()));
             GrayU8 grayImage = ConvertBufferedImage.convertFrom(bufferedImage, (GrayU8) null); // Placeholder
@@ -168,7 +177,7 @@ public class ImageService {
         float[] vec2 = v2.toArray();
         if (vec1.length != vec2.length) {
             System.out.println("Descriptor length mismatch: " + vec1.length + " vs " + vec2.length);
-            return Double.MAX_VALUE;
+            return Double.MAX_VALUE; // Treat as dissimilar
         }
         double sum = 0.0;
         for (int i = 0; i < vec1.length; i++) {
