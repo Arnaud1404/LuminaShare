@@ -38,7 +38,8 @@ public class ImageRepository implements InitializingBean {
 
     @Value("${DATABASE_TABLE:imageDatabase}")
     private String databaseTable;
-
+    @Value("${DATABASE_RESET:false}")
+    private boolean resetDatabase;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -54,12 +55,13 @@ public class ImageRepository implements InitializingBean {
     @Override
     @PostConstruct
     public void afterPropertiesSet() throws Exception {
-
-        // Create table
+        if (resetDatabase) {
+            this.jdbcTemplate.execute("DROP TABLE IF EXISTS " + databaseTable);
+        }
         this.jdbcTemplate
                 .execute(
                         "CREATE TABLE IF NOT EXISTS " + databaseTable
-                                + " (id bigserial PRIMARY KEY, name character varying(255), type character varying(10), size character varying(255), rgbcube vector(512))");
+                                + " (id bigserial PRIMARY KEY, name character varying(255) UNIQUE, type character varying(10), size character varying(255), rgbcube vector(512))");
     }
 
     /**
@@ -87,38 +89,26 @@ public class ImageRepository implements InitializingBean {
     }
 
     /**
-     * Adds one image to the database with their descriptors
+     * Adds an image to the database with their descriptors
      * 
      * @param image image to add to the database
      * @return 1 if the image was added, else 0
      */
-
     public int addDatabase(Image img) {
         try {
-            BufferedImage input = UtilImageIO.loadImage(img.getPath() + "/" +
-                    img.getName());
+            if (imageExists(img.getName())) {
+                return 0;
+            }
 
-            Planar<GrayU8> image = ConvertBufferedImage.convertFromPlanar(input, null, true, GrayU8.class);
-            PGvector histo3Drgb = ImagePGVector.createRgbHistogram(image, 8);
-
-            // GrayU8 img_final = new GrayU8();
-            // PGvector hueSaturation;
-            // ConvertBufferedImage.convertFrom(input, img_final);
-            // hueSaturation = ImagePGVector.convertGrayU8ToVector(img_final);
-            // Object[] vector = new Object[] { hueSaturation };
-
-            jdbcTemplate.update(
-                    "INSERT INTO " + databaseTable + " (name, type, size, rgbcube) VALUES (?, ?, ?, ?)",
-                    img.getName(),
-                    img.getType().toString(),
-                    img.getSize(),
-                    histo3Drgb);
-            return 1;
+            PGvector histogram = createHistogramFromImage(img);
+            if (histogram == null) {
+                return 0;
+            }
+            return insertImageRecord(img, histogram);
         } catch (Exception e) {
-            System.err.println("Failed to add image " + img.getName() + " - " + e.getMessage());
+            System.err.println("Error adding image to database: " + e.getMessage());
             return 0;
         }
-
     }
 
     /**
@@ -179,6 +169,61 @@ public class ImageRepository implements InitializingBean {
         } catch (Exception e) {
             return -1; // Non trouvé
         }
+    }
 
+    /**
+     * Creates a histogram vector from an image
+     */
+    private PGvector createHistogramFromImage(Image img) {
+        try {
+            BufferedImage input = UtilImageIO.loadImage(img.getPath() + "/" + img.getName());
+            if (input == null) {
+                System.err.println("Could not load image: " + img.getPath() + "/" + img.getName());
+                return null;
+            }
+
+            Planar<GrayU8> image = ConvertBufferedImage.convertFromPlanar(input, null, true, GrayU8.class);
+            return ImagePGVector.createRgbHistogram(image, 8);
+        } catch (Exception e) {
+            System.err.println("Failed to create histogram: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Checks if an image with the given name already exists in the database
+     *
+     * @param imageName The name of the image to check in the database
+     * @return true if an image with this name exists, false otherwise
+     */
+    private boolean imageExists(String imageName) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM " + databaseTable + " WHERE name = ?",
+                Integer.class, imageName);
+        return count != null && count > 0;
+    }
+
+    /**
+     * Inserts an image record into the database
+     *
+     * @param img     The Image object containing metadata (name, type, size) to
+     *                insert
+     * @param rgbcube The PGvector containing the RGB histogram data for
+     *                similarity search
+     * @return 1 if insertion was successful, 0 if it failed
+     */
+    private int insertImageRecord(Image img, PGvector rgbcube) {
+        try {
+            jdbcTemplate.update(
+                    "INSERT INTO " + databaseTable + " (name, type, size, rgbcube) VALUES (?, ?, ?, ?)",
+                    img.getName(),
+                    img.getType().toString(),
+                    img.getSize(),
+                    rgbcube);
+            return 1;
+        } catch (Exception e) {
+            System.err.println("Database insertion failed: " + e.getMessage());
+            return 0;
+        }
     }
 }

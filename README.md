@@ -18,6 +18,7 @@ Une application de partage de photos développée par Arnaud Gomes, Kamiel De Vo
    DATABASE_PASSWORD=<motdepasse>
    DATABASE_PATH=pgsql # au CREMI, ou localhost pour un environnement local
    DATABASE_TABLE=imageDatabase # nom de la table pour stocker les images
+   DATABASE_RESET=false # ou true pour drop la table
    ```
 
 2. Installez et lancez l'application:

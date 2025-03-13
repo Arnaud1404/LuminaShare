@@ -34,6 +34,10 @@ public class FileController {
                                                                                             // sécurité
                 throw new RuntimeException("cannot store file outside current directory");
             }
+
+            if (Files.exists(destinationFile)) {
+                return;
+            }
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, destinationFile);
             }
@@ -49,7 +53,7 @@ public class FileController {
 
         Path fileToDelete = Paths.get(directory_location.toString() + "/" + name);
         try {
-            Files.delete(fileToDelete);
+            Files.deleteIfExists(fileToDelete);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -58,5 +62,34 @@ public class FileController {
     public static File get_file(String name) {
         Path fileToGet = Paths.get(directory_location.toString() + "/" + name);
         return fileToGet.toFile();
+    }
+
+    /**
+     * Checks if a file exists in the images directory
+     * 
+     * @param name The filename to check
+     * @return true if the file exists, else false
+     */
+    public static boolean file_exists(String name) {
+        Path filePath = Paths.get(directory_location.toString() + "/" + name);
+        return Files.exists(filePath);
+    }
+
+    /**
+     * Counts image files in the directory
+     * 
+     * @return number of image files in the directory
+     */
+    public static long count_files() {
+        try {
+            return Files.list(directory_location)
+                    .filter(path -> {
+                        String name = path.getFileName().toString().toLowerCase();
+                        return name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png");
+                    })
+                    .count();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to count files in directory", e);
+        }
     }
 }
