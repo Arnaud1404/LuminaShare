@@ -3,6 +3,8 @@ package pdl.backend;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.pgvector.PGvector;
+
 public class Image {
   private static Long count = Long.valueOf(1);
   private String path;
@@ -11,6 +13,8 @@ public class Image {
   private MediaType type;
   private String size;
   private String description;
+  private PGvector rgbcube;
+  private PGvector hueSat;
   private byte[] data;
 
   public Image(String path, String name, byte[] data,
@@ -70,5 +74,21 @@ public class Image {
 
   public byte[] getData() {
     return data;
+  }
+
+  public void setHueSat(PGvector huesat) {
+    this.hueSat = huesat;
+  }
+
+  public PGvector getHueSat() {
+    return this.hueSat;
+  }
+
+  public void setRgbCube(PGvector rgbcube) {
+    this.rgbcube = rgbcube;
+  }
+
+  public PGvector getRgbCube() {
+    return this.hueSat;
   }
 }

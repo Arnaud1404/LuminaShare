@@ -66,7 +66,7 @@ public class ImageRepository implements InitializingBean {
 
     /**
      * Adds multiple images to the database with their descriptors
-     * 
+     *
      * @param images Array of images to add to the database
      * @return Number of images successfully added
      */
@@ -106,6 +106,7 @@ public class ImageRepository implements InitializingBean {
             if (rgbcube == null || hueSat == null) {
                 return 0;
             }
+
             return insertImageRecord(img, rgbcube, hueSat);
         } catch (Exception e) {
             System.err.println("Error adding image to database: " + e.getMessage());
@@ -252,10 +253,40 @@ public class ImageRepository implements InitializingBean {
                     img.getSize(),
                     rgbcube,
                     hueSat);
+            img.setHueSat(hueSat);
+            img.setRgbCube(rgbcube);
             return 1;
         } catch (Exception e) {
             System.err.println("Database insertion failed: " + e.getMessage());
             return 0;
         }
+    }
+
+    /**
+     * Returns the list of images Similar to this image from the database
+     *
+     * @param img        the image who will be compare
+     * @param descriptor the element wich will serve to get select the similar
+     *                   images
+     * @param n          the number of similar images
+     *
+     * @return A List<Image> with the images from the database
+     */
+    public List<Image> imageSimilar(Image img, String descriptor, int n) {
+        PGvector histo;
+
+        switch (descriptor) {
+            case "huesat":
+                histo = img.getHueSat();
+                break;
+            case "rgbcube":
+                histo = img.getRgbCube();
+                break;
+            default:
+                throw new RuntimeException("bad descriptor for image Similar");
+        }
+
+        String sql = "SELECT * FROM " + databaseTable + " ORDER BY " + descriptor + "<->" + histo + " LIMIT 5 ";
+        return jdbcTemplate.query(sql, ps -> ps.setObject(1, histo), rowMapper);
     }
 }
