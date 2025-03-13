@@ -34,6 +34,10 @@ public class DatabaseTests {
     @Autowired
     private ImageRepository imageRepository;
 
+    @Autowired
+    // Singleton because of the @Repository
+    private ImageDao imageDao;
+
     private static BufferedImage testBufferedImage;
     private static Image testImage;
     private static long testImageId;
@@ -74,24 +78,32 @@ public class DatabaseTests {
 
     // @Test
     // @Order(2)
+    // // TODO : A TESTER AVEC LE NB DE FICHIERS DANS LE DOSSIER, COMPTER LES
+    // FICHIER JPEG, JPG ET PNG
+    // void testGetImageCount() {
+    // assertEquals(imageRepository.getImageCount(), imageDao.getImageCount(););
+    // }
+    // @Test
+    // @Order(3)
     // public void testAddImage() {
-    //     long before = imageRepository.getImageCount();
-    //     imageRepository.addDatabase(testImage);
-    //     assertNotNull(imageRepository.getById(testImageId));
-    //     long after = imageRepository.getImageCount();
-    //     assertEquals(before + 1, after);
+    // long before = imageRepository.getImageCount();
+    // int result = imageRepository.addDatabase(testImage);
+    // assertEquals(1, result);
+    // assertNotNull(imageRepository.getById(testImageId));
+    // long after = imageRepository.getImageCount();
+    // assertEquals(before + 1, after);
 
     // }
 
     // @Test
-    // @Order(3)
+    // @Order(4)
     // public void testDeleteImage() {
-    //     long before = imageRepository.getImageCount();
+    // long before = imageRepository.getImageCount();
 
-    //     imageRepository.deleteDatabase(testImageId);
+    // int result = imageRepository.deleteDatabase(testImageId);
+    // assertEquals(1, result);
+    // long after = imageRepository.getImageCount();
 
-    //     long after = imageRepository.getImageCount();
-
-    //     assertEquals(before - 1, after);
+    // assertEquals(before - 1, after);
     // }
 }

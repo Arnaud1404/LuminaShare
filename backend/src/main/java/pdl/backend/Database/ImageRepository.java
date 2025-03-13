@@ -24,6 +24,17 @@ import jakarta.annotation.PostConstruct;
 
 import java.awt.image.BufferedImage;
 
+/**
+ * Repository for image storage and similarity search.
+ * 
+ * This class manages the database of images and their vector descriptors for
+ * similarity search.
+ * It maintains a synchronized relationship between the database entries and
+ * image files in the filesystem. When adding or deleting images, the database
+ * and filesystem should be kept in sync.
+ * It uses pgvector to store histograms as file descriptors for similarity
+ * search.
+ */
 @Repository
 public class ImageRepository implements InitializingBean {
 
@@ -49,45 +60,103 @@ public class ImageRepository implements InitializingBean {
                         "CREATE TABLE IF NOT EXISTS databasearnaud (id bigserial PRIMARY KEY, name character varying(255), type character varying(10), size character varying(255), rgbcube vector(512))");
     }
 
-    public void addDatabase(Image img) {
-        BufferedImage input = UtilImageIO.loadImage(img.getPath() + "/" +
-                img.getName());
+    /**
+     * Adds multiple images to the database with their descriptors
+     * 
+     * @param images Array of images to add to the database
+     * @return Number of images successfully added
+     */
+    public int addDatabase(Image[] images) {
+        if (images == null || images.length == 0) {
+            return 0;
+        }
+        int success = 0;
 
-        Planar<GrayU8> image = ConvertBufferedImage.convertFromPlanar(input, null, true, GrayU8.class);
-        PGvector histo3Drgb = ImagePGVector.createRgbHistogram(image, 8);
+        for (Image img : images) {
+            try {
+                int result = addDatabase(img);
+                success += result;
+            } catch (Exception e) {
+                System.err.println("Failed to add image " + img.getName() + " - " + e.getMessage());
+            }
+        }
 
-        // GrayU8 img_final = new GrayU8();
-        // PGvector hueSaturation;
-        // ConvertBufferedImage.convertFrom(input, img_final);
-        // hueSaturation = ImagePGVector.convertGrayU8ToVector(img_final);
-        // Object[] vector = new Object[] { hueSaturation };
-
-        jdbcTemplate.update(
-                "INSERT INTO databasearnaud (name, type, size, rgbcube ) VALUES (?, ?, ?, ?)",
-                img.getName(),
-                img.getType().toString(),
-                img.getSize(),
-                histo3Drgb);
+        return success;
     }
 
+    /**
+     * Adds one image to the database with their descriptors
+     * 
+     * @param image image to add to the database
+     * @return 1 if the image was added, else 0
+     */
+
+    public int addDatabase(Image img) {
+        try {
+            BufferedImage input = UtilImageIO.loadImage(img.getPath() + "/" +
+                    img.getName());
+
+            Planar<GrayU8> image = ConvertBufferedImage.convertFromPlanar(input, null, true, GrayU8.class);
+            PGvector histo3Drgb = ImagePGVector.createRgbHistogram(image, 8);
+
+            // GrayU8 img_final = new GrayU8();
+            // PGvector hueSaturation;
+            // ConvertBufferedImage.convertFrom(input, img_final);
+            // hueSaturation = ImagePGVector.convertGrayU8ToVector(img_final);
+            // Object[] vector = new Object[] { hueSaturation };
+
+            jdbcTemplate.update(
+                    "INSERT INTO databasearnaud (name, type, size, rgbcube ) VALUES (?, ?, ?, ?)",
+                    img.getName(),
+                    img.getType().toString(),
+                    img.getSize(),
+                    histo3Drgb);
+            return 1;
+        } catch (Exception e) {
+            System.err.println("Failed to add image " + img.getName() + " - " + e.getMessage());
+            return 0;
+        }
+
+    }
+
+    /**
+     * Returns the list of images from the database
+     * 
+     * @return A List<Image> with the images from the database
+     */
     public List<Image> list() {
-        String sql = "SELECT id, name, type, size FROM databasearnaud";
+        String sql = "SELECT id, name, type, size, rgbcube FROM databasearnaud";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
+    /**
+     * Gets an image from the database by its unique id
+     * 
+     * @return The image from the database
+     */
     public Image getById(long id) {
         try {
-            String sql = "SELECT id, name, type, size FROM databasearnaud WHERE id = ?";
+            String sql = "SELECT id, name, type, size, rgbcube FROM databasearnaud WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, Image.class, id);
         } catch (Exception e) {
             return null; // Non trouvé
         }
     }
 
-    public void deleteDatabase(long id) {
-        jdbcTemplate.update("DELETE FROM databasearnaud WHERE id = (?)", id);
+    /**
+     * Deletes an image from the database by its unique id
+     * This function does not delete an image server-side
+     * 
+     * @param id The ID of the image to delete
+     * @return Number of rows affected (1 if successful, else 0)
+     */
+    public int deleteDatabase(long id) {
+        return jdbcTemplate.update("DELETE FROM databasearnaud WHERE id = (?)", id);
     }
 
+    /**
+     * Gets the number of images in the database
+     */
     public long getImageCount() {
         try {
             Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM databasearnaud", Long.class);

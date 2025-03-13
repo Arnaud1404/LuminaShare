@@ -21,6 +21,10 @@ public class ImageDao implements Dao<Image> {
 
   private final Map<Long, Image> images = new HashMap<>();
 
+  public long getImageCount() {
+    return images.size();
+  }
+
   public void saveImage(String fileName, byte[] fileContent) {
     try {
       BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(fileContent));
