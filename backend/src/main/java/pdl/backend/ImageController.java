@@ -167,13 +167,14 @@ public class ImageController {
   public ResponseEntity<?> getSimilarImages(@PathVariable("id") long id, @RequestParam("number") int n,
       @RequestParam("descriptor") String descriptor) {
     try {
-
+      System.out.println("id: " + id + " n: " + n + " descriptor: " + descriptor);
       if (n <= 0) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le paramètre 'number' doit être supérieur à 0");
       }
 
+      Image image = imageDao.retrieve(id).get();
       // TODO:Replace this with the actual similar images
-      List<Image> similarImages = imageRepository.list();
+      List<Image> similarImages = imageRepository.imageSimilar(image, descriptor, n);
       ArrayNode nodes = mapper.createArrayNode();
       for (Image img : similarImages) {
         ObjectNode img_json = mapper.createObjectNode();

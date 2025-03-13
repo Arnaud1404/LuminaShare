@@ -286,7 +286,7 @@ public class ImageRepository implements InitializingBean {
                 throw new RuntimeException("bad descriptor for image Similar");
         }
 
-        String sql = "SELECT * FROM " + databaseTable + " ORDER BY " + descriptor + "<->" + histo + " LIMIT 5 ";
+        String sql = "SELECT * FROM " + databaseTable + " ORDER BY " + descriptor + " <-> ? LIMIT " + n;
         return jdbcTemplate.query(sql, ps -> ps.setObject(1, histo), rowMapper);
     }
 }

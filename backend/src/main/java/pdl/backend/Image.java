@@ -89,6 +89,6 @@ public class Image {
   }
 
   public PGvector getRgbCube() {
-    return this.hueSat;
+    return this.rgbcube;
   }
 }
