@@ -32,7 +32,7 @@ public class ImageDao implements Dao<Image> {
     return images.size();
   }
 
-  public void saveImage(String fileName, byte[] fileContent) {
+  public Image saveImage(String fileName, byte[] fileContent) {
     try {
       BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(fileContent));
 
@@ -45,6 +45,7 @@ public class ImageDao implements Dao<Image> {
           "TODO");
 
       this.create(img);
+      return img;
 
     } catch (IOException e) {
       throw new RuntimeException("Failed to process image");

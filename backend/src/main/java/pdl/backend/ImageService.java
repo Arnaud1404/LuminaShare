@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.annotation.PostConstruct;
 import pdl.backend.Database.ImageRepository;
+import pdl.backend.FileHandler.FileController;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,12 +49,12 @@ public class ImageService {
                 if (file.isFile() && isValidImage(file.getName())) {
                     try {
                         byte[] fileContent = Files.readAllBytes(file.toPath());
-                        imageDao.saveImage(file.getName(), fileContent);
-                        List<Image> images = imageDao.retrieveAll();
-                        if (!images.isEmpty()) {
-                            Image lastImage = images.get(images.size() - 1);
-                            imageRepository.addDatabase(lastImage);
+                        Image image = imageDao.saveImage(file.getName(), fileContent);
+
+                        if (!imageRepository.imageExists(file.getName())) {
+                            imageRepository.addDatabase(image);
                         }
+                        System.out.println("Image chargée : " + file.getName());
                     } catch (IOException e) {
                         throw new RuntimeException("Erreur lors du chargement de l'image : " + file.getName());
                     }
@@ -77,12 +78,10 @@ public class ImageService {
                 if (file.isFile() && isValidImage(file.getName())) {
                     try {
                         byte[] fileContent = Files.readAllBytes(file.toPath());
-                        imageDao.saveImage(file.getName(), fileContent);
+                        Image image = imageDao.saveImage(file.getName(), fileContent);
 
-                        List<Image> images = imageDao.retrieveAll();
-                        if (!images.isEmpty()) {
-                            Image lastImage = images.get(images.size() - 1);
-                            imageRepository.addDatabase(lastImage);
+                        if (!imageRepository.imageExists(file.getName())) {
+                            imageRepository.addDatabase(image);
                         }
                         System.out.println("Image chargée : " + file.getName());
                     } catch (IOException e) {
