@@ -11,14 +11,9 @@ function selectImage(image: ImageGallery) {
 
 <template>
   <div class="image-grid">
-    <div
-      v-for="image in images"
-      :key="image.id"
-      class="image-container"
-      @click="selectImage(image)"
-    >
+    <div v-for="image in images" :key="image.id" class="image-container" @click="selectImage(image)">
       <img v-if="image.dataUrl" :src="image.dataUrl" :alt="image.name" />
-      {{ image.similarity }}
+      <p>{{ image.similarity }}</p>
     </div>
   </div>
 </template>
@@ -28,6 +23,7 @@ img:hover {
   transform: scale(1.02);
   cursor: pointer;
 }
+
 .image-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
