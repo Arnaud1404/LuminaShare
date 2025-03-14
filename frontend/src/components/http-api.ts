@@ -47,9 +47,7 @@ export async function loadImageData(imageID: number): Promise<string> {
  * @param jsonImages Array of image metadata without data URLs
  * @returns Array of complete images with data URLs
  */
-async function loadImageDataUrls(
-  jsonImages: ImageGallery[]
-): Promise<ImageGallery[]> {
+async function loadImageDataUrls(jsonImages: ImageGallery[]): Promise<ImageGallery[]> {
   const imageDataUrlArray: ImageGallery[] = [];
 
   for (const image of jsonImages) {

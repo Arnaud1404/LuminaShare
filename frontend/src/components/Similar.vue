@@ -5,11 +5,11 @@ defineProps<{ images: ImageGallery[] }>();
 const emit = defineEmits(['select']);
 
 function selectImage(image: ImageGallery) {
-    emit('select', image);
+  emit('select', image);
 }
 
 function formatSimilarity(value?: number): string {
-  if (value === undefined) return "";
+  if (value === undefined) return '';
   return `${(value * 100).toFixed(2)}`;
 }
 </script>
@@ -23,7 +23,7 @@ function formatSimilarity(value?: number): string {
       @click="selectImage(image)"
     >
       <img v-if="image.dataUrl" :src="image.dataUrl" :alt="image.name" />
-       <p>{{ formatSimilarity(image.similarity) }}</p>
+      <p>{{ formatSimilarity(image.similarity) }}</p>
     </div>
   </div>
 </template>
