@@ -96,12 +96,7 @@
                   <show>private</show> 
                   <nohelp>true</nohelp>
                   <quiet>true</quiet>
-
-                  <!-- Le French -->
-                  <locale>fr_FR</locale>
-                  <charset>UTF-8</charset>
-                  <docencoding>UTF-8</docencoding>
-                  <encoding>UTF-8</encoding>
+                  <doclint>none</doclint>
 
                   <reportOutputDirectory>${project.basedir}/../docs</reportOutputDirectory>
                   <destDir>api</destDir> 
