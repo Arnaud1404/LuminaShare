@@ -5,7 +5,12 @@ defineProps<{ images: ImageGallery[] }>();
 const emit = defineEmits(['select']);
 
 function selectImage(image: ImageGallery) {
-  emit('select', image);
+    emit('select', image);
+}
+
+function formatSimilarity(value?: number): string {
+  if (value === undefined) return "";
+  return `${(value * 100).toFixed(1)}`;
 }
 </script>
 
@@ -18,7 +23,7 @@ function selectImage(image: ImageGallery) {
       @click="selectImage(image)"
     >
       <img v-if="image.dataUrl" :src="image.dataUrl" :alt="image.name" />
-      <p>{{ image.similarity }}</p>
+       <p>{{ formatSimilarity(image.similarity) }}</p>
     </div>
   </div>
 </template>
@@ -29,8 +34,9 @@ img:hover {
   cursor: pointer;
 }
 .image-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  display: flex;
+  overflow-x: auto;
+  flex-wrap: nowrap;
   gap: 1rem;
   padding: 1rem;
 }
@@ -48,5 +54,8 @@ img:hover {
 
 .image-container p {
   margin-top: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>
