@@ -10,7 +10,7 @@ function selectImage(image: ImageGallery) {
 
 function formatSimilarity(value?: number): string {
   if (value === undefined) return "";
-  return `${(value * 100).toFixed(1)}`;
+  return `${(value * 100).toFixed(2)}`;
 }
 </script>
 
@@ -46,16 +46,13 @@ img:hover {
 }
 
 .image-container img {
-  max-width: 200px;
-  max-height: 200px;
+  max-width: 160px;
+  max-height: 120px;
   object-fit: cover;
   border-radius: 4px;
 }
 
 .image-container p {
-  margin-top: 0.5rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  margin-top: 0.2rem;
 }
 </style>

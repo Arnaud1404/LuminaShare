@@ -252,23 +252,22 @@ watchEffect(async () => {
         <p v-else>Aucune image sélectionnée</p>
       </div>
 
-      <!-- Similar Images Selector - 10% height -->
-      <div class="similar-selector">
-        <h3>Filtres de similarité</h3>
-        <select v-model="descriptor">
-          <option value="rgbcube">3D RGB</option>
-          <option value="huesat">2D Teinte Saturation</option>
-        </select>
-        <input type="number" v-model="similarCount" min="0" max="10" placeholder="Nombre d'images similaires">
-        <button @click="fetchSimilarImages">Rechercher</button>
-      </div>
-
-      <!-- Similar Images - 30% height -->
-      <div class="similar-images">
-        <h3>Images similaires</h3>
-        <Similar :images="similarImages" @select="handleImageSelect"/>
-      </div>
-    </div>
+      <!-- Similar Images - 40% height -->
+<div class="similar-section">
+  <h3>Images similaires - Plus le score est bas, plus l'image est similaire</h3>
+  <div class="similar-filters">
+    <select v-model="descriptor">
+      <option value="rgbcube">3D RGB</option>
+      <option value="huesat">2D Teinte Saturation</option>
+    </select>
+    <input type="number" v-model="similarCount" min="1" max="10">
+    <button @click="fetchSimilarImages">Rechercher</button>
+  </div>
+  <div class="similar-results">
+    <Similar :images="similarImages" @select="handleImageSelect"/>
+  </div>
+</div>
+</div>
 
     <!-- RIGHT COLUMN - 40% width -->
     <div class="right-column">
@@ -407,19 +406,22 @@ input[type="number"] {
   overflow: auto;
 }
 
-.similar-selector {
-  height: 10%;
+.similar-section {
+  height: 40%;
   background-color: hsl(0, 0%, 16%);
   border-radius: 8px;
   padding: 10px;
-  margin-bottom: 10px;
 }
 
-.similar-images {
-  height: 30%;
-  background-color: hsl(0, 0%, 16%);
-  border-radius: 8px;
-  padding: 10px;
+.similar-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.similar-results {
+  overflow: hidden;
 }
 
 .right-column {
