@@ -286,8 +286,11 @@ public class ImageRepository implements InitializingBean {
                 throw new RuntimeException("bad descriptor for image Similar");
         }
 
-        String sql = "SELECT id, name, type, size, " + descriptor + " <-> ? as similarity_score FROM " + databaseTable +
-                " ORDER BY " + descriptor + " <-> ? LIMIT " + n;
+        String sql = "SELECT id, name, type, size, " + descriptor + " <-> ? as similarity_score FROM " + databaseTable;
+
+        sql += " WHERE id != " + img.getId();
+
+        sql += " ORDER BY " + descriptor + " <-> ? LIMIT " + n;
 
         return jdbcTemplate.query(sql,
                 (rs, rowNum) -> {
