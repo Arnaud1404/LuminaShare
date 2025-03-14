@@ -56,8 +56,7 @@ public class DatabaseTests {
         testImage = new Image(null, "test.png", imgData,
                 MediaType.IMAGE_PNG,
                 testBufferedImage.getWidth(),
-                testBufferedImage.getHeight(),
-                "Test database image");
+                testBufferedImage.getHeight());
         testImageId = testImage.getId();
     }
 

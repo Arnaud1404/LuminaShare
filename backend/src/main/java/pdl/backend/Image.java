@@ -12,21 +12,18 @@ public class Image {
   private String name;
   private MediaType type;
   private String size;
-  private String description;
   private PGvector rgbcube;
   private PGvector hueSat;
   private float similarityScore;
   private byte[] data;
 
   public Image(String path, String name, byte[] data,
-      MediaType type, long width, long height,
-      String description) {
+      MediaType type, long width, long height) {
     id = count++;
     this.path = path;
     this.name = name;
     this.type = type;
     this.size = width + "*" + height;
-    this.description = description;
     this.data = data;
   }
 
@@ -57,9 +54,6 @@ public class Image {
     this.type = type;
   }
 
-  public String getDesciption() {
-    return description;
-  }
 
   public String getSize() {
     return size;

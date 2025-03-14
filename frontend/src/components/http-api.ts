@@ -5,7 +5,6 @@ export async function getImagesAsJSON() {
   let json: ImageGallery[] = [];
   await axios
     .get('/images')
-    // Writes the id and name attributes but not dataUrl
     .then((response) => (json = response.data))
     .catch((error) => console.error(error));
   return json;
@@ -58,7 +57,6 @@ async function loadImageDataUrls(jsonImages: ImageGallery[]): Promise<ImageGalle
         name: image.name,
         type: image.type,
         size: image.size,
-        description: image.description,
         similarity: image.similarity,
         dataUrl: dataUrl,
       });

@@ -130,8 +130,7 @@ public class ImageController {
           file.getBytes(),
           type,
           bufferedImage.getWidth(),
-          bufferedImage.getHeight(),
-          "TODO");
+          bufferedImage.getHeight());
       imageDao.create(img);
 
       imageRepository.addDatabase(img);
@@ -154,7 +153,6 @@ public class ImageController {
       img_json.put("name", img.getName());
       img_json.put("type", img.getType().toString());
       img_json.put("size", img.getSize());
-      img_json.put("description", img.getDesciption());
       img_json.put("similarity", img.getSimilarityScore());
       img_json.put("url", "/images/" + img.getId());
       nodes.add(img_json);
@@ -180,8 +178,6 @@ public class ImageController {
         img_json.put("name", img.getName());
         img_json.put("type", img.getType().toString());
         img_json.put("size", img.getSize());
-        img_json.put("description", img.getDesciption());
-        img_json.put("url", "/images/" + img.getId());
         img_json.put("similarity", img.getSimilarityScore());
 
         nodes.add(img_json);

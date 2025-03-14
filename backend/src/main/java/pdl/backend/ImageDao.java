@@ -41,8 +41,7 @@ public class ImageDao implements Dao<Image> {
 
       MediaType type = ImageService.parseMediaTypeFromFilename(fileName);
 
-      Image img = new Image(FileController.directory_location.toString(), fileName, fileContent, type, width, height,
-          "TODO");
+      Image img = new Image(FileController.directory_location.toString(), fileName, fileContent, type, width, height);
 
       this.create(img);
       return img;

@@ -5,7 +5,6 @@ export interface ImageGallery {
   name: string;
   type: string;
   size: string;
-  description: string;
   dataUrl: string | null;
   similarity?: number;
 }
