@@ -5,6 +5,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.pgvector.PGvector;
 
+/**
+ * Represents an image with its metadata and binary data.
+ * This class allows storing and managing image information,
+ * including its path, name, media type, and dimensions.
+ */
 public class Image {
   private static Long count = Long.valueOf(1);
   private String path;
@@ -17,6 +22,18 @@ public class Image {
   private float similarityScore;
   private byte[] data;
 
+ /**
+  * Constructs a new Image instance with the specified parameters.
+  * The identifier is automatically generated from the static counter.
+  *
+  * @param path        the path of the image in the file system
+  * @param name        the name of the image
+  * @param data        the binary data of the image
+  * @param type        the media type of the image
+  * @param width       the width of the image in pixels
+  * @param height      the height of the image in pixels
+  * @param description the description of the image
+  */
   public Image(String path, String name, byte[] data,
       MediaType type, long width, long height) {
     id = count++;

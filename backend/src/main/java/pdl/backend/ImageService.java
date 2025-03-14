@@ -16,6 +16,13 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Service class for managing image-related operations and similarity searches.
+ * 
+ * This class interacts with the ImageDao to retrieve images and performs similarity
+ * computations based on image descriptors. It supports variable-length descriptors
+ * and handles different descriptor types (e.g., grayscale, RGB).
+ */
 @Service
 public class ImageService {
 
@@ -28,10 +35,12 @@ public class ImageService {
         this.imageDao = imageDao;
         this.imageRepository = imageRepository;
     }
-
     /**
-     * Méthode exécutée après l'initialisation de l'application.
-     * Charge les images du dossier 'images/' et les stocke dans ImageDao.
+     * Loads images from a predefined folder into the database on application startup.
+     * 
+     * This method scans the 'images/' folder for image files and loads them into the
+     * database using the {@code ImageDao}.
+     * @throws RuntimeException If an I/O error occurs while reading an image file
      */
     @PostConstruct
     public void loadImagesOnStartup() {
@@ -64,7 +73,16 @@ public class ImageService {
             }
         }
     }
-
+     
+     /**
+      * Loads images from a specified folder into the database.
+      * 
+      * This method scans the specified folder for image files and loads them into the
+      * database using the {@code ImageDao}.
+      * 
+      * @param name_folder The path to the folder containing images to load
+      * @throws RuntimeException If an I/O error occurs while reading an image file
+      */
     public void loadImagesOnStartup(String name_folder) {
         File folder = new File(name_folder);
         // Vérifie si le dossier 'images/' existe, sinon lève une erreur
@@ -97,7 +115,10 @@ public class ImageService {
     }
 
     /**
-     * Vérifie si l'extension du fichier correspond aux formats supportés.
+     * Checks if a given filename corresponds to a valid image file.
+     * 
+     * @param fileName The name of the file to check
+     * @return True if the file is a valid image, else false
      */
     private boolean isValidImage(String fileName) {
         String extension = getFileExtension(fileName);
@@ -106,18 +127,30 @@ public class ImageService {
     }
 
     /**
-     * Récupère l'extension d'un fichier à partir de son nom.
+     * Gets the file extension of a given filename.
+     * 
+     * @param fileName The name of the file to parse
      */
     private static String getFileExtension(String fileName) {
         int lastDotIndex = fileName.lastIndexOf('.');
         return (lastDotIndex == -1) ? "" : fileName.substring(lastDotIndex + 1);
     }
-
+     /**
+      * Parses the media type of a file based on its original filename.
+      * 
+      * @param file The MultipartFile to analyze
+      * @return The MediaType corresponding to the file extension (e.g., IMAGE_PNG, IMAGE_JPEG), or null if undetermined
+      */
     public static MediaType parseMediaTypeFromFile(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
         return parseMediaTypeFromFilename(originalFilename);
     }
-
+    /**
+      * Parses the media type of a file based on its filename extension.
+      * 
+      * @param fileName The name of the file to parse
+      * @return The MediaType corresponding to the file extension (e.g., IMAGE_PNG, IMAGE_JPEG), or null if undetermined
+      */
     public static MediaType parseMediaTypeFromFilename(String fileName) {
         if (fileName != null) {
             String extension = getFileExtension(fileName).toLowerCase();

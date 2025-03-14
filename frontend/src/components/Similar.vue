@@ -10,7 +10,7 @@ function selectImage(image: ImageGallery) {
 
 function formatSimilarity(value?: number): string {
   if (value === undefined) return '';
-  return `${(value * 100).toFixed(2)}`;
+  return `${value.toFixed(2)}`;
 }
 </script>
 

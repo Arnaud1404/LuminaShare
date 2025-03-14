@@ -3,8 +3,24 @@ package pdl.backend.imageProcessing;
 import boofcv.io.image.UtilImageIO;
 import boofcv.struct.image.GrayU8;
 
+/**
+ * Provides methods for grayscale image processing and enhancement.
+ * 
+ * This class contains static utility methods to manipulate grayscale images (GrayU8),
+ * including thresholding, brightness adjustment, dynamic range stretching, and histogram
+ * equalization. It operates directly on the input image data, modifying it in place.
+ */
 public class GrayLevelProcessing {
-
+   /**
+    * Applies a binary threshold to a grayscale image.
+    * 
+    * Pixels with grayscale values below the threshold are set to 0 (black), and those
+    * above or equal to the threshold are set to 255 (white). The input image is modified
+    * in place.
+    * 
+    * @param input The grayscale image to threshold
+    * @param t The threshold value (0-255)
+    */
 	public static void threshold(GrayU8 input, int t) {
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
@@ -18,7 +34,16 @@ public class GrayLevelProcessing {
 			}
 		}
 	}
-
+   /**
+    * Adjusts the brightness of a grayscale image by a specified delta.
+    * 
+    * Adds the delta value to each pixel’s grayscale level, clamping the result to the
+    * valid range [0, 255]. Positive delta increases brightness, negative delta decreases it.
+    * The input image is modified in place.
+    * 
+    * @param input The grayscale image to adjust
+    * @param delta The brightness adjustment value (can be negative or positive)
+    */
 	public static void modif_lum(GrayU8 input, int delta) {
 		for (int y = 0; y < input.height; ++y) {
 			for (int x = 0; x < input.width; ++x) {
@@ -33,7 +58,13 @@ public class GrayLevelProcessing {
 			}
 		}
 	}
-
+   /**
+    * Stretches the dynamic range of a grayscale image using a lookup table (LUT).
+    * 
+    * Computes the minimum and maximum grayscale values in the image, then maps all pixel
+    * values to the full range [0, 255] using a LUT for efficiency. The input image is
+    * modified in place.
+    */
 	public static void etend_dynamic(GrayU8 input) {
 		int LUT[] = new int[256];
 
@@ -63,7 +94,13 @@ public class GrayLevelProcessing {
 		}
 
 	}
-
+   /**
+    * Stretches the dynamic range of a grayscale image without optimization.
+    * 
+    * Similar to etend_dynamic, but recalculates the mapping for each pixel without using
+    * a LUT, making it less efficient. The input image is modified in place to span the
+    * full range [0, 255] based on its minimum and maximum grayscale values.
+    */
 	public static void etend_dynamic_pas_opt(GrayU8 input) {
 		int min = 256;
 		int max = 0;
@@ -88,7 +125,15 @@ public class GrayLevelProcessing {
 		}
 
 	}
-
+   /**
+    * Computes the histogram of grayscale levels in an image.
+    * 
+    * Returns an array where each index (0-255) represents a grayscale level, and the
+    * value at that index is the number of pixels with that level.
+    * 
+    * @param input The grayscale image to analyze
+    * @return An array of size 256 containing the histogram of grayscale levels
+    */
 	public static int[] histogram(GrayU8 input) {
 		int histogram[] = new int[256];
 		int gl = 0;
@@ -100,7 +145,13 @@ public class GrayLevelProcessing {
 		}
 		return histogram;
 	}
-
+   /**
+    * Applies histogram equalization to a grayscale image.
+    * 
+    * Enhances contrast by redistributing grayscale levels based on the cumulative
+    * histogram. The input image is modified in place to achieve a more uniform
+    * distribution of intensities.
+    */
 	public static void egalisation_histo(GrayU8 input) {
 		int histogram[] = histogram(input);
 		int histogram_egalise[] = new int[256];
@@ -138,7 +189,16 @@ public class GrayLevelProcessing {
 		}
 
 	}
-
+    /**
+     * Main method for testing grayscale image processing operations.
+     * 
+     * Loads an input image from the command line, applies a selected processing method
+     * (currently set to etend_dynamic_pas_opt), and saves the result to an output file.
+     * 
+     * <p>Usage: java GrayLevelProcessing <input_image_path> <output_image_path></p>
+     * 
+     * @param args Command-line arguments: [0] input image path, [1] output image path
+     */
 	public static void main(String[] args) {
 
 		// load image
