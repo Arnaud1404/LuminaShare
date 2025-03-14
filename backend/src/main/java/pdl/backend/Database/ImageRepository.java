@@ -263,14 +263,13 @@ public class ImageRepository implements InitializingBean {
     }
 
     /**
-     * Returns the list of images Similar to this image from the database
+     * Returns the list of images similar to this image from the database
      *
-     * @param img        the image who will be compare
-     * @param descriptor the element wich will serve to get select the similar
-     *                   images
-     * @param n          the number of similar images
+     * @param img        the image to compare with
+     * @param descriptor the descriptor to use for comparison (huesat or rgbcube)
+     * @param n          the number of similar images to get
      *
-     * @return A List<Image> with the images from the database
+     * @return A List<Image> with the n most similar images
      */
     public List<Image> imageSimilar(Image img, String descriptor, int n) {
         PGvector histo;
