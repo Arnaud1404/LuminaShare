@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
@@ -77,34 +76,4 @@ public class DatabaseTests {
         assertEquals(1.0f, sum, 0.01f);
     }
 
-    // @Test
-    // @Order(2)
-    // TODO : A TESTER AVEC LE NB DE FICHIERS DANS LE DOSSIER, COMPTER LES
-    // FICHIER JPEG, JPG ET PNG
-    // void testGetImageCount() {
-    // assertEquals(imageRepository.getImageCount(), imageDao.getImageCount(););
-    // }
-    // @Test
-    // @Order(3)
-    // public void testAddImage() {
-    // long before = imageRepository.getImageCount();
-    // int result = imageRepository.addDatabase(testImage);
-    // assertEquals(1, result);
-    // assertNotNull(imageRepository.getById(testImageId));
-    // long after = imageRepository.getImageCount();
-    // assertEquals(before + 1, after);
-
-    // }
-
-    // @Test
-    // @Order(4)
-    // public void testDeleteImage() {
-    // long before = imageRepository.getImageCount();
-
-    // int result = imageRepository.deleteDatabase(testImageId);
-    // assertEquals(1, result);
-    // long after = imageRepository.getImageCount();
-
-    // assertEquals(before - 1, after);
-    // }
 }

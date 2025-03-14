@@ -155,7 +155,6 @@ public class GrayLevelProcessing {
 	public static void egalisation_histo(GrayU8 input) {
 		int histogram[] = histogram(input);
 		int histogram_egalise[] = new int[256];
-		int LUT[] = new int[256];
 		int nb_pixel = 0;
 		int nb_gl = 0;
 		int min = 256;

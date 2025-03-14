@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import pdl.backend.Database.ImageRepository;
 import pdl.backend.FileHandler.*;
-import pdl.backend.Database.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,7 +38,6 @@ public class ImageController {
   @Autowired
   private ImageRepository imageRepository;
 
-  @Autowired
   public ImageController(ImageDao imageDao) {
     this.imageDao = imageDao;
   }
