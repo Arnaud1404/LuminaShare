@@ -7,5 +7,6 @@ export interface ImageGallery {
   size: string;
   description: string;
   dataUrl: string | null;
+  similarity?: number;
 }
 export const images = ref<ImageGallery[]>([]);

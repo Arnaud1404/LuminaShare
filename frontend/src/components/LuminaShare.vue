@@ -8,6 +8,7 @@ import {
   getSimilarImages
 } from "./http-api";
 import Gallery from "./Gallery.vue";
+import Similar from "./Similar.vue";
 import { images, type ImageGallery } from "./images.ts";
 import Notification, { type NotificationType } from "./Notification.vue";
 
@@ -265,7 +266,7 @@ watchEffect(async () => {
       <!-- Similar Images - 30% height -->
       <div class="similar-images">
         <h3>Images similaires</h3>
-        <Gallery :images="similarImages" @select="handleImageSelect"/>
+        <Similar :images="similarImages" @select="handleImageSelect"/>
       </div>
     </div>
 

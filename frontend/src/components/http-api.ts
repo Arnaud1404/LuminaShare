@@ -61,6 +61,7 @@ async function loadImageDataUrls(
         type: image.type,
         size: image.size,
         description: image.description,
+        similarity: image.similarity,
         dataUrl: dataUrl,
       });
     } catch (error) {

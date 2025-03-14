@@ -155,7 +155,7 @@ public class ImageController {
       img_json.put("type", img.getType().toString());
       img_json.put("size", img.getSize());
       img_json.put("description", img.getDesciption());
-
+      img_json.put("similarity", img.getSimilarityScore());
       img_json.put("url", "/images/" + img.getId());
       nodes.add(img_json);
     }
@@ -172,7 +172,6 @@ public class ImageController {
       }
 
       Image image = imageDao.retrieve(id).get();
-      // TODO:Replace this with the actual similar images
       List<Image> similarImages = imageRepository.imageSimilar(image, descriptor, n);
       ArrayNode nodes = mapper.createArrayNode();
       for (Image img : similarImages) {
