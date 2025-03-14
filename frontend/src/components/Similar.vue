@@ -18,7 +18,7 @@ function selectImage(image: ImageGallery) {
       @click="selectImage(image)"
     >
       <img v-if="image.dataUrl" :src="image.dataUrl" :alt="image.name" />
-      {{ image.similarity }}
+      <p>{{ image.similarity }}</p>
     </div>
   </div>
 </template>
