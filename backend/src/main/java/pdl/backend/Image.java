@@ -15,6 +15,7 @@ public class Image {
   private String description;
   private PGvector rgbcube;
   private PGvector hueSat;
+  private float similarityScore;
   private byte[] data;
 
   public Image(String path, String name, byte[] data,
@@ -90,5 +91,13 @@ public class Image {
 
   public PGvector getRgbCube() {
     return this.rgbcube;
+  }
+
+  public void setSimilarityScore(float similarityScore) {
+    this.similarityScore = similarityScore;
+  }
+
+  public float getSimilarityScore() {
+    return this.similarityScore;
   }
 }

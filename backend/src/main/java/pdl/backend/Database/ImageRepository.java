@@ -264,6 +264,7 @@ public class ImageRepository implements InitializingBean {
 
     /**
      * Returns the list of images similar to this image from the database
+     * Sets the similarity score in the Image object
      *
      * @param img        the image to compare with
      * @param descriptor the descriptor to use for comparison (huesat or rgbcube)
@@ -285,7 +286,19 @@ public class ImageRepository implements InitializingBean {
                 throw new RuntimeException("bad descriptor for image Similar");
         }
 
-        String sql = "SELECT * FROM " + databaseTable + " ORDER BY " + descriptor + " <-> ? LIMIT " + n;
-        return jdbcTemplate.query(sql, ps -> ps.setObject(1, histo), rowMapper);
+        String sql = "SELECT id, name, type, size, " + descriptor + " <-> ? as similarity_score FROM " + databaseTable +
+                " ORDER BY " + descriptor + " <-> ? LIMIT " + n;
+
+        return jdbcTemplate.query(sql,
+                (rs, rowNum) -> {
+                    Image image = new Image();
+                    image.setId((long) rs.getInt("id"));
+                    image.setName(rs.getString("name"));
+                    image.setType(MediaType.valueOf(rs.getString("type")));
+                    image.setSize(rs.getString("size"));
+                    image.setSimilarityScore(rs.getFloat("similarity_score"));
+                    return image;
+                },
+                histo, histo);
     }
 }
