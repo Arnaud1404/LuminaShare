@@ -18,7 +18,6 @@ Une application de partage de photos développée par Arnaud Gomes, Kamiel De Vo
    DATABASE_PASSWORD=<motdepasse>
    DATABASE_PATH=pgsql # au CREMI, ou localhost pour un environnement local
    DATABASE_TABLE=imageDatabase # nom de la table pour stocker les images
-   DATABASE_RESET=false # ou true pour drop la table
    ```
 
 2. Installez et lancez l'application:
@@ -26,7 +25,8 @@ Une application de partage de photos développée par Arnaud Gomes, Kamiel De Vo
    mvn clean install
    mvn --projects backend spring-boot:run
    ```
-
+3. Obtenir des images de test (Optionnel)
+   https://picsum.photos/images
 ## Documentation
 
 Pour générer la documentation Javadoc, exécutez la commande suivante:

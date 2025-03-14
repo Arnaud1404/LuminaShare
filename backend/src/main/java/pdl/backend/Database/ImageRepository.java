@@ -38,7 +38,7 @@ public class ImageRepository implements InitializingBean {
 
     @Value("${DATABASE_TABLE:imageDatabase}")
     private String databaseTable;
-    @Value("${DATABASE_RESET:false}")
+    @Value("${DATABASE_RESET:true}")
     private boolean resetDatabase;
     @Autowired
     private JdbcTemplate jdbcTemplate;
