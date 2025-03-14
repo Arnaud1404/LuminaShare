@@ -16,6 +16,13 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Service class for managing image-related operations and similarity searches.
+ * 
+ * This class interacts with the ImageDao to retrieve images and performs similarity
+ * computations based on image descriptors. It supports variable-length descriptors
+ * and handles different descriptor types (e.g., grayscale, RGB).
+ */
 @Service
 public class ImageService {
 
@@ -28,10 +35,21 @@ public class ImageService {
         this.imageDao = imageDao;
         this.imageRepository = imageRepository;
     }
-
     /**
-     * Méthode exécutée après l'initialisation de l'application.
-     * Charge les images du dossier 'images/' et les stocke dans ImageDao.
+     * Loads images from a predefined folder into the database on application startup.
+     * 
+     * This method is automatically invoked after bean initialization due to the
+     * {@code @PostConstruct} annotation. It scans the 'images/' folder (defined by
+     * {@code IMAGE_FOLDER}), creates the folder if it doesn’t exist, and loads valid
+     * image files into the database using the {@code ImageDao}. It respects a maximum
+     * limit ({@code MAX_IMAGES}) to prevent overloading.
+     * 
+     * <p>If the folder doesn’t exist, it is created, and the method exits without
+     * loading any files. For each valid image file, it reads the content as bytes and
+     * saves it to the database, logging the progress. Memory is periodically freed
+     * using garbage collection.</p>
+     * 
+     * @throws RuntimeException If an I/O error occurs while reading an image file
      */
     @PostConstruct
     public void loadImagesOnStartup() {
@@ -64,7 +82,22 @@ public class ImageService {
             }
         }
     }
-
+     /**
+      * Loads images from a specified folder into the database.
+      * 
+      * This method scans a user-defined folder, creates it if it doesn’t exist, and loads
+      * valid image files into the database using the {@code ImageDao}. It respects a maximum
+      * limit ({@code MAX_IMAGES}) to prevent overloading. Unlike the {@code @PostConstruct}
+      * version, this method allows specifying a custom folder path.
+      * 
+      * <p>If the folder doesn’t exist, it is created, and the method exits without
+      * loading any files. For each valid image file, it reads the content as bytes and
+      * saves it to the database, logging the progress. Memory is periodically freed
+      * using garbage collection.</p>
+      * 
+      * @param name_folder The path to the folder containing images to load
+      * @throws RuntimeException If an I/O error occurs while reading an image file
+      */
     public void loadImagesOnStartup(String name_folder) {
         File folder = new File(name_folder);
         // Vérifie si le dossier 'images/' existe, sinon lève une erreur
@@ -112,12 +145,30 @@ public class ImageService {
         int lastDotIndex = fileName.lastIndexOf('.');
         return (lastDotIndex == -1) ? "" : fileName.substring(lastDotIndex + 1);
     }
-
+     /**
+      * Parses the media type of a file based on its original filename.
+      * 
+      * This method extracts the filename from a MultipartFile and delegates the media type
+      * parsing to parseMediaTypeFromFilename. It supports common image formats like PNG
+      * and JPEG.
+      * 
+      * @param file The MultipartFile to analyze
+      * @return The MediaType corresponding to the file extension (e.g., IMAGE_PNG, IMAGE_JPEG), or null if undetermined
+      */
     public static MediaType parseMediaTypeFromFile(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
         return parseMediaTypeFromFilename(originalFilename);
     }
-
+    /**
+      * Parses the media type of a file based on its filename extension.
+      * 
+      * This method examines the file extension (case-insensitive) and returns the corresponding
+      * MediaType for supported image formats (PNG, JPG, JPEG). If the extension is unrecognized
+      * or the filename is null, it returns null.
+      * 
+      * @param fileName The name of the file to parse
+      * @return The MediaType corresponding to the file extension (e.g., IMAGE_PNG, IMAGE_JPEG), or null if undetermined
+      */
     public static MediaType parseMediaTypeFromFilename(String fileName) {
         if (fileName != null) {
             String extension = getFileExtension(fileName).toLowerCase();
