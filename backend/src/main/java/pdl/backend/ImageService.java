@@ -173,11 +173,11 @@ public class ImageService {
         List<Image> allImages = imageDao.retrieveAll();
         return allImages.stream()
                 .filter(img -> img.getId() != imageId)
-                .map(img -> new ImageSimilarity(img, calculateDistance(targetDescriptor, getDescriptorByType(img, descriptorType))))
-                .sorted((a, b) -> Double.compare(a.distance, b.distance))
+                .map(img -> new ImageSimilarity(img, calculateDistance(targetDescriptor, getDescriptorByType(img, descriptorType))))//calcul de la distance pour chaque image , transforme chaque image ( img ) de la liste allImages en un objet ImageSimilarity , qui associe l'image à sa distance par rapport à l'image cible.
+                .sorted((a, b) -> Double.compare(a.distance, b.distance))//trie les objets imagesimilar  par distance croissante 
                 .limit(n) // Limiter aux N plus similaires
-                .map(is -> is.image)
-                .collect(Collectors.toList());
+                .map(is -> is.image)//prepare les données en associant chaque image a sa distance 
+                .collect(Collectors.toList());//colecter dans une liste 
     }
     /**
      * Retrieves or computes the descriptor for an image based on the specified type.
@@ -187,8 +187,9 @@ public class ImageService {
      * @return The PGvector descriptor, or null if the type is unsupported
      */
     private PGvector getDescriptorByType(Image image, String descriptorType) {
+        //Récupère ou calcule le descripteur d'une image selon le type spécifié.
         switch (descriptorType.toLowerCase()) {
-            case "gray":
+            case "gray"://Retourne le descripteur existant déja calculer (niveaux de gris)
                 return image.getDescriptor(); // Descripteur actuel (niveaux de gris)
             case "rgb":
                 return computeRGBDescriptor(image); // calcul RGB
@@ -209,9 +210,9 @@ public class ImageService {
     private PGvector computeRGBDescriptor(Image image) {
         //  exemple de calcul  un descripteur RGB (à adapter selon tes besoins)
         try {
-            BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(image.getData()));
-            GrayU8 grayImage = ConvertBufferedImage.convertFrom(bufferedImage, (GrayU8) null); // Placeholder
-            return ImageVectorConversion.convertGrayU8ToVector(grayImage); // À remplacer par RGB si nécessaire
+            BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(image.getData()));//charger les donneés binaire en tant'quan image en mémoire 
+            GrayU8 grayImage = ConvertBufferedImage.convertFrom(bufferedImage, (GrayU8) null); // charger l'image  en niveaux de gris et la convertit en gris avec BoofCv
+            return ImageVectorConversion.convertGrayU8ToVector(grayImage); // génere un vector a partir une image grise , en peux la remplacer par RGB aussi 
         } catch (IOException e) {
             throw new RuntimeException("Erreur lors du calcul du descripteur RGB");
         }
@@ -239,9 +240,11 @@ public class ImageService {
      * @return The Euclidean distance, or Double.MAX_VALUE if either descriptor is null
      */
     private double calculateDistance(PGvector v1, PGvector v2) {
+        //retourne la distance entre deux vecteur 
         if (v1 == null || v2 == null) {
-            return Double.MAX_VALUE;
+            return Double.MAX_VALUE;//retourne un descripteur infinie (image non comparable)
         }
+        //conversion des vecteur OGvecteur en tableau
         float[] vec1 = v1.toArray();
         float[] vec2 = v2.toArray();
         if (vec1.length != vec2.length) {
@@ -250,10 +253,11 @@ public class ImageService {
         }
         double sum = 0.0;
         for (int i = 0; i < vec1.length; i++) {
+            //Formule de la distance euclidienne : √((x₁-y₁)² + ... + (xₙ-yₙ)²)
             double diff = vec1[i] - vec2[i];
             sum += diff * diff;
         }
-        return Math.sqrt(sum);
+        return Math.sqrt(sum);//Retourne la racine carrée de la somme, soit la distance final
     }
  
     /**
