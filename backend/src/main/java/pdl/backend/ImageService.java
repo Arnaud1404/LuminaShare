@@ -38,17 +38,8 @@ public class ImageService {
     /**
      * Loads images from a predefined folder into the database on application startup.
      * 
-     * This method is automatically invoked after bean initialization due to the
-     * {@code @PostConstruct} annotation. It scans the 'images/' folder (defined by
-     * {@code IMAGE_FOLDER}), creates the folder if it doesn’t exist, and loads valid
-     * image files into the database using the {@code ImageDao}. It respects a maximum
-     * limit ({@code MAX_IMAGES}) to prevent overloading.
-     * 
-     * <p>If the folder doesn’t exist, it is created, and the method exits without
-     * loading any files. For each valid image file, it reads the content as bytes and
-     * saves it to the database, logging the progress. Memory is periodically freed
-     * using garbage collection.</p>
-     * 
+     * This method scans the 'images/' folder for image files and loads them into the
+     * database using the {@code ImageDao}.
      * @throws RuntimeException If an I/O error occurs while reading an image file
      */
     @PostConstruct
@@ -82,18 +73,12 @@ public class ImageService {
             }
         }
     }
+     
      /**
       * Loads images from a specified folder into the database.
       * 
-      * This method scans a user-defined folder, creates it if it doesn’t exist, and loads
-      * valid image files into the database using the {@code ImageDao}. It respects a maximum
-      * limit ({@code MAX_IMAGES}) to prevent overloading. Unlike the {@code @PostConstruct}
-      * version, this method allows specifying a custom folder path.
-      * 
-      * <p>If the folder doesn’t exist, it is created, and the method exits without
-      * loading any files. For each valid image file, it reads the content as bytes and
-      * saves it to the database, logging the progress. Memory is periodically freed
-      * using garbage collection.</p>
+      * This method scans the specified folder for image files and loads them into the
+      * database using the {@code ImageDao}.
       * 
       * @param name_folder The path to the folder containing images to load
       * @throws RuntimeException If an I/O error occurs while reading an image file
@@ -130,7 +115,10 @@ public class ImageService {
     }
 
     /**
-     * Vérifie si l'extension du fichier correspond aux formats supportés.
+     * Checks if a given filename corresponds to a valid image file.
+     * 
+     * @param fileName The name of the file to check
+     * @return True if the file is a valid image, else false
      */
     private boolean isValidImage(String fileName) {
         String extension = getFileExtension(fileName);
@@ -139,7 +127,9 @@ public class ImageService {
     }
 
     /**
-     * Récupère l'extension d'un fichier à partir de son nom.
+     * Gets the file extension of a given filename.
+     * 
+     * @param fileName The name of the file to parse
      */
     private static String getFileExtension(String fileName) {
         int lastDotIndex = fileName.lastIndexOf('.');
@@ -147,10 +137,6 @@ public class ImageService {
     }
      /**
       * Parses the media type of a file based on its original filename.
-      * 
-      * This method extracts the filename from a MultipartFile and delegates the media type
-      * parsing to parseMediaTypeFromFilename. It supports common image formats like PNG
-      * and JPEG.
       * 
       * @param file The MultipartFile to analyze
       * @return The MediaType corresponding to the file extension (e.g., IMAGE_PNG, IMAGE_JPEG), or null if undetermined
@@ -161,10 +147,6 @@ public class ImageService {
     }
     /**
       * Parses the media type of a file based on its filename extension.
-      * 
-      * This method examines the file extension (case-insensitive) and returns the corresponding
-      * MediaType for supported image formats (PNG, JPG, JPEG). If the extension is unrecognized
-      * or the filename is null, it returns null.
       * 
       * @param fileName The name of the file to parse
       * @return The MediaType corresponding to the file extension (e.g., IMAGE_PNG, IMAGE_JPEG), or null if undetermined

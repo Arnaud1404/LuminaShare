@@ -24,9 +24,7 @@ public class FileController {
    /**
     * Stores an uploaded file in the designated directory.
     * 
-    * Saves the provided MultipartFile to the "src/main/resources/images" directory using
-    * its original filename. Includes security checks to ensure the file is stored within
-    * the intended directory and throws exceptions for empty files or I/O errors.
+    * Saves the file with the original filename in the "src/main/resources/images" directory.
     * 
     * @param file The MultipartFile to store
     * @throws RuntimeException If the file is empty, the destination is outside the directory,
@@ -59,11 +57,11 @@ public class FileController {
         }
 
     }
+    
     /**
      * Removes a file from the designated directory.
      * 
-     * Deletes the file with the specified name from the "src/main/resources/images" directory.
-     * Throws an exception if the deletion fails due to an I/O error (e.g., file not found).
+     * Deletes the file with the given name from the "src/main/resources/images" directory.
      * 
      * @param name The name of the file to delete
      * @throws RuntimeException If an I/O error occurs during deletion
