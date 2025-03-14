@@ -20,12 +20,14 @@ const notification = ref<NotificationRef | null>(null);
 const selectedImage = ref<ImageGallery | null>(null);
 const file = ref<File | null>(null);
 const allowedFileTypes = ["image/jpeg", "image/png"];
-const isFileValid = ref(false);
-const isFullscreen = ref(false);
-const showMetadata = ref(false);
 const descriptor = ref("rgbcube");
 const similarCount = ref(3);
 const similarImages = ref<ImageGallery[]>([]);
+const isFileValid = ref(false);
+const isFullscreen = ref(false);
+const showMetadata = ref(false);
+const isUploading = ref(false);
+
 
 const fetchSimilarImages = async () => {
   if (!selectedImage.value) return;
@@ -136,8 +138,10 @@ const handleFileUpload = (event: Event) => {
 };
 
 const submitFile = async () => {
-  if (!file.value) return;
-
+  if (!file.value || isUploading.value) return;
+  
+  isUploading.value = true;
+  
   try {
     await uploadImage(file.value);
     file.value = null;
@@ -157,6 +161,7 @@ const submitFile = async () => {
     isFileValid.value = false;
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
+    isUploading.value = false;
   }
 };
 
@@ -192,6 +197,7 @@ const handleDeleteImage = async () => {
           "success",
         );
         selectedImage.value = null;
+        similarImages.value = [];
       } else {
         notification.value?.showNotification(
           "Échec de la suppression",
@@ -298,8 +304,8 @@ watchEffect(async () => {
         <h3>Téléverser une image</h3>
         <div style="display: flex; gap: 10px;">
           <input type="file" @change="handleFileUpload" style="flex: 1;" />
-          <button @click="submitFile">
-            Téléverser
+          <button @click="submitFile" :disabled="isUploading">
+            {{ isUploading ? 'Téléversement...' : 'Téléverser' }}
           </button>
         </div>
       </div>
