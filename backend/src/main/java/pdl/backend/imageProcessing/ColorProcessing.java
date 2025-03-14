@@ -136,7 +136,15 @@ public class ColorProcessing {
       }
     }
   }
-
+  /**
+   * Generates a hue histogram of a color image.
+   * 
+   * Computes the frequency of hue values (0-360 degrees) across the image, normalizes it
+   * to a height of 300 pixels, and returns a grayscale image representing the histogram.
+   * 
+   * @param input The input planar RGB image (3 bands: R, G, B)
+   * @return A GrayU8 image (360x300) representing the hue histogram
+   */
   public static GrayU8 histogramme_hue(Planar<GrayU8> input) {
     int height = 300;
     int width = 360;
@@ -174,7 +182,15 @@ public class ColorProcessing {
     }
     return histo;
   }
-
+  /**
+   * Generates a 2D hue-saturation histogram of a color image.
+   * 
+   * Computes a 2D histogram of hue (0-360 degrees) and saturation (0-100%) values,
+   * mapping frequencies to grayscale intensities (0-255). Returns a 360x101 grayscale image.
+   * 
+   * @param input The input planar RGB image (3 bands: R, G, B)
+   * @return A GrayU8 image (360x101) representing the 2D hue-saturation histogram
+   */
   public static GrayU8 histo_2d_hue_saturation(Planar<GrayU8> input) {
     int height = 101;
     int width = 360;
@@ -224,7 +240,16 @@ public class ColorProcessing {
     }
     return histo;
   }
-
+  /**
+   * Main method for testing color image processing operations.
+   * 
+   * Loads an input RGB image from the command line, applies mean filtering with two
+   * different window sizes (11 and 33), measures execution time, and saves two output images.
+   * 
+   * <p>Usage: java ColorProcessing <input_image_path> <output_image_path_11> <output_image_path_33></p>
+   * 
+   * @param args Command-line arguments: [0] input image path, [1] output path (size 11), [2] output path (size 33)
+   */
   public static void main(String[] args) {
     // load image
     if (args.length < 3) {
