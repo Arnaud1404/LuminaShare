@@ -99,7 +99,7 @@ public class ImageService {
     /**
      * Vérifie si l'extension du fichier correspond aux formats supportés.
      */
-    private boolean isValidImage(String fileName) {
+    public boolean isValidImage(String fileName) {
         String extension = getFileExtension(fileName);
         return extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg")
                 || extension.equalsIgnoreCase("png");
