@@ -42,7 +42,6 @@ backend/src/main/resources/public/static/
 backend/src/main/resources/public/index.html
 backend/target/classes/public/static/
 backend/src/main/resources/images/
-backend/src/main/resources/images_test/
 
 ## Débug ##
 *.txt
