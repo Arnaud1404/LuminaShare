@@ -22,18 +22,18 @@ public class Image {
   private float similarityScore;
   private byte[] data;
 
- /**
-  * Constructs a new Image instance with the specified parameters.
-  * The identifier is automatically generated from the static counter.
-  *
-  * @param path        the path of the image in the file system
-  * @param name        the name of the image
-  * @param data        the binary data of the image
-  * @param type        the media type of the image
-  * @param width       the width of the image in pixels
-  * @param height      the height of the image in pixels
-  * @param description the description of the image
-  */
+  /**
+   * Constructs a new Image instance with the specified parameters.
+   * The identifier is automatically generated from the static counter.
+   *
+   * @param path        the path of the image in the file system
+   * @param name        the name of the image
+   * @param data        the binary data of the image
+   * @param type        the media type of the image
+   * @param width       the width of the image in pixels
+   * @param height      the height of the image in pixels
+   * @param description the description of the image
+   */
   public Image(String path, String name, byte[] data,
       MediaType type, long width, long height) {
     id = count++;
@@ -70,7 +70,6 @@ public class Image {
   public void setType(MediaType type) {
     this.type = type;
   }
-
 
   public String getSize() {
     return size;
@@ -110,5 +109,9 @@ public class Image {
 
   public float getSimilarityScore() {
     return this.similarityScore;
+  }
+
+  public static long getCount() {
+    return count;
   }
 }

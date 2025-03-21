@@ -11,9 +11,12 @@ import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
 
+import pdl.backend.Database.ImageRepository;
 import pdl.backend.FileHandler.FileController;
 
 /**
@@ -27,6 +30,8 @@ import pdl.backend.FileHandler.FileController;
 public class ImageDao implements Dao<Image> {
 
   private final Map<Long, Image> images = new HashMap<>();
+  @Autowired
+  private ImageRepository imageRepository;
 
   /**
    * Saves an image to the in-memory collection.
@@ -85,6 +90,14 @@ public class ImageDao implements Dao<Image> {
   @Override
   public void create(final Image img) {
     images.put(img.getId(), img);
+    imageRepository.addDatabase(img);
+  }
+
+  public void create(final Image img, MultipartFile file) {
+    images.put(img.getId(), img);
+    FileController.store(file);
+    imageRepository.addDatabase(img);
+
   }
 
   /**
@@ -105,14 +118,17 @@ public class ImageDao implements Dao<Image> {
   @Override
   public void delete(final Image img) {
     images.remove(img.getId());
+    imageRepository.deleteDatabase(img.getId());
+    FileController.remove_from_directory(img.getName());
+
   }
 
   /**
    * Gets the number of images in the in-memory collection
-   * 
+   *
    * @return The count of images in memory
    */
-  public int getImageCount() {
-    return images.size();
+  public static long getImageCount() {
+    return Image.getCount();
   }
 }

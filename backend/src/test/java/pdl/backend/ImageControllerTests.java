@@ -37,18 +37,16 @@ import pdl.backend.FileHandler.*;
 @TestMethodOrder(OrderAnnotation.class)
 public class ImageControllerTests {
 
+	private long last_id;
 	@Autowired
 	private MockMvc mockMvc;
 
 	@BeforeAll
 	public static void reset() {
 		try {
-			Files.createDirectories(FileController.directory_location);
-
-			FileController.remove_from_directory("test.jpg");
+			FileController.remove_from_directory("test_certain_est_test.jpg");
 			FileController.remove_from_directory("test.png");
 
-			ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
 		} catch (Exception e) {
 			System.err.println("Error in test setup: " + e.getMessage());
 		}
@@ -57,6 +55,8 @@ public class ImageControllerTests {
 	@Test
 	@Order(1)
 	public void getImageListShouldReturnSuccess() throws Exception {
+		last_id = ImageDao.getImageCount();
+		System.out.println("nb d'image dans le dossier:" + last_id);
 		this.mockMvc.perform(get("/images")).andExpect(status().isOk());
 	}
 
@@ -69,11 +69,12 @@ public class ImageControllerTests {
 	@Test
 	@Order(3)
 	public void createImageShouldReturnSuccessJPEG() throws Exception {
-		ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
-
+		last_id = ImageDao.getImageCount() - 1;
+		System.out.println("dernier id:" + last_id);
 		ClassPathResource imgFile = new ClassPathResource("images_test/test_certain_est_test.jpg");
 
-		MockMultipartFile file_multipart = new MockMultipartFile("file", "test.jpg", MediaType.IMAGE_JPEG_VALUE,
+		MockMultipartFile file_multipart = new MockMultipartFile("file", "test_certain_est_test.jpg",
+				MediaType.IMAGE_JPEG_VALUE,
 				imgFile.getInputStream());
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart)).andDo(print())
 				.andExpect(status().isCreated());
@@ -82,7 +83,7 @@ public class ImageControllerTests {
 	@Test
 	@Order(4)
 	public void getImageShouldReturnSuccessJPEG() throws Exception {
-		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk());
+		this.mockMvc.perform(get("/images/" + last_id)).andExpect(status().isOk());
 
 	}
 
@@ -110,7 +111,8 @@ public class ImageControllerTests {
 	@Test
 	@Order(7)
 	public void getImageShouldReturnSuccessPNG() throws Exception {
-		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk()); // a besoin d'au moins 1 images dans le dossier images
+		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk()); // a besoin d'au moins 1 images dans le
+																			// dossier images
 	}
 
 	@Test

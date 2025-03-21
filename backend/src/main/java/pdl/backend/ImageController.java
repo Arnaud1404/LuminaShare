@@ -35,7 +35,6 @@ public class ImageController {
   private ObjectMapper mapper;
 
   private final ImageDao imageDao;
-
   @Autowired
   private ImageRepository imageRepository;
 
@@ -79,9 +78,7 @@ public class ImageController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
     }
     if (img.isPresent()) {
-      FileController.remove_from_directory(img.get().getName());
       imageDao.delete(img.get());
-      imageRepository.deleteDatabase(id);
       return ResponseEntity
           .ok("Image deleted successfully\n");
     }
@@ -136,7 +133,6 @@ public class ImageController {
 
       MediaType type = ImageService.parseMediaTypeFromFile(file);
 
-      FileController.store(file);
       Image img = new Image(
           FileController.directory_location.toString(),
           file.getOriginalFilename(),
@@ -144,9 +140,7 @@ public class ImageController {
           type,
           bufferedImage.getWidth(),
           bufferedImage.getHeight());
-      imageDao.create(img);
-
-      imageRepository.addDatabase(img);
+      imageDao.create(img, file);
 
       return ResponseEntity.status(HttpStatus.CREATED).body("Image ajoutée avec succès.");
     } catch (IOException e) {
@@ -197,6 +191,7 @@ public class ImageController {
 
       Image image = imageDao.retrieve(id).get();
       List<Image> similarImages = imageRepository.imageSimilar(image, descriptor, n);
+
       ArrayNode nodes = mapper.createArrayNode();
       for (Image img : similarImages) {
         ObjectNode img_json = mapper.createObjectNode();
