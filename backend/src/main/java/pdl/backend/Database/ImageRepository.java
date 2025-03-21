@@ -245,30 +245,29 @@ public class ImageRepository implements InitializingBean {
      * @return 1 if insertion was successful, 0 if it failed
      */
     private int insertImageRecord(Image img, PGvector rgbcube, PGvector hueSat) {
-    try {
-        String sql = "INSERT INTO " + databaseTable + 
-                     " (name, type, size, rgbcube, hueSat) VALUES (?, ?, ?, ?, ?) RETURNING id";
-        
-        Long id = jdbcTemplate.queryForObject(
-            sql, 
-            Long.class,
-            img.getName(),
-            img.getType().toString(),
-            img.getSize(),
-            rgbcube,
-            hueSat
-        );
-        
-        img.setId(id);
-        img.setHueSat(hueSat);
-        img.setRgbCube(rgbcube);
-        
-        return 1;
-    } catch (Exception e) {
-        System.err.println("Database insertion failed: " + e.getMessage());
-        return 0;
+        try {
+            String sql = "INSERT INTO " + databaseTable +
+                    " (name, type, size, rgbcube, hueSat) VALUES (?, ?, ?, ?, ?) RETURNING id";
+
+            Long id = jdbcTemplate.queryForObject(
+                    sql,
+                    Long.class,
+                    img.getName(),
+                    img.getType().toString(),
+                    img.getSize(),
+                    rgbcube,
+                    hueSat);
+
+            img.setId(id);
+            img.setHueSat(hueSat);
+            img.setRgbCube(rgbcube);
+
+            return 1;
+        } catch (Exception e) {
+            System.err.println("Database insertion failed: " + e.getMessage());
+            return 0;
+        }
     }
-}
 
     /**
      * Returns the list of images similar to this image from the database
@@ -309,5 +308,19 @@ public class ImageRepository implements InitializingBean {
                     return image;
                 },
                 histo, histo);
+    }
+
+    /**
+     * Gets the highest ID currently in the database
+     * 
+     * @return The maximum ID, or 0 if no images exist
+     */
+    public long getMaxId() {
+        try {
+            Long result = jdbcTemplate.queryForObject("SELECT MAX(id) FROM " + databaseTable, Long.class);
+            return result != null ? result.longValue() : 0;
+        } catch (Exception e) {
+            return 0;
+        }
     }
 }

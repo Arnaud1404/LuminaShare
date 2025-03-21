@@ -89,6 +89,14 @@ public class ImageDao implements Dao<Image> {
    */
   @Override
   public void create(final Image img) {
+    Long maxDatabaseId = imageRepository.getMaxId();
+
+    if (maxDatabaseId != null && maxDatabaseId >= Image.getCount() - 1) {
+      img.setId(maxDatabaseId + 1);
+    } else {
+      img.setId(Image.getCount());
+    }
+
     images.put(img.getId(), img);
     imageRepository.addDatabase(img);
   }
