@@ -6,12 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.logging.FileHandler;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
@@ -25,7 +20,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import org.springframework.http.MediaType;
@@ -37,16 +31,18 @@ import pdl.backend.FileHandler.*;
 @TestMethodOrder(OrderAnnotation.class)
 public class ImageControllerTests {
 
-	private long last_id;
 	@Autowired
 	private MockMvc mockMvc;
 
 	@BeforeAll
 	public static void reset() {
 		try {
-			FileController.remove_from_directory("test_certain_est_test.jpg");
-			FileController.remove_from_directory("test.png");
+			Files.createDirectories(FileController.directory_location);
 
+			FileController.remove_from_directory("test_certain_est_test12312315646216.jpg");
+			FileController.remove_from_directory("test_certain_est_test12312315646216.png");
+
+			ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
 		} catch (Exception e) {
 			System.err.println("Error in test setup: " + e.getMessage());
 		}
@@ -55,8 +51,6 @@ public class ImageControllerTests {
 	@Test
 	@Order(1)
 	public void getImageListShouldReturnSuccess() throws Exception {
-		last_id = ImageDao.getImageCount();
-		System.out.println("nb d'image dans le dossier:" + last_id);
 		this.mockMvc.perform(get("/images")).andExpect(status().isOk());
 	}
 
@@ -69,11 +63,11 @@ public class ImageControllerTests {
 	@Test
 	@Order(3)
 	public void createImageShouldReturnSuccessJPEG() throws Exception {
-		last_id = ImageDao.getImageCount() - 1;
-		System.out.println("dernier id:" + last_id);
-		ClassPathResource imgFile = new ClassPathResource("images_test/test_certain_est_test.jpg");
+		ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
 
-		MockMultipartFile file_multipart = new MockMultipartFile("file", "test_certain_est_test.jpg",
+		ClassPathResource imgFile = new ClassPathResource("images_test/test_certain_est_test12312315646216.jpg");
+
+		MockMultipartFile file_multipart = new MockMultipartFile("file", "test_certain_est_test12312315646216.jpg",
 				MediaType.IMAGE_JPEG_VALUE,
 				imgFile.getInputStream());
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart)).andDo(print())
@@ -83,16 +77,16 @@ public class ImageControllerTests {
 	@Test
 	@Order(4)
 	public void getImageShouldReturnSuccessJPEG() throws Exception {
-		this.mockMvc.perform(get("/images/" + last_id)).andExpect(status().isOk());
+		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk());
 
 	}
 
 	@Test
 	@Order(5)
 	public void deleteImageShouldReturnSuccessJPEG() throws Exception {
-		assertTrue(FileController.file_exists("test.jpg"));
+		assertTrue(FileController.file_exists("test_certain_est_test12312315646216.jpg"));
 		this.mockMvc.perform(delete("/images/0")).andExpect(status().isOk());
-		assertFalse(FileController.file_exists("test.jpg"));
+		assertFalse(FileController.file_exists("test_certain_est_test12312315646216.jpg"));
 	}
 
 	@Test
@@ -100,9 +94,10 @@ public class ImageControllerTests {
 	public void createImageShouldReturnSuccessPNG() throws Exception {
 		ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
 
-		ClassPathResource imgFile = new ClassPathResource("images_test/test.png");
+		ClassPathResource imgFile = new ClassPathResource("images_test/test_certain_est_test12312315646216.png");
 
-		MockMultipartFile file_multipart = new MockMultipartFile("file", "test.png", MediaType.IMAGE_JPEG_VALUE,
+		MockMultipartFile file_multipart = new MockMultipartFile("file", "test_certain_est_test12312315646216.png",
+				MediaType.IMAGE_JPEG_VALUE,
 				imgFile.getInputStream());
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart)).andDo(print())
 				.andExpect(status().isCreated());
@@ -118,9 +113,9 @@ public class ImageControllerTests {
 	@Test
 	@Order(8)
 	public void deleteImageShouldReturnSuccessPNG() throws Exception {
-		assertTrue(FileController.file_exists("test.png"));
+		assertTrue(FileController.file_exists("test_certain_est_test12312315646216.png"));
 		this.mockMvc.perform(delete("/images/0")).andExpect(status().isOk());
-		assertFalse(FileController.file_exists("test.png"));
+		assertFalse(FileController.file_exists("test_certain_est_test12312315646216.png"));
 
 	}
 

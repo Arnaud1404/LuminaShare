@@ -49,11 +49,11 @@ public class DatabaseTests {
     public static void setup() throws IOException {
         ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
 
-        ClassPathResource imgFile = new ClassPathResource("images_test/test.png");
+        ClassPathResource imgFile = new ClassPathResource("images_test/test_certain_est_test12312315646216.png");
         testBufferedImage = UtilImageIO.loadImage(imgFile.getFile().getAbsolutePath());
         byte[] imgData = Files.readAllBytes(imgFile.getFile().toPath());
 
-        testImage = new Image(null, "test.png", imgData,
+        testImage = new Image(null, "test_certain_est_test12312315646216.png", imgData,
                 MediaType.IMAGE_PNG,
                 testBufferedImage.getWidth(),
                 testBufferedImage.getHeight());
