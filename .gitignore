@@ -44,11 +44,13 @@ backend/target/classes/public/static/
 backend/src/main/resources/images/
 
 ## LateX ##
-Latex/*.fls
-Latex/*.out
-Latex/*.log
-Latex/*.fdb_latexmk
-Latex/*.aux
+cahierBesoins/*.fls
+cahierBesoins/*.out
+cahierBesoins/*.log
+cahierBesoins/*.fdb_latexmk
+cahierBesoins/*.aux
+cahierBesoins/*.gz
+
 
 
 ## Débug ##
