@@ -17,6 +17,7 @@ import pdl.backend.Database.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -97,7 +98,7 @@ public class ImageController {
   public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
     // Vérification des erreurs dans un seul bloc
     if (file == null || file.isEmpty()) {
-      return ResponseEntity.badRequest().body("Veuillez sélectionner un fichier.");
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Veuillez sélectionner un fichier.");
     }
 
     String contentType = file.getContentType();
