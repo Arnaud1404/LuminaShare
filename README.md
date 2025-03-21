@@ -44,6 +44,9 @@ Sur Ubuntu/Debian:
 sudo apt-get install openjdk-17-jdk
 ```
 
+## Inspiration
+données : https://www.dcode.fr/donnees-exif
+
 ## Testé Sur
 
 ### Systèmes d'exploitation

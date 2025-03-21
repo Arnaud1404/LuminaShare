@@ -43,6 +43,16 @@ backend/src/main/resources/public/index.html
 backend/target/classes/public/static/
 backend/src/main/resources/images/
 
+## LateX ##
+cahierBesoins/*.fls
+cahierBesoins/*.out
+cahierBesoins/*.log
+cahierBesoins/*.fdb_latexmk
+cahierBesoins/*.aux
+cahierBesoins/*.gz
+
+
+
 ## Débug ##
 *.txt
 note.txt

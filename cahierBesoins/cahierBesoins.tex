@@ -1,0 +1,424 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[frenchb]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc} 
+\usepackage{lmodern}
+\usepackage{mathptmx}
+
+\usepackage{amsmath}
+\usepackage{etoolbox}
+\usepackage{float}
+\usepackage{geometry}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    pdftitle={Projet de Développement Logiciel - Cahier des besoins},
+    pdfpagemode=FullScreen,
+    }
+\usepackage{graphicx}
+%\usepackage[disable]{todonotes}
+\setlength{\marginparwidth}{2cm}
+\usepackage{todonotes}
+\usepackage{titlesec}
+\titleformat*{\section}{\Large\bfseries\sffamily}
+\titleformat*{\subsection}{\large\bfseries\sffamily}
+\titleformat*{\subsubsection}{\itshape\subsubsectionfont}
+
+\geometry{margin=2cm}
+
+\newcounter{besoin}
+
+% Descriptif des besoins:
+% 1 - Label du besoin pour référencement
+% 2 - Titre du besoin
+% 3 - Description
+% 4 - Gestion d'erreurs
+% 5 - Spécifications tests
+\newcommand{\besoin}[5]{%
+  \refstepcounter{besoin}%
+  \fbox{\parbox{0.95\linewidth}{%
+    \begin{center}\label{besoin:#1}\textbf{\sffamily Besoin~\thebesoin~: #2}\end{center}
+    \ifstrempty{#3}{}{\textbf{Description~:} #3\par}
+    \vspace{0.5em}
+    \ifstrempty{#4}{}{\textbf{Gestion d'erreurs~:} #4\par}
+    \vspace{0.5em}
+    \ifstrempty{#5}{}{\textbf{Tests~:} #5\par}
+  }}
+}
+
+\newcommand{\refBesoin}[1]{%
+  Besoin~\ref{besoin:#1}%
+}
+
+\title{\sffamily \textbf{LuminaShare}}
+\author{Arnaud Gomes, Kamiel De Vos Le plus, Soraya Benachour}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+
+\section{Introduction}
+
+Ce document présente les besoins nécessaires au développement d'une application
+de recherche d'image par similarité avec une architecture de type client-serveur s'appuyant sur une base de données pour l'indexation des images.
+Afin de permettre aux groupes d'approfondir un sujet qui les intéresse plus
+particulièrement, on propose la structure suivante.
+
+\begin{description}
+\item[Noyau commun :] Chaque groupe devra réaliser l'implémentation du fonctionnement central de l'application client-serveur. Elle est décrite dans la section~\ref{sec:kernel}. Notez qu'une partie des besoins a été développée dans les TP communs. Le code du noyau commun fera l'objet d'un rendu intermédiaire.
+  
+\item [Extensions :] Des suggestions d'extensions seront proposées en cours (amélioration de l'interface utilisateur, descripteurs d'image plus avancés, pagination des résultats, sessions utilisateur persistantes, gestion d'une arborescence de fichiers image, etc), mais vous êtes invités à faire vos propres propositions.
+  
+\end{description}
+
+
+Chaque groupe peut faire évoluer ce document avec l'aval de son chargé de TD. Le cahier des besoins fera partie des rendus.\\
+
+
+L'application devra permettre de traiter les images couleur enregistrées aux formats suivants :
+
+\begin{itemize}
+\item \verb!JPEG!
+\item \verb!PNG!
+\end{itemize}
+
+
+
+\section{\label{sec:kernel}Noyau commun}
+
+\subsection{Serveur}
+
+\besoin{server:initImages}
+{Initialiser un ensemble d'images présentes sur le serveur}
+{
+  Lorsque le serveur est lancé, il doit charger toutes les images présentes à l'intérieur du dossier \verb!images! et les indexer dans une base de données (cf. \refBesoin{server:indexImage}). Ce dossier \verb!images! doit exister à l'endroit où est lancé le serveur. Seuls les fichiers images correspondants aux formats d'image reconnus doivent être traités. Les sous-dossiers du dossier \verb!images! ne seront pas traités.
+}
+{
+  Si le dossier \verb!images! n'existe pas depuis l'endroit où a été lancé le
+  serveur, une erreur explicite doit être levée.
+}
+{
+  \begin{enumerate}
+  \item Lancement de l'exécutable depuis un environnement vide, une erreur doit
+    se déclencher indiquant que le dossier \verb!images! n'est pas présent.
+  \item Mise en place d'un dossier de test contenant des images aux formats reconnus ainsi que des documents avec des extensions non-reconnues comme étant des images (e.g.,~\verb!.txt!).
+  \end{enumerate}
+}
+
+\besoin{server:manageImages}
+{Gérer les images présentes sur le serveur}
+{  
+    Le serveur gère un ensemble d'images. Il permet d'accéder aux données brutes de chaque image ainsi qu'aux méta-données nécessaires aux réponses aux requêtes (identifiant, nom de fichier, taille de l'image, format,...). Le serveur peut :
+
+    \begin{enumerate}
+    \item accéder à une image via son identifiant,
+    \item supprimer une image via son identifiant,
+    \item ajouter une image,
+    \item construire la liste des images disponibles (composée uniquement des métadonnées).
+    \end{enumerate}
+
+    Le serveur garantit la persistance des données : le dossier \verb!images! contient à tout moment l'ensemble des images disponibles qui sont également indexées dans la base de données.
+}
+{}
+{}
+
+\besoin{server:indexImage}
+{Indexer une image}
+{
+  Le serveur permet d'indexer une image c'est-à-dire d'ajouter dans une base de données un enregistrement correspondant à l'image (identifiant et descripteur). Les descripteurs supportés sont l'histogramme 2D Teinte/Saturation et l'histogramme 3D RGB de l'image.
+}
+{}
+{}
+
+\besoin{server:searchBySimilarity}
+{Rechercher des images similaires à une image donnée}
+{
+  Le serveur permet de construire la liste des \verb!N! images les plus similaires à une image donnée pour un descripteur donné.
+}
+{}
+{}
+
+\newpage
+
+\subsection{Communication}
+
+Pour l'ensemble des besoins, des codes d'erreurs à renvoyer sont précisés dans le paragraphe "Gestion d'erreurs" (à compléter si nécessaire). \\
+
+
+\besoin{comm:listImages}
+{Transférer la liste des images existantes}
+{
+  La liste des images présentes sur le serveur doit être envoyée par le serveur lorsqu'il reçoit une requête \verb!GET! à l'adresse \verb!/images!.
+
+  Le résultat sera fourni au format \verb!JSON!, sous la forme d'un tableau
+  contenant pour chaque image un objet avec les informations suivantes :
+  \begin{description}
+  \item[Id:] L'identifiant auquel est accessible l'image (type \verb!long!)
+  \item[Name:] Le nom du fichier qui a servi à construire l'image (type \verb!string!)
+  \item[Type:] Le type de l'image (type \verb!org.springframework.http.MediaType!) 
+  \item[Size:] Une description de la taille de l'image, par exemple \verb!640*480! pour
+    une image de $640 \times 480$ pixels (type \verb!string!)
+  \end{description}
+}
+{}
+{
+  Pour le dossier de tests spécifié dans \refBesoin{server:initImages}, la
+  réponse attendue doit être comparée à la réponse reçue lors de l'exécution de la commande.
+}
+
+\besoin{comm:create}
+{Ajouter une image}
+{
+  L'envoi d'une requête \verb!POST! à l'adresse \verb!/images! avec
+  des données de type multimedia dans le corps de la requête doit ajouter une
+  image à celles disponibles sur le serveur (voir \refBesoin{server:manageImages}).
+}
+{
+  \begin{description}
+  \item[201 Created:] La requête s'est bien exécutée et l'image est à présent
+    sur le serveur.
+  \item[415 Unsupported Media Type:] La requête a été refusée car le serveur ne
+    supporte pas le format reçu (par exemple \verb!EXR!).
+  \end{description}
+}
+{}
+
+\besoin{comm:retrieve}
+{Récupérer une image}
+{
+  L'envoi d'une requête \verb!GET! à une adresse de la forme \verb!/images/id!
+  doit renvoyer l'image stockée sur le serveur avec l'identifiant \verb!id! (entier positif). En cas de succès, l'image est retournée dans le corps de la réponse.
+}
+{
+  \begin{description}
+  \item[200 OK:] L'image a bien été récupérée.
+  \item[404 Not Found:] Aucune image existante avec l'identifiant \verb!id!.
+  \end{description}
+}
+{}
+
+
+\besoin{comm:delete}
+{Supprimer une image}
+{
+  L'envoi d'une requête \verb!DELETE! à une adresse de la forme \verb!/images/id!
+  doit effacer l'image stockée avec l'identifiant \verb!id! (entier positif). Voir \refBesoin{server:manageImages}.
+}
+{
+  \begin{description}
+  \item[200 OK:] L'image a bien été effacée.
+  \item[404 Not Found:] Aucune image existante avec l'identifiant \verb!id!.
+  \end{description}
+}
+{}
+
+\besoin{comm:getsimilar}
+{Transférer la liste des images les plus similaires à une image donnée}
+{
+    Lors d'une requête \verb!GET! à une adresse de la forme \verb!/images/id/similar?number=N\&descriptor=DESCR! le serveur envoie la liste des \verb!N! images les plus similaires à l'image d'identifiant \verb!id! selon le descripteur \verb!DESCR!.
+
+    Le résultat sera fourni au format \verb!JSON!, sous la forme d'un tableau
+  contenant les informations de chaque image (comme pour le \refBesoin{comm:listImages})
+}
+{
+  \begin{description}
+  \item[200 OK:] La requête a bien été traitée.
+  \item[400 Bad Request:] La requête ne peut être traitée, par exemple si la valeur du paramètre \verb!descriptor! ne correspond pas à un descripteur disponible.
+  \item[404 Not Found:] Aucune image existante avec l'indice \verb!id!.
+  \end{description}
+}
+{}
+
+
+\newpage
+
+\subsection{Client}
+Les actions que peut effectuer l'utilisateur côté client induisent des requêtes envoyées au serveur. En cas d'échec d'une requête, le client doit afficher un message d'erreur explicatif.\\
+
+\besoin{client:viewImages}
+{Parcourir les images disponibles sur le serveur}
+{
+  L'utilisateur peut visualiser les images disponibles sur le serveur. La présentation visuelle peut prendre la forme d'un carroussel ou d'une galerie d'images. On suggère que chaque vignette contenant une image soit de taille fixe (relativement à la page affichée). Suivant la taille de l'image initiale la vignette sera complètement remplie en hauteur ou en largeur.
+}
+{}
+{}
+
+\besoin{client:selectImage}
+{Sélectionner une image et afficher les images similaires}
+{
+  L'utilisateur peut cliquer sur la vignette correspondant à une image. L'image est affichée sur la page. L'utilisateur peut visualiser les méta-données de l'image. L'utilisateur peut choisir d'afficher les images similaires disponibles. Il peut préciser le nombre d'images similaires à afficher et le descripteur utilisé pour la mesure de similarité. Pour chaque image similaire est affiché un score de similarité.
+}
+{}
+{}
+
+
+\besoin{client:saveImage}
+{Enregistrer une image sur disque}
+{
+  L'utilisateur peut sauvegarder dans son système de fichier une image chargée.
+}
+{}
+{}
+
+\besoin{client:createImage}
+{Ajouter une image aux images disponibles sur le serveur}
+{
+  L'utilisateur peut ajouter une image choisie dans son système de fichier aux images disponibles sur le serveur. Cet ajout est persistant (un fichier est ajouté côté serveur).
+}
+{}
+{}
+
+
+
+\besoin{client:delete}
+{Supprimer une image}
+{
+  Le client peut choisir de supprimer une image préalablement sélectionnée. Elle n'apparaîtra plus dans les images disponibles sur le serveur. Cette suppression est persistante (un fichier est supprimé côté serveur).
+}
+{}
+{}
+
+\besoin{client:preview}
+{prévisualiser l'application d'un filtre sur une image}
+{
+  L'utilisateur peut sélectionner un filtre à appliquer à une image sélectionnée.\\
+  Dans une séction prédifinis, une image avec le filtre appliqué apparaîtra en temps réeel
+}
+{}
+{}
+
+\besoin{client:Metadonnées}
+{Metadonnées d'une images}
+{
+  Affichier de manière visibles toutes les métadonnées (données EXIF) extractable de l'image
+  \begin {itemize}
+    \item size
+    \item discription
+    \item extension
+    \item localisation
+    \item crédit
+    \item date
+  \end {itemize}
+}
+{}
+{}
+%% \newpage
+
+%% \subsection{Traitement d'images}
+%% \label{tai}
+
+%% \besoin{tai:luminosity}
+%% {Réglage de la luminosité}
+%% {L'utilisateur peut augmenter ou diminuer la luminosité de l'image sélectionnée.}
+%% {}
+%% {}
+
+%% \besoin{tai:equalizeHist}
+%% {Égalisation d'histogramme}
+%% {L'utilisateur peut appliquer une égalisation d'histogramme à l'image sélectionnée. L'égalisation sera apliquée au choix sur le canal S ou V de l'image représentée dans l'espace HSV.}
+%% {}
+%% {}
+
+%% \besoin{tai:setHue}
+%% {Filtre coloré}
+%% {L'utilisateur peut choisir la teinte de tous les pixels de l'image sélectionnée de façon à obtenir un effet de filtre coloré.}
+%% {}
+%% {}
+
+%% \besoin{tai:blur}
+%% {Filtres de flou}
+%% {L'utilisateur peut appliquer un flou à l'image sélectionnée. Il peut définir le filtre appliqué (moyen ou gaussien) et choisir le niveau de flou. La convolution est appliquée sur les trois canaux R, G et B.}
+%% {}
+%% {}
+
+%% \besoin{tai:contour}
+%% {Filtre de contour}
+%% {L'utilisateur peut appliquer un détecteur de contour à l'image sélectionnée. Le résultat sera issu d'une convolution par le filtre de Sobel. La convolution sera appliquée sur la version en niveaux de gris de l'image.}
+%% {}
+%% {}
+
+\newpage
+
+\subsection{Besoins non-fonctionnels}
+
+\besoin{bnf:ci}
+{Intégration continue}
+{
+  Les outils de Gitlab permettant le développement partagé et l'intégration continue seront utilisés pour :
+  \begin{itemize}
+    \item le versionnage,
+    \item la gestion des tickets,
+    \item la compilation de l'application,
+    \item l'exécution des tests.
+  \end{itemize}
+  
+}
+{}
+{}
+
+
+\besoin{bnf:serverCompatibility}
+{Compatibilité du serveur}
+{
+  La partie serveur de l'application sera écrite en Java (JDK 17) avec les
+  bibliothèques suivantes:
+  \begin{itemize}
+  \item \verb!org.springframework.boot! : version 3.2.x
+  \item \verb!org.boofcv! : version 1.1.2
+  \item \verb!org.postgresql! : version 42.7.1
+  \item \verb!com.pgvector!: version 0.1.4
+  \end{itemize}
+
+  La base de données utilisée sera PostgreSQL avec l'extension \verb!pgvector!. Spring JDBC sera utilisé pour faire le lien avec la base.\\
+
+  Le fonctionnement du serveur devra être éprouvé sur au moins un des environnements suivants :
+  \begin{itemize}
+  \item Windows $\ge$ 10
+  \item Ubuntu $\ge$ 20.04
+  \item Debian Bookworm
+  \item MacOS $\ge$ 11
+  \end{itemize}
+}
+{}
+{}
+
+\besoin{bnf:clientCompatibility}
+{Compatibilité du client}
+{
+  Le client sera écrit en TypeScript et s'appuiera sur la version \verb!3.x! du
+  framework \verb!Vue.js!.\\
+
+  Le client devra être testé sur au moins l'un des navigateurs Web suivants,
+  la version à utiliser n'étant pas imposée :
+  \begin{itemize}
+  \item Safari
+  \item Google Chrome
+  \item Firefox
+  \end{itemize}
+}
+{}
+{}
+
+\besoin{bnf:documentation}
+{Documentation d'installation et de test}
+{
+  La racine du projet devra contenir un fichier \verb!README.md! indiquant au
+  moins les informations suivantes:
+  \begin{itemize}
+  \item Système(s) d'exploitation sur lesquels votre serveur a été testé, voir
+    \refBesoin{bnf:serverCompatibility}.
+  \item Navigateur(s) web sur lesquels votre client a été testé incluant la
+    version de celui-ci, voir \refBesoin{bnf:clientCompatibility}.
+  \end{itemize}
+  
+}
+{}
+{}
+
+
+\end{document}
