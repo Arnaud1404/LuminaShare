@@ -143,6 +143,49 @@ L'application devra permettre de traiter les images couleur enregistrées aux fo
 {}
 {}
 
+\besoin{server:authentication}
+{Système d'authentification utilisateur}
+{
+  Le serveur doit implémenter un système d'authentification basique avec identifiants uniques et mots de passe. Il stocke les données utilisateur de façon sécurisée dans la base de données :
+  \begin{itemize}
+    \item userid (identifiant unique choisi par l'utilisateur, clé primaire)
+    \item name (pseudo affiché)
+    \item bio (courte description de l'utilisateur)
+    \item password (mot de passe chiffré)
+  \end{itemize}
+  Les mots de passe sont stockés de manière sécurisée à l'aide d'un algorithme de hachage moderne (BCrypt).
+}
+{
+  En cas d'échec d'authentification, le serveur renvoie un code d'erreur 401 (Unauthorized).
+}
+{}
+
+\besoin{server:userManagement}
+{Gestion des utilisateurs et de leurs contenus}
+{
+  Le serveur associe chaque image à son utilisateur créateur via une clé étrangère (userid). Les utilisateurs peuvent :
+  \begin{itemize}
+    \item Consulter leur profil et leurs images
+    \item Visualiser les profils des autres utilisateurs
+    \item Gérer uniquement leurs propres images
+  \end{itemize}
+  Les images disposent d'un attribut "public" (booléen) qui détermine leur visibilité.
+}
+{}
+{}
+
+\besoin{server:extendedInfo}
+{Informations enrichies pour les images}
+{
+  Chaque image stockée dans la base de données contient des informations supplémentaires :
+  \begin{itemize}
+    \item userDescription (texte libre décrivant l'image)
+    \item tags (liste de mots-clés associés à l'image)
+    \item userid (identifiant de l'auteur de l'image)
+    \item public (booléen indiquant si l'image est accessible à tous)
+  \end{itemize}
+}
+{}
 \newpage
 
 \subsection{Communication}
@@ -170,6 +213,48 @@ Pour l'ensemble des besoins, des codes d'erreurs à renvoyer sont précisés dan
   Pour le dossier de tests spécifié dans \refBesoin{server:initImages}, la
   réponse attendue doit être comparée à la réponse reçue lors de l'exécution de la commande.
 }
+
+\besoin{comm:userRoutes}
+{Routes pour la gestion des utilisateurs}
+{
+  Le serveur expose les routes suivantes pour la gestion des utilisateurs :
+  \begin{itemize}
+    \item \verb!/login! (POST) : Authentification d'un utilisateur
+    \item \verb!/register! (POST) : Création d'un nouvel utilisateur
+    \item \verb!/user/{userid}! (GET) : Récupération des informations d'un utilisateur
+    \item \verb!/user/{userid}/images! (GET) : Récupération des images d'un utilisateur
+  \end{itemize}
+}
+{
+  \begin{description}
+    \item[200 OK] : La requête a été traitée avec succès
+    \item[201 Created] : L'utilisateur a été créé avec succès
+    \item[400 Bad Request] : Format de données incorrect
+    \item[401 Unauthorized] : Authentification échouée
+    \item[404 Not Found] : Utilisateur non trouvé
+  \end{description}
+}
+{}
+
+\besoin{comm:imageRoutes}
+{Routes pour les images}
+{
+  Le serveur expose les routes suivantes pour la gestion des images :
+  \begin{itemize}
+    \item \verb!/images/{imageId}/edit! (PUT) : Modification des informations d'une image (userDescription, tags)
+    \item \verb!/images/search! (GET) : Recherche d'images par tags ou auteur (tags, name)
+  \end{itemize}
+}
+{
+  \begin{description}
+    \item[200 OK] : La requête a été traitée avec succès
+    \item[400 Bad Request] : Format de données incorrect
+    \item[401 Unauthorized] : Authentification échouée
+    \item[403 Forbidden] : Accès non autorisé (image privée ou non propriétaire)
+    \item[404 Not Found] : Image non trouvée
+  \end{description}
+}
+{}
 
 \besoin{comm:create}
 {Ajouter une image}
@@ -248,6 +333,48 @@ Les actions que peut effectuer l'utilisateur côté client induisent des requêt
 {}
 {}
 
+\besoin{client:authentication}
+{Interface d'authentification}
+{
+  L'utilisateur peut s'inscrire et se connecter via des formulaires dédiés. Une fois connecté, il peut accéder à ses fonctionnalités privées.
+}
+{}
+{}
+
+\besoin{client:homePage}
+{Page d'accueil style Pinterest}
+{
+  La page d'accueil présente une galerie d'images dans un style inspiré de Pinterest, avec des vignettes de différentes tailles organisées en colonnes. Les images publiques de tous les utilisateurs y sont affichées.
+}
+{}
+{}
+
+\besoin{client:profilePage}
+{Page de profil utilisateur}
+{
+  Chaque utilisateur dispose d'une page de profil affichant :
+  \begin{itemize}
+    \item Son identifiant(userid), pseudo (name) et sa biographie (bio)
+    \item Une galerie de ses images publiques
+    \item Pour le propriétaire du profil : toutes ses images (publiques et privées)
+  \end{itemize}
+  Le propriétaire du profil peut également ajouter, supprimer ou éditer ses images depuis cette page.
+}
+{}
+{}
+
+\besoin{client:search}
+{Barre de recherche}
+{
+  Une barre de recherche permet à l'utilisateur de filtrer les images par :
+  \begin{itemize}
+    \item Mots-clés (tags)
+    \item Identifiant utilisateur (userid)
+  \end{itemize}
+}
+{}
+{}
+
 \besoin{client:selectImage}
 {Sélectionner une image et afficher les images similaires}
 {
@@ -284,24 +411,24 @@ Les actions que peut effectuer l'utilisateur côté client induisent des requêt
 {}
 
 \besoin{client:preview}
-{prévisualiser l'application d'un filtre sur une image}
+{Prévisualiser l'application d'un filtre sur une image}
 {
   L'utilisateur peut sélectionner un filtre à appliquer à une image sélectionnée.\\
-  Dans une séction prédifinis, une image avec le filtre appliqué apparaîtra en temps réeel
+  Dans une séction prédéfinis, une image avec le filtre appliqué apparaîtra en temps réeel
 }
 {}
 {}
 
-\besoin{client:Metadonnées}
-{Metadonnées d'une images}
+\besoin{client:exifMetadata}
+{Métadonnées d'une image}
 {
-  Affichier de manière visibles toutes les métadonnées (données EXIF) extractable de l'image
+  Afficher de manière visible toutes les métadonnées (données EXIF) extractables de l'image
   \begin {itemize}
     \item size
-    \item discription
+    \item description
     \item extension
     \item localisation
-    \item crédit
+    \item credits
     \item date
   \end {itemize}
 }
@@ -345,6 +472,31 @@ Les actions que peut effectuer l'utilisateur côté client induisent des requêt
 \newpage
 
 \subsection{Besoins non-fonctionnels}
+
+\besoin{bnf:containerization}
+{Conteneurisation avec Docker}
+{
+  L'application sera conteneurisée à l'aide de Docker pour simplifier le déploiement. 
+}
+{}
+{}
+
+\besoin{bnf:internationalization}
+{Internationalisation}
+{
+  L'application supportera le français et l'anglais. Les traductions seront stockées dans des fichiers JSON et l'utilisateur pourra
+  basculer entre les langues via un sélecteur dans l'interface.
+}
+{}
+{}
+
+\besoin{bnf:responsiveDesign}
+{Design responsive}
+{
+  L'interface client s'adaptera automatiquement aux différentes tailles d'écran, permettant une utilisation confortable sur ordinateur et portable.
+}
+{}
+{}
 
 \besoin{bnf:ci}
 {Intégration continue}
