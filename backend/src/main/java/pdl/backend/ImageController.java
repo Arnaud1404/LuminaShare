@@ -114,17 +114,7 @@ public class ImageController {
       return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
           .body("Seuls les fichiers JPG, JPEG et PNG sont autorisés.");
     }
-    String type_file = file.getContentType();
-    if (type_file == null)
-      return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-          .body("fichier sans type.");
-
     try {
-      MediaType mediaType = ImageService.parseMediaTypeFromFile(file);
-      if (mediaType == null) {
-        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-            .body("Les formats acceptés sont JPEG et PNG, vérifiez que votre image soit conforme.");
-      }
 
       // Lecture de l’image
       BufferedImage bufferedImage = ImageIO.read(file.getInputStream());

@@ -113,15 +113,15 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(10)
-	public void createImageShouldReturnBadRequest() throws Exception {
-		ClassPathResource imgFile = new ClassPathResource("images_test/test.txt");
+	public void createImageShouldReturnNoContent() throws Exception {
+		ClassPathResource imgFile = new ClassPathResource("images_test/empty.txt");
 		byte[] fileContent;
 		fileContent = Files.readAllBytes(imgFile.getFile().toPath());
 
 		MockMultipartFile file_multipart = new MockMultipartFile("file", fileContent);
 		// attendu par POST
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart)).andDo(print())
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isNoContent());
 
 	}
 
@@ -129,6 +129,20 @@ public class ImageControllerTests {
 	@Order(11)
 	public void createImageShouldReturnUnsupportedMediaType() throws Exception {
 		ClassPathResource imgFile = new ClassPathResource("images_test/test.gif");
+		byte[] fileContent;
+		fileContent = Files.readAllBytes(imgFile.getFile().toPath());
+
+		MockMultipartFile file_multipart = new MockMultipartFile("file", fileContent);
+		// attendu par POST
+		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart)).andDo(print())
+				.andExpect(status().isUnsupportedMediaType());
+
+	}
+
+	@Test
+	@Order(11)
+	public void createImageShouldReturnUnsupportedMediaType2() throws Exception {
+		ClassPathResource imgFile = new ClassPathResource("images_test/test.txt");
 		byte[] fileContent;
 		fileContent = Files.readAllBytes(imgFile.getFile().toPath());
 
