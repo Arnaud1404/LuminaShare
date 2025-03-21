@@ -245,22 +245,30 @@ public class ImageRepository implements InitializingBean {
      * @return 1 if insertion was successful, 0 if it failed
      */
     private int insertImageRecord(Image img, PGvector rgbcube, PGvector hueSat) {
-        try {
-            jdbcTemplate.update(
-                    "INSERT INTO " + databaseTable + " (name, type, size, rgbcube, hueSat) VALUES (?, ?, ?, ?, ?)",
-                    img.getName(),
-                    img.getType().toString(),
-                    img.getSize(),
-                    rgbcube,
-                    hueSat);
-            img.setHueSat(hueSat);
-            img.setRgbCube(rgbcube);
-            return 1;
-        } catch (Exception e) {
-            System.err.println("Database insertion failed: " + e.getMessage());
-            return 0;
-        }
+    try {
+        String sql = "INSERT INTO " + databaseTable + 
+                     " (name, type, size, rgbcube, hueSat) VALUES (?, ?, ?, ?, ?) RETURNING id";
+        
+        Long id = jdbcTemplate.queryForObject(
+            sql, 
+            Long.class,
+            img.getName(),
+            img.getType().toString(),
+            img.getSize(),
+            rgbcube,
+            hueSat
+        );
+        
+        img.setId(id);
+        img.setHueSat(hueSat);
+        img.setRgbCube(rgbcube);
+        
+        return 1;
+    } catch (Exception e) {
+        System.err.println("Database insertion failed: " + e.getMessage());
+        return 0;
     }
+}
 
     /**
      * Returns the list of images similar to this image from the database

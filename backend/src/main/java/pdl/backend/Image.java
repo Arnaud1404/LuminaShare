@@ -11,7 +11,7 @@ import com.pgvector.PGvector;
  * including its path, name, media type, and dimensions.
  */
 public class Image {
-  private static Long count = Long.valueOf(1);
+  private static Long count = Long.valueOf(0);
   private String path;
   private Long id;
   private String name;
@@ -36,7 +36,8 @@ public class Image {
    */
   public Image(String path, String name, byte[] data,
       MediaType type, long width, long height) {
-    id = count++;
+    count++;
+    this.id = -1L;
     this.path = path;
     this.name = name;
     this.type = type;
@@ -53,6 +54,9 @@ public class Image {
 
   public void setId(final Long id) {
     this.id = id;
+    if (id != null && id >= count) {
+        count = id + 1;
+    }
   }
 
   public String getPath() {
