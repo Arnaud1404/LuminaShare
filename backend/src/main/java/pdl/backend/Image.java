@@ -1,6 +1,7 @@
 package pdl.backend;
 
 import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.pgvector.PGvector;
 

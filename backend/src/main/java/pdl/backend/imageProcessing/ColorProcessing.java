@@ -195,6 +195,7 @@ public class ColorProcessing {
     int height = 101;
     int width = 360;
     int col = 0;
+    int max_histo = 0;
 
     int histogram_2d[][] = new int[width][height];
 
@@ -264,9 +265,9 @@ public class ColorProcessing {
 
     Planar<GrayU8> output = image.createSameShape();
     Planar<GrayU8> output2 = image.createSameShape();
-    // Planar<GrayU8> hsv = image.createSameShape();
-    // GrayU8 histo = histogramme_hue(image);
-    // GrayU8 histo2d = histo_2d_hue_saturation(image);
+    Planar<GrayU8> hsv = image.createSameShape();
+    GrayU8 histo = histogramme_hue(image);
+    GrayU8 histo2d = histo_2d_hue_saturation(image);
 
     // processing
     long time = System.currentTimeMillis();

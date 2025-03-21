@@ -6,11 +6,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.annotation.PostConstruct;
 import pdl.backend.Database.ImageRepository;
+import pdl.backend.FileHandler.FileController;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Service class for managing image-related operations and similarity searches.
@@ -25,6 +29,7 @@ public class ImageService {
     private final ImageDao imageDao;
     private final ImageRepository imageRepository;
     private static final String IMAGE_FOLDER = "src/main/resources/images";
+    private static final List<String> SUPPORTED_FORMATS = Arrays.asList("jpg", "jpeg", "png");
 
     public ImageService(ImageDao imageDao, ImageRepository imageRepository) {
         this.imageDao = imageDao;
