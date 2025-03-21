@@ -43,6 +43,14 @@ backend/src/main/resources/public/index.html
 backend/target/classes/public/static/
 backend/src/main/resources/images/
 
+## LateX ##
+Latex/*.fls
+Latex/*.out
+Latex/*.log
+Latex/*.fdb_latexmk
+Latex/*.aux
+
+
 ## Débug ##
 *.txt
 note.txt
