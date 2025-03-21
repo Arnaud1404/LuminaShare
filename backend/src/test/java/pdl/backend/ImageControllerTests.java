@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.nio.file.Files;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -32,6 +33,11 @@ public class ImageControllerTests {
 
 	@Autowired
 	private MockMvc mockMvc;
+
+	@BeforeAll
+	public static void reset (){
+		System.out.println("nb d'image dans dao"+ImageDao.getImageCount());
+	}
 
 	@Test
 	@Order(1)
