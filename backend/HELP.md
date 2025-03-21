@@ -96,3 +96,15 @@ pour supprimer une branche en local
 ```bash
 git brand -D NOM_BRANCHE
 ```
+
+pour revenir sur un nombbre def de commit
+
+```bash
+git revert HEAD~1..HEAD
+```
+
+pour revenir sur commit
+
+```bash
+git revert NUM COMMIT
+```
