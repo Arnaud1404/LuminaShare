@@ -154,7 +154,7 @@ public class ImageController {
    * 
    * @return JSON array with image metadata
    */
-  @RequestMapping(value = "/images", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  @RequestMapping(value = "/images", method = RequestMethod.GET, produces = "application/json")
   @ResponseBody
   public ArrayNode getImageList() { // format attendu
     ArrayNode nodes = mapper.createArrayNode();
