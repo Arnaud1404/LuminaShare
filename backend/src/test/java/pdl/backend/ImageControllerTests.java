@@ -34,20 +34,6 @@ public class ImageControllerTests {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@BeforeAll
-	public static void reset() {
-		try {
-			Files.createDirectories(FileController.directory_location);
-
-			FileController.remove_from_directory("test_certain_est_test12312315646216.jpg");
-			FileController.remove_from_directory("test_certain_est_test12312315646216.png");
-
-			ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
-		} catch (Exception e) {
-			System.err.println("Error in test setup: " + e.getMessage());
-		}
-	}
-
 	@Test
 	@Order(1)
 	public void getImageListShouldReturnSuccess() throws Exception {
@@ -106,8 +92,7 @@ public class ImageControllerTests {
 	@Test
 	@Order(7)
 	public void getImageShouldReturnSuccessPNG() throws Exception {
-		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk()); // a besoin d'au moins 1 images dans le
-																			// dossier images
+		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk());
 	}
 
 	@Test
