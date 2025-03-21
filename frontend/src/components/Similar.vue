@@ -7,6 +7,11 @@ const emit = defineEmits(['select']);
 function selectImage(image: ImageGallery) {
   emit('select', image);
 }
+
+function formatSimilarity(value?: number): string {
+  if (value === undefined) return '';
+  return `${value.toFixed(2)}`;
+}
 </script>
 
 <template>
@@ -18,6 +23,7 @@ function selectImage(image: ImageGallery) {
       @click="selectImage(image)"
     >
       <img v-if="image.dataUrl" :src="image.dataUrl" :alt="image.name" />
+      <p>{{ formatSimilarity(image.similarity) }}</p>
     </div>
   </div>
 </template>
@@ -28,8 +34,9 @@ img:hover {
   cursor: pointer;
 }
 .image-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  display: flex;
+  overflow-x: auto;
+  flex-wrap: nowrap;
   gap: 1rem;
   padding: 1rem;
 }
@@ -39,13 +46,13 @@ img:hover {
 }
 
 .image-container img {
-  max-width: 200px;
-  max-height: 200px;
+  max-width: 160px;
+  max-height: 120px;
   object-fit: cover;
   border-radius: 4px;
 }
 
 .image-container p {
-  margin-top: 0.5rem;
+  margin-top: 0.2rem;
 }
 </style>

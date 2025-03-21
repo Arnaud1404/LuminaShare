@@ -1,11 +1,11 @@
-import { ref } from "vue";
+import { ref } from 'vue';
 
 export interface ImageGallery {
   id: number;
   name: string;
   type: string;
   size: string;
-  description: string;
   dataUrl: string | null;
+  similarity?: number;
 }
 export const images = ref<ImageGallery[]>([]);

@@ -7,8 +7,25 @@ import boofcv.struct.image.GrayU8;
 import boofcv.struct.image.Planar;
 import java.awt.image.BufferedImage;
 
+/**
+ * Provides methods for processing and enhancing color images.
+ * 
+ * This class contains static utility methods to manipulate planar RGB images (Planar<GrayU8>),
+ * including brightness adjustment, mean filtering, grayscale conversion, hue modification,
+ * and histogram generation in HSV space. Methods either modify the input image in place
+ * or produce an output image as specified.
+ */
 public class ColorProcessing {
-
+ /**
+  * Adjusts the brightness of a color image by a specified delta.
+  * 
+  * Adds the delta value to each RGB band of the image, clamping the result to the valid
+  * range [0, 255]. Positive delta increases brightness, negative delta decreases it.
+  * The input image is modified in place.
+  * 
+  * @param input The planar RGB image to adjust (3 bands: R, G, B)
+  * @param delta The brightness adjustment value (can be negative or positive)
+  */
   public static void modif_lum(Planar<GrayU8> input, int delta) {
     for (int band = 0; band < 3; band = band + 1) {
       for (int y = 0; y < input.height; ++y) {
@@ -25,7 +42,17 @@ public class ColorProcessing {
       }
     }
   }
-
+ /**
+  * Applies a mean filter to a color image.
+  * 
+  * Computes the average value within a square window of the specified size around each
+  * pixel for each RGB band, ignoring border pixels where the window doesn’t fully fit.
+  * The result is stored in the output image.
+  * 
+  * @param input The input planar RGB image (3 bands: R, G, B)
+  * @param output The output planar RGB image to store the filtered result
+  * @param size The size of the square filter window (must be odd, e.g., 3, 5)
+  */
   public static void meanFilter(Planar<GrayU8> input, Planar<GrayU8> output, int size) {
     int moy = 0;
 
@@ -46,7 +73,15 @@ public class ColorProcessing {
       }
     }
   }
-
+ /**
+  * Converts a color image to grayscale.
+  * 
+  * Computes the grayscale value for each pixel using the weighted formula
+  * (0.3*R + 0.59*G + 0.11*B) and sets all three bands of the output image to this value.
+  * 
+  * @param input The input planar RGB image (3 bands: R, G, B)
+  * @param output The output planar RGB image with identical grayscale values in all bands
+  */
   public static void griser(Planar<GrayU8> input, Planar<GrayU8> output) {
     int r = 0;
     int g = 0;
@@ -68,7 +103,15 @@ public class ColorProcessing {
       }
     }
   }
-
+  /**
+   * Changes the hue of a color image to a specified value.
+   * 
+   * Converts each pixel from RGB to HSV, sets the hue to the specified value (in degrees),
+   * and converts back to RGB. The input image is modified in place.
+   * 
+   * @param input The planar RGB image to modify (3 bands: R, G, B)
+   * @param hue The new hue value in degrees (0-360)
+   */
   public static void change_hue(Planar<GrayU8> input, int hue) {
 
     double[] hsv = new double[3];
@@ -93,7 +136,15 @@ public class ColorProcessing {
       }
     }
   }
-
+  /**
+   * Generates a hue histogram of a color image.
+   * 
+   * Computes the frequency of hue values (0-360 degrees) across the image, normalizes it
+   * to a height of 300 pixels, and returns a grayscale image representing the histogram.
+   * 
+   * @param input The input planar RGB image (3 bands: R, G, B)
+   * @return A GrayU8 image (360x300) representing the hue histogram
+   */
   public static GrayU8 histogramme_hue(Planar<GrayU8> input) {
     int height = 300;
     int width = 360;
@@ -131,7 +182,15 @@ public class ColorProcessing {
     }
     return histo;
   }
-
+  /**
+   * Generates a 2D hue-saturation histogram of a color image.
+   * 
+   * Computes a 2D histogram of hue (0-360 degrees) and saturation (0-100%) values,
+   * mapping frequencies to grayscale intensities (0-255). Returns a 360x101 grayscale image.
+   * 
+   * @param input The input planar RGB image (3 bands: R, G, B)
+   * @return A GrayU8 image (360x101) representing the 2D hue-saturation histogram
+   */
   public static GrayU8 histo_2d_hue_saturation(Planar<GrayU8> input) {
     int height = 101;
     int width = 360;
@@ -181,7 +240,16 @@ public class ColorProcessing {
     }
     return histo;
   }
-
+  /**
+   * Main method for testing color image processing operations.
+   * 
+   * Loads an input RGB image from the command line, applies mean filtering with two
+   * different window sizes (11 and 33), measures execution time, and saves two output images.
+   * 
+   * <p>Usage: java ColorProcessing <input_image_path> <output_image_path_11> <output_image_path_33></p>
+   * 
+   * @param args Command-line arguments: [0] input image path, [1] output path (size 11), [2] output path (size 33)
+   */
   public static void main(String[] args) {
     // load image
     if (args.length < 3) {

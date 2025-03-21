@@ -47,7 +47,6 @@
     			<groupId>org.postgresql</groupId>
     			<artifactId>postgresql</artifactId>
           <version>42.7.1</version>
-    			<scope>runtime</scope>
     		</dependency>
 
         <dependency>
@@ -68,7 +67,12 @@
           <scope>test</scope>
         </dependency>
     
-        <!-- https://mvnrepository.com/artifact/org.boofcv/boofcv-core -->
+        <dependency>
+          <groupId>com.pgvector</groupId>
+          <artifactId>pgvector</artifactId>
+          <version>0.1.4</version>
+        </dependency>
+
         <dependency>
           <groupId>org.boofcv</groupId>
           <artifactId>boofcv-core</artifactId>
@@ -83,6 +87,25 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>3.5.0</version>
+              <configuration>
+                  <show>private</show> 
+                  <nohelp>true</nohelp>
+                  <quiet>true</quiet>
+                  <doclint>none</doclint>
+
+                  <reportOutputDirectory>${project.basedir}/../docs</reportOutputDirectory>
+                  <destDir>api</destDir> 
+                  <doctitle>LuminaShare API Documentation</doctitle>
+                  <windowtitle>LuminaShare API</windowtitle>
+              </configuration>
+            </plugin>
+
+
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>

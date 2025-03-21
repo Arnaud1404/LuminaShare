@@ -42,8 +42,12 @@ backend/src/main/resources/public/static/
 backend/src/main/resources/public/index.html
 backend/target/classes/public/static/
 backend/src/main/resources/images/
-backend/src/main/resources/images_test/
 
 ## Débug ##
 *.txt
 note.txt
+backend/src/main/resources/public/favicon.ico
+backend/src/main/resources/public/index.html
+
+## Docs ##
+docs/

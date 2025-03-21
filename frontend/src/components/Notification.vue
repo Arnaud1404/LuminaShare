@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from 'vue';
 
-export type NotificationType = "info" | "error" | "success";
+export type NotificationType = 'info' | 'error' | 'success';
 
 const show = ref(false);
-const message = ref("");
-const type = ref<NotificationType>("info");
+const message = ref('');
+const type = ref<NotificationType>('info');
 
-function showNotification(
-  text: string,
-  notificationType: NotificationType = "info",
-) {
+function showNotification(text: string, notificationType: NotificationType = 'info') {
   message.value = text;
   type.value = notificationType;
   show.value = true;
