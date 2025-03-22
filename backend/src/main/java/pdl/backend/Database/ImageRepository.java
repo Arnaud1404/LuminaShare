@@ -47,6 +47,7 @@ public class ImageRepository implements InitializingBean {
         Image img = new Image(); // doit pas incrémenter le compteur
         img.setId((long) rs.getInt("id"));
         img.setName(rs.getString("name"));
+        img.setPath(rs.getString("path"));
         img.setType(MediaType.valueOf(rs.getString("type")));
         img.setSize(rs.getString("size"));
         return img;
@@ -61,7 +62,7 @@ public class ImageRepository implements InitializingBean {
         this.jdbcTemplate
                 .execute(
                         "CREATE TABLE IF NOT EXISTS " + databaseTable
-                                + " (id bigserial PRIMARY KEY, name character varying(255) UNIQUE, type character varying(10), size character varying(255), rgbcube vector(512), hueSat vector(101))");
+                                + " (id bigserial PRIMARY KEY, name character varying(255) UNIQUE, path character varying(2048), type character varying(10), size character varying(255), rgbcube vector(512), hueSat vector(101))");
     }
 
     /**
@@ -120,7 +121,7 @@ public class ImageRepository implements InitializingBean {
      * @return A List<Image> with the images from the database
      */
     public List<Image> list() {
-        String sql = "SELECT id, name, type, size FROM " + databaseTable;
+        String sql = "SELECT id, name, path, type, size FROM " + databaseTable;
         return jdbcTemplate.query(sql, rowMapper);
     }
 
@@ -131,7 +132,7 @@ public class ImageRepository implements InitializingBean {
      */
     public Image getById(long id) {
         try {
-            String sql = "SELECT id, name, type, size, rgbcube, hueSat FROM " + databaseTable + " WHERE id = ?";
+            String sql = "SELECT id, name, path, type, size, rgbcube, hueSat FROM " + databaseTable + " WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, Image.class, id);
         } catch (Exception e) {
             return null; // Non trouvé
@@ -247,12 +248,13 @@ public class ImageRepository implements InitializingBean {
     private int insertImageRecord(Image img, PGvector rgbcube, PGvector hueSat) {
         try {
             String sql = "INSERT INTO " + databaseTable +
-                    " (name, type, size, rgbcube, hueSat) VALUES (?, ?, ?, ?, ?) RETURNING id";
+                    " (name, path, type, size, rgbcube, hueSat) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
 
             Long id = jdbcTemplate.queryForObject(
                     sql,
                     Long.class,
                     img.getName(),
+                    img.getPath(),
                     img.getType().toString(),
                     img.getSize(),
                     rgbcube,

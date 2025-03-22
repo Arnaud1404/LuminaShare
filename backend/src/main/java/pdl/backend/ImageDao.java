@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.annotation.PostConstruct;
 import pdl.backend.Database.ImageRepository;
 import pdl.backend.FileHandler.FileController;
+import pdl.backend.Image;
 
 /**
  * Handles in-memory image collection.
