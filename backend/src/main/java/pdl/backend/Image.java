@@ -11,7 +11,6 @@ import com.pgvector.PGvector;
  * including its path, name, media type, and dimensions.
  */
 public class Image {
-  private static Long count = Long.valueOf(0);
   private String path;
   private Long id;
   private String name;
@@ -36,8 +35,6 @@ public class Image {
    */
   public Image(String path, String name, byte[] data,
       MediaType type, long width, long height) {
-    count++;
-    this.id = -1L;
     this.path = path;
     this.name = name;
     this.type = type;
@@ -48,15 +45,16 @@ public class Image {
   public Image() {
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
+  }
+
+  public long getIdAsLong() {
+    return id != null ? id : 0L;
   }
 
   public void setId(final Long id) {
     this.id = id;
-    if (id != null && id >= count) {
-        count = id + 1;
-    }
   }
 
   public String getPath() {
@@ -87,6 +85,10 @@ public class Image {
     this.name = name;
   }
 
+  public void setData(byte[] data) {
+    this.data = data;
+  }
+
   public byte[] getData() {
     return data;
   }
@@ -113,9 +115,5 @@ public class Image {
 
   public float getSimilarityScore() {
     return this.similarityScore;
-  }
-
-  public static long getCount() {
-    return count;
   }
 }

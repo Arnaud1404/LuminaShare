@@ -34,10 +34,11 @@ public class ImageControllerTests {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@BeforeAll
-	public static void reset (){
-		System.out.println("nb d'image dans dao"+ImageDao.getImageCount());
-	}
+	@Autowired
+	private ImageDao imageDao;
+
+	private static Long jpegImageId;
+	private static Long pngImageId;
 
 	@Test
 	@Order(1)

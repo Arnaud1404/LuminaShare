@@ -3,6 +3,9 @@ package pdl.backend;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.annotation.PostConstruct;
 import pdl.backend.Database.ImageRepository;
 import pdl.backend.FileHandler.FileController;
 
@@ -60,16 +64,48 @@ public class ImageDao implements Dao<Image> {
     }
   }
 
+  @PostConstruct
+  public void syncWithDatabase() {
+    images.clear();
+
+    try {
+      List<Image> dbImages = imageRepository.list();
+      for (Image img : dbImages) {
+        if (img.getId() != null) {
+          images.put(img.getId(), img);
+          System.out.println("Loaded from DB: Image ID " + img.getId() + ", name: " + img.getName());
+        }
+      }
+
+      System.out.println("Synchronized " + images.size() + " images from database");
+    } catch (Exception e) {
+      System.err.println("Error synchronizing with database: " + e.getMessage());
+    }
+  }
+
   /**
-   * Retrieves a single image from memory by its id
+   * Retri
+   * eves a single image from memory by its id
    * 
    * @param id The unique id of the image to retrieve
    * @return Optional containing the image if found, else empty Optional
    */
   @Override
   public Optional<Image> retrieve(final long id) {
-    Optional<Image> img = Optional.ofNullable(images.get(id));
-    return img;
+    Image image = images.get(id);
+
+    if (image != null && image.getData() == null) {
+      try {
+        Path filePath = Paths.get(image.getPath(), image.getName());
+        if (Files.exists(filePath)) {
+          image.setData(Files.readAllBytes(filePath));
+        }
+      } catch (Exception e) {
+        System.err.println("Failed to load image data: " + e.getMessage());
+      }
+    }
+
+    return Optional.ofNullable(image);
   }
 
   /**
@@ -89,22 +125,19 @@ public class ImageDao implements Dao<Image> {
    */
   @Override
   public void create(final Image img) {
-    Long maxDatabaseId = imageRepository.getMaxId();
+    int result = imageRepository.addDatabase(img);
 
-    if (maxDatabaseId != null && maxDatabaseId >= Image.getCount() - 1) {
-      img.setId(maxDatabaseId + 1);
+    if (result > 0 && img.getId() != null) {
+      images.put(img.getId(), img);
+      System.out.println("Created image with DB-assigned ID: " + img.getId());
     } else {
-      img.setId(Image.getCount());
+      System.err.println("Failed to create image in database");
     }
-
-    images.put(img.getId(), img);
-    imageRepository.addDatabase(img);
   }
 
   public void create(final Image img, MultipartFile file) {
-    images.put(img.getId(), img);
     FileController.store(file);
-    imageRepository.addDatabase(img);
+    create(img);
 
   }
 
@@ -129,14 +162,5 @@ public class ImageDao implements Dao<Image> {
     imageRepository.deleteDatabase(img.getId());
     FileController.remove_from_directory(img.getName());
 
-  }
-
-  /**
-   * Gets the number of images in the in-memory collection
-   *
-   * @return The count of images in memory
-   */
-  public static long getImageCount() {
-    return Image.getCount();
   }
 }
