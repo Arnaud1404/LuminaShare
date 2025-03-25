@@ -11,7 +11,7 @@ Une application de partage de photos développée par Arnaud Gomes, Kamiel De Vo
 
 ## Instructions de Configuration
 
-1. Créez un fichier `.env` dans le dossier `backend` avec les variables suivantes:
+1. Créez un fichier `.env` à la racine avec les variables suivantes:
 
    ```
    DATABASE_NAME=<nom>
@@ -20,13 +20,37 @@ Une application de partage de photos développée par Arnaud Gomes, Kamiel De Vo
    DATABASE_TABLE=imageDatabase # nom de la table pour stocker les images
    ```
 
+### Localement
+
 2. Installez et lancez l'application:
    ```
    mvn clean install
    mvn --projects backend spring-boot:run
    ```
-3. Obtenir des images de test (Optionnel)
+
+### Avec Docker
+
+2. Construisez et lancez l'application:
+
+```bash
+# Construire les images
+sudo docker compose build
+
+# Lancer l'application
+sudo docker compose up -d
+
+# Voir les logs
+sudo docker compose logs app
+
+# Arrêter l'application
+sudo docker compose down
+```
+
+3. Accédez à l'application: http://localhost:8181 ou http://localhost:8182 (Docker)
+
+4. Obtenir des images de test (Optionnel)
    https://picsum.photos/images
+
 ## Documentation
 
 Pour générer la documentation Javadoc, exécutez la commande suivante:
@@ -45,7 +69,8 @@ sudo apt-get install openjdk-17-jdk
 ```
 
 ## Inspiration
-données : https://www.dcode.fr/donnees-exif
+
+Données : https://www.dcode.fr/donnees-exif
 
 ## Testé Sur
 

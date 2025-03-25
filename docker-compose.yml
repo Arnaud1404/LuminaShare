@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: luminashare-postgres
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-imagedb}
+      POSTGRES_USER: ${DATABASE_NAME:-imagedb}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-password}
+    ports:
+      - "127.0.0.1::5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_NAME:-imagedb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: luminashare-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_PATH=postgres
+      - DATABASE_NAME=${DATABASE_NAME:-imagedb}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-password}
+      - DATABASE_TABLE=${DATABASE_TABLE:-imageDatabase}
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8182:8181"
+    volumes:
+      - ./backend/src/main/resources/images:/app/src/main/resources/images
+    restart: always
+
+volumes:
+  postgres-data:

@@ -55,6 +55,7 @@ public class ImageRepository implements InitializingBean {
     @Override
     @PostConstruct
     public void afterPropertiesSet() throws Exception {
+        this.jdbcTemplate.execute("CREATE EXTENSION IF NOT EXISTS vector");
         if (resetDatabase) {
             this.jdbcTemplate.execute("DROP TABLE IF EXISTS " + databaseTable);
         }
