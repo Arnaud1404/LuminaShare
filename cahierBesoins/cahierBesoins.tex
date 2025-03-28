@@ -470,6 +470,58 @@ Les actions que peut effectuer l'utilisateur côté client induisent des requêt
 %% {}
 
 \newpage
+\subsection{Traitement d'images}
+\label{tai}
+
+\besoin{tai:resize}
+{Redimensionnement des images}
+{
+  L'utilisateur peut redimensionner une image sélectionnée à une taille standard (par exemple, 300x300 pixels) pour optimiser son stockage ou son affichage.
+}
+{
+  Si l'image ne peut pas être redimensionnée (par exemple, en cas de corruption), un message d'erreur explicatif doit être affiché à l'utilisateur.
+}
+{
+  Vérifier que l'image redimensionnée a bien les dimensions spécifiées (par exemple, 300x300 pixels) et que son contenu visuel est préservé.
+}
+
+\besoin{tai:invertColors}
+{Inversion des couleurs}
+{
+  L'utilisateur peut inverser les couleurs d'une image sélectionnée pour obtenir un effet de négatif (par exemple, le blanc devient noir, le rouge devient cyan).
+}
+{
+  Si l'image est invalide ou corrompue, un message d'erreur explicatif doit être affiché à l'utilisateur.
+}
+{
+  Tester qu'un pixel blanc (255, 255, 255) devient noir (0, 0, 0) et qu’un pixel de couleur (par exemple, R=200, G=150, B=50) devient sa complémentaire (R=55, G=105, B=205).
+}
+
+\besoin{tai:mirror}
+{Miroir de l'image}
+{
+  L'utilisateur peut créer une version miroir de l'image sélectionnée, soit horizontalement (inversion gauche-droite), soit verticalement (inversion haut-bas).
+}
+{
+  Si l'image ne peut pas être traitée (par exemple, en cas de corruption), un message d'erreur explicatif doit être affiché à l'utilisateur.
+}
+{
+  Vérifier que pour un miroir horizontal, le pixel en position (0, 0) est déplacé à (largeur-1, 0), et pour un miroir vertical, le pixel en (0, 0) est déplacé à (0, hauteur-1).
+}
+
+\besoin{tai:rotate}
+{Rotation des images}
+{
+  L'utilisateur peut faire pivoter une image sélectionnée selon un angle spécifié (par exemple, 90°, 180°, ou 270°) pour corriger son orientation ou appliquer un effet visuel. 
+}
+{
+  Si l'image ne peut pas être pivotée (par exemple, en cas de corruption ou d'angle invalide), un message d'erreur explicatif doit être affiché à l'utilisateur.
+}
+{
+  Vérifier que pour une rotation de 90° dans le sens horaire, les dimensions de l'image sont inversées (largeur devient hauteur, hauteur devient largeur) et que le contenu est correctement orienté.
+}
+
+\newpage
 
 \subsection{Besoins non-fonctionnels}
 
