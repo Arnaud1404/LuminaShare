@@ -15,7 +15,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 /**
  * Service class for managing image-related operations and similarity searches.
  * 
@@ -112,6 +113,22 @@ public class ImageService {
                 }
             }
         }
+    }
+
+    /**
+     * Resizes a given BufferedImage to the specified target width and height.
+     *
+     * @param originalImage The original BufferedImage to be resized.
+     * @param targetWidth The desired width of the resized image.
+     * @param targetHeight The desired height of the resized image.
+     * @return A new BufferedImage object with the specified dimensions.
+     */
+    public BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
+        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, originalImage.getType());
+        Graphics2D graphics = resizedImage.createGraphics();
+        graphics.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
+        graphics.dispose();
+        return resizedImage;
     }
 
     /**

@@ -21,6 +21,8 @@ public class Image {
   private PGvector hueSat;
   private float similarityScore;
   private byte[] data;
+  private int width;
+  private int height;
 
   /**
    * Constructs a new Image instance with the specified parameters.
@@ -86,7 +88,10 @@ public class Image {
   public byte[] getData() {
     return data;
   }
-
+  public void setData(final byte[] data) {
+    this.data = data;
+  }
+ 
   public void setHueSat(PGvector huesat) {
     this.hueSat = huesat;
   }
@@ -113,5 +118,12 @@ public class Image {
 
   public static long getCount() {
     return count;
+  }
+  public void setWidth(int width) {
+    this.width = width;
+  }
+
+  public void setHeight(int height) {
+    this.height = height;
   }
 }

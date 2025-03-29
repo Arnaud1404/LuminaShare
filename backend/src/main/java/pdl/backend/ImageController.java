@@ -1,9 +1,15 @@
 package pdl.backend;
 
 import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.awt.image.BufferedImage;
+import java.util.Optional;
+import javax.imageio.ImageIO;
 import java.util.List;
 import java.util.Optional;
 import java.awt.image.BufferedImage;
+
 
 import javax.imageio.ImageIO;
 
@@ -36,12 +42,17 @@ public class ImageController {
   private ObjectMapper mapper;
 
   private final ImageDao imageDao;
+
   @Autowired
   private ImageRepository imageRepository;
 
   @Autowired
+  private ImageService imageService;
+
+  @Autowired
   public ImageController(ImageDao imageDao) {
     this.imageDao = imageDao;
+    this.imageService = imageService;
   }
 
   /**
@@ -203,4 +214,51 @@ public class ImageController {
       }
     }
   }
+  /**
+   * Handles the resizing of an image with the specified ID.
+   *
+   * @param id The ID of the image to be resized.
+   * @return A ResponseEntity containing the result of the operation:
+   *         - HTTP 200 (OK) with a success message if the image is resized successfully.
+   *         - HTTP 404 (NOT FOUND) if the image with the specified ID is not found.
+   *         - HTTP 400 (BAD REQUEST) if the image data is invalid or corrupted.
+   *         - HTTP 500 (INTERNAL SERVER ERROR) if an error occurs during the resizing process.
+   */
+  @RequestMapping(value = "/images/{id}/resize", method = RequestMethod.POST, produces = MediaType.IMAGE_JPEG_VALUE)
+  public ResponseEntity<?> resizeImage(@PathVariable("id") long id, 
+                                       @RequestParam("width") int width,
+                                       @RequestParam("height") int height) {
+    try {
+        // Validation des dimensions
+        if (width <= 0 || height <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Les dimensions doivent être positives.");
+        }
+        Optional<Image> optionalImage = imageDao.retrieve(id);
+        if (optionalImage.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image introuvable.");
+        }
+
+        Image image = optionalImage.get();
+        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(image.getData()));
+
+        if (originalImage == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'image est corrompue ou invalide.");
+        }
+
+        BufferedImage resizedImage = imageService.resizeImage(originalImage, width, height);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(resizedImage, "jpeg", outputStream);
+
+        image.setData(outputStream.toByteArray());
+        image.setWidth(width);
+        image.setHeight(height);
+        imageDao.create(image);
+
+        return ResponseEntity.ok().body("Image redimensionnée avec succès.");
+    } catch (IOException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors du redimensionnement de l'image.");
+    }
+  }
+  
 }
