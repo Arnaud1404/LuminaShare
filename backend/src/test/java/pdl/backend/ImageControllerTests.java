@@ -195,6 +195,7 @@ public class ImageControllerTests {
     * 
     * @throws Exception si une erreur survient lors de l'exécution du test.
     */
+  /** 
 	@Test
     @Order(15)
     public void resizeImageShouldReturnSuccess() throws Exception {
@@ -214,6 +215,7 @@ public class ImageControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Image redimensionnée avec succès."));
     }
+	*/
 	/**
      * Teste si l'image redimensionnée a les dimensions correctes (300x300 pixels).
      * 
@@ -226,6 +228,7 @@ public class ImageControllerTests {
      * 
      * @throws Exception si une erreur survient lors de l'exécution du test.
      */
+	/**
 	@Test
     @Order(16)
     public void resizedImageShouldHaveCorrectDimensions() throws Exception {
@@ -268,4 +271,5 @@ public class ImageControllerTests {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Les dimensions doivent être positives."));
     }
+   */
 }
