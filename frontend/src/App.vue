@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import LuminaShare from './components/LuminaShare.vue';
+// import LuminaShare from './components/LuminaShare.vue';
 </script>
 
 <template>
-    <div id="app">
+  <div id="app">
     <nav>
       <ul>
         <li>
@@ -17,8 +17,5 @@ import LuminaShare from './components/LuminaShare.vue';
         </li>
       </ul>
     </nav>
-
-
   </div>
-
 </template>
