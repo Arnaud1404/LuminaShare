@@ -28,6 +28,7 @@ import pdl.backend.FileHandler.*;
 import java.util.Optional;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import javax.imageio.ImageIO;
 
 @SpringBootTest
@@ -195,7 +196,7 @@ public class ImageControllerTests {
     * 
     * @throws Exception si une erreur survient lors de l'exécution du test.
     */
-  /** 
+  
 	@Test
     @Order(15)
     public void resizeImageShouldReturnSuccess() throws Exception {
@@ -215,7 +216,7 @@ public class ImageControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Image redimensionnée avec succès."));
     }
-	*/
+
 	/**
      * Teste si l'image redimensionnée a les dimensions correctes (300x300 pixels).
      * 
@@ -228,7 +229,6 @@ public class ImageControllerTests {
      * 
      * @throws Exception si une erreur survient lors de l'exécution du test.
      */
-	/**
 	@Test
     @Order(16)
     public void resizedImageShouldHaveCorrectDimensions() throws Exception {
@@ -271,5 +271,32 @@ public class ImageControllerTests {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Les dimensions doivent être positives."));
     }
-   */
+	/**
+	 * Test case for verifying the functionality of inverting image colors.
+	 * 
+	 * This test performs the following steps:
+	 * 1. Loads a test image from the resources directory.
+	 * 2. Sends a POST request to upload the image to the server.
+	 * 3. Sends another POST request to invert the colors of the uploaded image.
+	 * 4. Verifies that the server responds with a success status and the expected message.
+	 * 
+	 * @throws Exception if an error occurs during the test execution.
+	 */
+    @Test
+    @Order(18)
+    public void invertImageColorsShouldReturnSuccess() throws Exception {
+        // Charger une image de test
+        ClassPathResource imgFile = new ClassPathResource("images_test/test.jpg");
+        byte[] fileContent = Files.readAllBytes(imgFile.getFile().toPath());
+
+        // Ajouter l'image
+        MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", fileContent);
+        this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file))
+            .andExpect(status().isCreated());
+
+        // Inverser les couleurs
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/images/1/invert"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("Couleurs inversées avec succès."));
+    }
 }

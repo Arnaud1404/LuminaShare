@@ -130,6 +130,48 @@ public class ImageService {
         graphics.dispose();
         return resizedImage;
     }
+    /**
+     * Inverts the colors of a given BufferedImage.
+     *
+     * @param originalImage The original BufferedImage to be inverted.
+     * @return A new BufferedImage object with inverted colors.
+     */
+    public BufferedImage invertColors(BufferedImage originalImage) {
+        int width = originalImage.getWidth();
+        int height = originalImage.getHeight();
+
+        BufferedImage invertedImage = new BufferedImage(width, height, originalImage.getType());
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                int rgba = originalImage.getRGB(x, y);
+                // Extraire les composantes alpha, rouge, vert et bleu
+                int alpha = (rgba >> 24) & 0xff;//canal alpha représente la transparence des pixel pour les formats ARGB (png)
+                int red = (rgba >> 16) & 0xff;
+                int green = (rgba >> 8) & 0xff;
+                int blue = rgba & 0xff;
+
+                // Inverser les couleurs
+                int invertedRed = 255 - red;
+                int invertedGreen = 255 - green;
+                int invertedBlue = 255 - blue;
+
+                // Recomposer la couleur inversée
+                int invertedRGBA;
+                if (originalImage.getType() == BufferedImage.TYPE_INT_ARGB) {
+                    // Conserver le canal alpha pour les images avec transparence
+                    invertedRGBA = (alpha << 24) | (invertedRed << 16) | (invertedGreen << 8) | invertedBlue;
+                } else {
+                    // Ignorer le canal alpha pour les images sans transparence
+                    invertedRGBA = (invertedRed << 16) | (invertedGreen << 8) | invertedBlue;
+                }
+                // Appliquer la couleur inversée au pixel
+                invertedImage.setRGB(x, y, invertedRGBA);
+            }
+            
+        }
+
+        return invertedImage;
+    }
 
     /**
      * Checks if a given filename corresponds to a valid image file.

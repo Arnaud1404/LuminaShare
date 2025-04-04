@@ -260,5 +260,43 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors du redimensionnement de l'image.");
     }
   }
+  /**
+   * Handles the inversion of colors for an image identified by its ID.
+   *
+   * @param id The ID of the image to invert colors for.
+   * @return A ResponseEntity containing:
+   *         - HTTP 200 (OK) with a success message if the colors were inverted successfully.
+   *         - HTTP 404 (NOT FOUND) if the image with the given ID does not exist.
+   *         - HTTP 400 (BAD REQUEST) if the image data is corrupted or invalid.
+   *         - HTTP 500 (INTERNAL SERVER ERROR) if an error occurs during processing.
+   */
+  @RequestMapping(value = "/images/{id}/invert", method = RequestMethod.POST, produces = MediaType.IMAGE_JPEG_VALUE)
+  public ResponseEntity<?> invertImageColors(@PathVariable("id") long id) {
+    try {
+        Optional<Image> optionalImage = imageDao.retrieve(id);
+        if (optionalImage.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image introuvable.");
+        }
+
+        Image image = optionalImage.get();
+        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(image.getData()));
+
+        if (originalImage == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'image est corrompue ou invalide.");
+        }
+
+        BufferedImage invertedImage = imageService.invertColors(originalImage);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(invertedImage, "jpeg", outputStream);
+
+        image.setData(outputStream.toByteArray());
+        imageDao.create(image);
+
+        return ResponseEntity.ok().body("Couleurs inversées avec succès.");
+    } catch (IOException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'inversion des couleurs.");
+    }
+  }
   
 }
