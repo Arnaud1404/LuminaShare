@@ -6,25 +6,44 @@ const routes: Array<RouteRecordRaw> = [
     path: "/",
     name: "home",
     component: () => import("./components/Home.vue"),
+    props: false
+  },
+  {
+    path: "/user",
+    name: "user",
+    component: () => import("./components/User.vue"),
     props: true
   },
   {
-    path: "/gallery",
-    name: "gallery",
-    component: () => import("./components/Gallery.vue"),
-    props: true
+    path: "/other_user",
+    name: "users",
+    component: () => import("./components/Users.vue"),
+    props: false
   },
   {
-    path: "/image/:id",
-    name: "image",
-    component: () => import("./components/Gallery.vue"),
-    props: ({ params }) => ({ id: Number(params.id) || 0 })
-  },
-  {
-    path: "/upload",
-    name: "upload",
+    path: "/edit",
+    name: "modif",
     component: () => import("./components/LuminaShare.vue"),
-    props: true
+    props: false
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: () => import("./components/Register.vue"),
+    props: false
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: () => import("./components/Login.vue"),
+    props: false
+  },
+
+  {
+    path: "/:pathMatch(.*)*",
+    name: "not_found",
+    component: () => import("./components/NotFoundPage.vue"),
+    props: false
   }
 ];
 

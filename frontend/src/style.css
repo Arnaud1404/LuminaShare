@@ -1,12 +1,52 @@
+#app {
+  width: 100%;
+  margin: 0;
+}
+
+:root{
+  --title: rgb(153, 130, 153);
+  --background_color:rgba(0, 0, 0, 0.85);
+  --select_color: hsl(0, 25%, 30%);
+  --color_button: hsl(0, 19%, 28%);
+}
+
+h1,h2,h3 {
+  color: var(--title);
+  text-align: center;
+  margin-bottom: 10px;
+}
+
 body {
-  background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85));
+  background:  var(--background_color);
   font-family: 'Arial', Times, serif;
   margin: 0;
   min-height: 100vh;
   color: white;
 }
 
-#app {
-  width: 100%;
-  margin: 0;
+
+button {
+  background-color: var(--color_button);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: hsl(0, 0%, 35%);
+}
+
+button:disabled {
+  background-color: hsl(0, 0%, 23%);
+  cursor: not-allowed;
+}
+
+.a:hover{
+  color:green;
+}
+
+.a{
+  color:greenyellow;
 }
