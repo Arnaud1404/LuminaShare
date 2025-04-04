@@ -40,6 +40,8 @@ public class ImageControllerTests {
 	private MockMvc mockMvc;
 	@Autowired
     private ImageDao imageDao;
+	@Autowired
+    private ImageService imageService;
 
 	@BeforeAll
 	public static void reset (){
@@ -298,5 +300,99 @@ public class ImageControllerTests {
         this.mockMvc.perform(MockMvcRequestBuilders.post("/images/1/invert"))
             .andExpect(status().isOk())
             .andExpect(content().string("Couleurs inversées avec succès."));
+    }
+	@Test
+    @Order(20)
+    public void mirrorImageShouldWorkCorrectly() throws Exception {
+        // Créer une image PNG avec canal alpha
+        BufferedImage testImage = new BufferedImage(3, 2, BufferedImage.TYPE_INT_ARGB);
+        testImage.setRGB(0, 0, 0x80FF0000); // Rouge avec alpha 50%
+        testImage.setRGB(1, 0, 0x8000FF00); // Vert avec alpha 50%
+        testImage.setRGB(2, 0, 0x800000FF); // Bleu avec alpha 50%
+        testImage.setRGB(0, 1, 0x80FFFFFF); // Blanc avec alpha 50%
+        testImage.setRGB(1, 1, 0x80000000); // Noir avec alpha 50%
+        testImage.setRGB(2, 1, 0x80808080); // Gris avec alpha 50%
+
+        // Miroir horizontal
+        BufferedImage horizontalMirror = imageService.mirrorImage(testImage, true);
+        assertEquals(0x800000FF, horizontalMirror.getRGB(0, 0)); // Bleu avec alpha 50% à gauche
+        assertEquals(0x8000FF00, horizontalMirror.getRGB(1, 0)); // Vert avec alpha 50% au milieu
+        assertEquals(0x80FF0000, horizontalMirror.getRGB(2, 0)); // Rouge avec alpha 50% à droite
+        assertEquals(0x80808080, horizontalMirror.getRGB(0, 1)); // Gris avec alpha 50% à gauche
+        assertEquals(0x80000000, horizontalMirror.getRGB(1, 1)); // Noir avec alpha 50% au milieu
+        assertEquals(0x80FFFFFF, horizontalMirror.getRGB(2, 1)); // Blanc avec alpha 50% à droite
+
+        // Miroir vertical
+        BufferedImage verticalMirror = imageService.mirrorImage(testImage, false);
+        assertEquals(0x80FFFFFF, verticalMirror.getRGB(0, 0)); // Blanc avec alpha 50% en haut
+        assertEquals(0x80000000, verticalMirror.getRGB(1, 0)); // Noir avec alpha 50% au milieu
+        assertEquals(0x80808080, verticalMirror.getRGB(2, 0)); // Gris avec alpha 50% en haut
+        assertEquals(0x80FF0000, verticalMirror.getRGB(0, 1)); // Rouge avec alpha 50% en bas
+        assertEquals(0x8000FF00, verticalMirror.getRGB(1, 1)); // Vert avec alpha 50% au milieu
+        assertEquals(0x800000FF, verticalMirror.getRGB(2, 1)); // Bleu avec alpha 50% en bas
+	}
+	@Test
+    @Order(21)
+    public void mirrorImageShouldWorkForDifferentFormats() throws Exception {
+        // Charger une image JPEG
+        ClassPathResource jpegFile = new ClassPathResource("images_test/test.jpg");
+        byte[] jpegContent = Files.readAllBytes(jpegFile.getFile().toPath());
+        MockMultipartFile jpegMultipartFile = new MockMultipartFile("file", "test.jpg", "image/jpeg", jpegContent);
+
+        // Charger une image PNG
+        ClassPathResource pngFile = new ClassPathResource("images_test/test.png");
+        byte[] pngContent = Files.readAllBytes(pngFile.getFile().toPath());
+        MockMultipartFile pngMultipartFile = new MockMultipartFile("file", "test.png", "image/png", pngContent);
+
+        // Ajouter les images
+        this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(jpegMultipartFile))
+                .andExpect(status().isCreated());
+        this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(pngMultipartFile))
+                .andExpect(status().isCreated());
+
+        // Miroir horizontal pour JPEG
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/images/1/mirror").param("horizontal", "true"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Miroir créé avec succès."));
+
+        // Miroir vertical pour PNG
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/images/2/mirror").param("horizontal", "false"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Miroir créé avec succès."));
+    }
+	@Test
+    @Order(22)
+    public void rotateImageShouldWorkForARGB() throws Exception {
+        // Créer une image ARGB avec canal alpha
+        BufferedImage testImage = new BufferedImage(3, 2, BufferedImage.TYPE_INT_ARGB);
+        testImage.setRGB(0, 0, 0x80FF0000); // Rouge avec alpha 50%
+        testImage.setRGB(1, 0, 0x8000FF00); // Vert avec alpha 50%
+        testImage.setRGB(2, 0, 0x800000FF); // Bleu avec alpha 50%
+        testImage.setRGB(0, 1, 0x80FFFFFF); // Blanc avec alpha 50%
+        testImage.setRGB(1, 1, 0x80000000); // Noir avec alpha 50%
+        testImage.setRGB(2, 1, 0x80808080); // Gris avec alpha 50%
+
+        // Rotation 90°
+        BufferedImage rotated90 = imageService.rotateImage(testImage, 90);
+        assertEquals(2, rotated90.getWidth());
+        assertEquals(3, rotated90.getHeight());
+        assertEquals(0x80FFFFFF, rotated90.getRGB(0, 0)); // Blanc avec alpha 50%
+        assertEquals(0x80000000, rotated90.getRGB(0, 1)); // Noir avec alpha 50%
+        assertEquals(0x80808080, rotated90.getRGB(0, 2)); // Gris avec alpha 50%
+        assertEquals(0x80FF0000, rotated90.getRGB(1, 0)); // Rouge avec alpha 50%
+        assertEquals(0x8000FF00, rotated90.getRGB(1, 1)); // Vert avec alpha 50%
+        assertEquals(0x800000FF, rotated90.getRGB(1, 2)); // Bleu avec alpha 50%
+
+        // Rotation 180°
+        BufferedImage rotated180 = imageService.rotateImage(testImage, 180);
+        assertEquals(3, rotated180.getWidth());
+        assertEquals(2, rotated180.getHeight());
+        assertEquals(0x80808080, rotated180.getRGB(0, 0)); // Gris avec alpha 50%
+        assertEquals(0x80000000, rotated180.getRGB(1, 0)); // Noir avec alpha 50%
+        assertEquals(0x80FFFFFF, rotated180.getRGB(2, 0)); // Blanc avec alpha 50%
+        assertEquals(0x800000FF, rotated180.getRGB(0, 1)); // Bleu avec alpha 50%
+        assertEquals(0x8000FF00, rotated180.getRGB(1, 1)); // Vert avec alpha 50%
+        assertEquals(0x80FF0000, rotated180.getRGB(2, 1)); // Rouge avec alpha 50%
+
     }
 }

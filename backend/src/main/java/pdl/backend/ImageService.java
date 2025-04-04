@@ -173,6 +173,82 @@ public class ImageService {
         return invertedImage;
     }
 
+   /**
+    * Creates a mirrored version of the given BufferedImage.
+    *
+    * @param originalImage The original BufferedImage to be mirrored.
+    * @param horizontal True for horizontal mirroring (left-right), false for vertical mirroring (top-bottom).
+    * @return A new BufferedImage object with the mirrored image.
+    * @throws IllegalArgumentException If the image cannot be processed.
+    */
+    public BufferedImage mirrorImage(BufferedImage originalImage, boolean horizontal) {
+        int width = originalImage.getWidth();
+        int height = originalImage.getHeight();
+
+        // Crée une nouvelle image avec le même type que l'image originale
+        BufferedImage mirroredImage = new BufferedImage(width, height, originalImage.getType());
+
+        try {
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    int pixel = originalImage.getRGB(x, y);
+
+                    if (horizontal) {
+                        // Miroir horizontal : inverser gauche-droite
+                        mirroredImage.setRGB(width - 1 - x, y, pixel);
+                    } else {
+                        // Miroir vertical : inverser haut-bas
+                        mirroredImage.setRGB(x, height - 1 - y, pixel);
+                    }
+                }
+           }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("L'image ne peut pas être traitée : " + e.getMessage());
+       }
+
+        return mirroredImage;
+    }
+    /**
+     * Rotates the given image by the specified angle.
+     *
+     * @param originalImage The original BufferedImage to be rotated.
+     * @param angle The angle of rotation (must be 90, 180, or 270 degrees).
+     * @return A new BufferedImage object with the rotated image.
+     * @throws IllegalArgumentException If the angle is invalid or the image cannot be processed.
+     */
+    public BufferedImage rotateImage(BufferedImage originalImage, int angle) {
+        if (angle != 90 && angle != 180 && angle != 270) {
+            throw new IllegalArgumentException("Angle invalide. Seuls 90°, 180° et 270° sont pris en charge.");
+        }
+
+        int width = originalImage.getWidth();
+        int height = originalImage.getHeight();
+        BufferedImage rotatedImage;
+
+        if (angle == 90 || angle == 270) {
+            // Inverser largeur et hauteur pour 90° ou 270°
+            rotatedImage = new BufferedImage(height, width, originalImage.getType());
+        } else {
+            // Conserver largeur et hauteur pour 180°
+            rotatedImage = new BufferedImage(width, height, originalImage.getType());
+        }
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                int pixel = originalImage.getRGB(x, y);
+
+                if (angle == 90) {
+                    rotatedImage.setRGB(height - 1 - y, x, pixel);
+                } else if (angle == 180) {
+                    rotatedImage.setRGB(width - 1 - x, height - 1 - y, pixel);
+                } else if (angle == 270) {
+                    rotatedImage.setRGB(y, width - 1 - x, pixel);
+                }
+            }
+        }
+
+        return rotatedImage;
+    }
     /**
      * Checks if a given filename corresponds to a valid image file.
      * 

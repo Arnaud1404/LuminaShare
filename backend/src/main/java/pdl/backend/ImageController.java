@@ -288,7 +288,8 @@ public class ImageController {
         BufferedImage invertedImage = imageService.invertColors(originalImage);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(invertedImage, "jpeg", outputStream);
+        String formatName = image.getType().getSubtype();
+        ImageIO.write(invertedImage,formatName, outputStream);
 
         image.setData(outputStream.toByteArray());
         imageDao.create(image);
@@ -298,5 +299,66 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'inversion des couleurs.");
     }
   }
-  
+  @RequestMapping(value = "/images/{id}/mirror", method = RequestMethod.POST, produces = MediaType.IMAGE_JPEG_VALUE)
+  public ResponseEntity<?> mirrorImage(@PathVariable("id") long id, @RequestParam("horizontal") boolean horizontal) {
+    try {
+        Optional<Image> optionalImage = imageDao.retrieve(id);
+        if (optionalImage.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image introuvable.");
+        }
+
+        Image image = optionalImage.get();
+        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(image.getData()));
+
+        if (originalImage == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'image est corrompue ou invalide.");
+        }
+
+        BufferedImage mirroredImage = imageService.mirrorImage(originalImage, horizontal);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        String formatName = image.getType().getSubtype();
+        ImageIO.write(mirroredImage, formatName, outputStream);
+
+        image.setData(outputStream.toByteArray());
+        imageDao.create(image);
+
+        return ResponseEntity.ok().body("Miroir créé avec succès.");
+    } catch (IOException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors du traitement de l'image.");
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+  }
+  @RequestMapping(value = "/images/{id}/rotate", method = RequestMethod.POST, produces = MediaType.IMAGE_JPEG_VALUE)
+  public ResponseEntity<?> rotateImage(@PathVariable("id") long id, @RequestParam("angle") int angle) {
+    try {
+        Optional<Image> optionalImage = imageDao.retrieve(id);
+        if (optionalImage.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image introuvable.");
+        }
+
+        Image image = optionalImage.get();
+        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(image.getData()));
+
+        if (originalImage == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'image est corrompue ou invalide.");
+        }
+
+        BufferedImage rotatedImage = imageService.rotateImage(originalImage, angle);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        String formatName = image.getType().getSubtype(); // Récupère le format (jpeg, png, etc.)
+        ImageIO.write(rotatedImage, formatName, outputStream);
+
+        image.setData(outputStream.toByteArray());
+        imageDao.create(image);
+
+        return ResponseEntity.ok().body("Rotation effectuée avec succès.");
+    } catch (IOException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors du traitement de l'image.");
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+  }
 }
