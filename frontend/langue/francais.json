@@ -1,0 +1,29 @@
+{
+    "header" : {
+        "home": "Accueil",
+        "user": "Utilisateur",
+        "users": "Les autres",
+        "edit": "Modifier",
+        "login": "Connexion",
+        "register": "S'incrire"
+    },
+    "display_image" : {
+        "title": "Image",
+        "description": "Aucune image sélectionnée"
+    },
+    "image_similar" : {
+        "title": "Images similaires - Plus le score est bas, plus l'image est similaire",
+        "button": "Recherche"
+    },
+    "upload_img" : {
+        "title" : "Téléverser une image"
+    },
+    "button" : {
+        "3D": "3D RGB",
+        "2D": "2D Teinte Saturation",
+        "upload" : "Téléverser",
+        "delete" : "Supprimer",
+        "download" : "Télécharger"
+    }
+
+}
