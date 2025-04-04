@@ -63,6 +63,14 @@ public class ImageRepository implements InitializingBean {
                 .execute(
                         "CREATE TABLE IF NOT EXISTS " + databaseTable
                                 + " (id bigserial PRIMARY KEY, name character varying(255) UNIQUE, type character varying(10), size character varying(255), rgbcube vector(512), hueSat vector(101))");
+    this.jdbcTemplate.execute("ALTER TABLE IF EXISTS " + databaseTable + 
+    " ADD COLUMN IF NOT EXISTS userid VARCHAR(50) REFERENCES users(userid)"
+);
+
+this.jdbcTemplate.execute(
+    "ALTER TABLE IF EXISTS " + databaseTable + 
+    " ADD COLUMN IF NOT EXISTS ispublic BOOLEAN DEFAULT false"
+);
     }
 
     /**

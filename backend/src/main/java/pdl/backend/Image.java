@@ -21,6 +21,8 @@ public class Image {
   private PGvector hueSat;
   private float similarityScore;
   private byte[] data;
+  private String userid;
+  private boolean isPublic = false;
 
   /**
    * Constructs a new Image instance with the specified parameters.
@@ -111,6 +113,22 @@ public class Image {
     return this.similarityScore;
   }
 
+
+  public String getUserid() {
+    return userid;
+  }
+
+  public void setUserid(String userid) {
+      this.userid = userid;
+  }
+
+  public boolean isPublic() {
+      return isPublic;
+  }
+
+  public void setPublic(boolean isPublic) {
+      this.isPublic = isPublic;
+  }
   public static long getCount() {
     return count;
   }
