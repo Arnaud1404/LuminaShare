@@ -32,6 +32,7 @@
         <maven.compiler.source>17</maven.compiler.source>
     </properties>
     <dependencies>
+    
         <dependency>
 			    <groupId>me.paulschwarz</groupId>
 			    <artifactId>spring-dotenv</artifactId>

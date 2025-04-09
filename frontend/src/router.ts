@@ -1,5 +1,6 @@
 import { createWebHistory, createRouter } from 'vue-router';
 import type { RouteRecordRaw } from 'vue-router';
+import { isLoggedIn } from './components/users';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -30,12 +31,14 @@ const routes: Array<RouteRecordRaw> = [
     path: '/register',
     name: 'register',
     component: () => import('./components/Register.vue'),
+    meta: { requiresGuest: true },
     props: false,
   },
   {
     path: '/login',
     name: 'login',
     component: () => import('./components/Login.vue'),
+    meta: { requiresGuest: true },
     props: false,
   },
 
@@ -50,6 +53,16 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach((to, _from, next) => {
+  if (to.meta.requiresAuth && !isLoggedIn()) {
+    next({ name: 'login' });
+  } else if (to.meta.requiresGuest && isLoggedIn()) {
+    next({ name: 'home' });
+  } else {
+    next();
+  }
 });
 
 export default router;

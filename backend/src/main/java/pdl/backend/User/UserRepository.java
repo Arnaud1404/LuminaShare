@@ -2,6 +2,7 @@ package pdl.backend.User;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,6 +13,9 @@ import java.util.Optional;
 
 @Repository
 public class UserRepository implements InitializingBean {
+    
+    @Value("${DATABASE_RESET:true}")
+    private boolean resetDatabase;
     @Autowired
     private JdbcTemplate jdbcTemplate;
     
@@ -26,6 +30,10 @@ public class UserRepository implements InitializingBean {
     
     @Override
     public void afterPropertiesSet() throws Exception {
+         if (resetDatabase) {
+            this.jdbcTemplate.execute("DROP TABLE IF EXISTS users CASCADE");
+        }
+        
         this.jdbcTemplate.execute(
             "CREATE TABLE IF NOT EXISTS users (" +
             "userid VARCHAR(50) PRIMARY KEY, " +

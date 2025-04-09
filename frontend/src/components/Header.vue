@@ -1,10 +1,29 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { currentUser, isLoggedIn } from './users';
+import { logoutUser } from './http-api';
 
+const router = useRouter();
 const isSidebarOpen = ref(false);
+const user = ref(null);
+
+// Load user data on component mount
+onMounted(() => {
+  const userData = localStorage.getItem('user');
+  if (userData) {
+    user.value = JSON.parse(userData);
+  }
+});
 
 function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value;
+}
+
+function handleLogout() {
+  logoutUser();
+  toggleSidebar();
+  router.push('/login');
 }
 </script>
 
@@ -45,12 +64,21 @@ function toggleSidebar() {
     </div>
 
     <div class="auth-links">
-      <RouterLink :to="{ name: 'login' }" class="nav-link" @click="toggleSidebar"
-        >Connexion</RouterLink
-      >
-      <RouterLink :to="{ name: 'register' }" class="nav-link" @click="toggleSidebar"
-        >S'inscrire</RouterLink
-      >
+      <template v-if="!isLoggedIn()">
+        <RouterLink :to="{ name: 'login' }" class="nav-link" @click="toggleSidebar">
+          Connexion
+        </RouterLink>
+        <RouterLink :to="{ name: 'register' }" class="nav-link" @click="toggleSidebar">
+          S'inscrire
+        </RouterLink>
+      </template>
+
+      <template v-else>
+        <div class="user-info nav-link">
+          {{ currentUser?.name }}
+        </div>
+        <a href="#" class="nav-link" @click.prevent="handleLogout"> Déconnexion </a>
+      </template>
     </div>
   </nav>
 </template>
