@@ -1,7 +1,7 @@
-package pdl.backend.Database;
+package pdl.backend.Image;
 
-import pdl.backend.Image;
-import pdl.backend.imageProcessing.*;
+import pdl.backend.Image.Processing.ImagePGVector;
+import pdl.backend.Image.Processing.*;
 
 import java.util.HashMap;
 import java.util.List;

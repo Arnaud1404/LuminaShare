@@ -1,4 +1,4 @@
-package pdl.backend;
+package pdl.backend.User;
 
 public class User {
     private String userid;

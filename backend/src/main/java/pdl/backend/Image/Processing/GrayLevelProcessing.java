@@ -1,4 +1,4 @@
-package pdl.backend.imageProcessing;
+package pdl.backend.Image.Processing;
 
 import boofcv.io.image.UtilImageIO;
 import boofcv.struct.image.GrayU8;

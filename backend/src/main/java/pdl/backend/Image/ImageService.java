@@ -1,11 +1,10 @@
-package pdl.backend;
+package pdl.backend.Image;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.annotation.PostConstruct;
-import pdl.backend.Database.ImageRepository;
 import pdl.backend.FileHandler.FileController;
 
 import java.io.File;

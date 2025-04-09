@@ -1,4 +1,4 @@
-package pdl.backend.Database;
+package pdl.backend.User;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,8 +6,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-
-import pdl.backend.User;
 
 import java.util.List;
 import java.util.Optional;
