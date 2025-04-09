@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import LuminaShare from './components/LuminaShare.vue';
+import Header from './components/Header.vue';
 </script>
 
 <template>
-  <LuminaShare />
+  <Header />
+  <div class="container">
+    <RouterView/>
+  </div>
 </template>

@@ -325,7 +325,7 @@ watchEffect(async () => {
 }
 
 select {
-  background: hsl(0, 0%, 20%);
+  background:var(--select_color);
   color: white;
   border: 1px solid hsl(0, 0%, 33%);
   padding: 5px;
@@ -334,7 +334,7 @@ select {
 }
 
 input[type='number'] {
-  background: hsl(0, 0%, 20%);
+  background:var(--select_color);
   color: white;
   border: 1px solid hsl(0, 0%, 33%);
   padding: 5px;
@@ -476,29 +476,4 @@ input[type='number'] {
   background-color: rgb(196, 33, 33);
 }
 
-button {
-  background-color: hsl(0, 0%, 29%);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 5px 10px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: hsl(0, 0%, 35%);
-}
-
-button:disabled {
-  background-color: hsl(0, 0%, 23%);
-  cursor: not-allowed;
-}
-
-h1,
-h2,
-h3 {
-  color: #ffffff;
-  text-align: center;
-  margin-bottom: 10px;
-}
 </style>
