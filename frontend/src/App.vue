@@ -3,8 +3,22 @@ import Header from './components/Header.vue';
 </script>
 
 <template>
-  <Header />
-  <div class="container">
-    <RouterView/>
+  <div class="app-container">
+    <Header />
+    <main class="main-content">
+      <RouterView />
+    </main>
   </div>
 </template>
+
+<style>
+.app-container {
+  min-height: 100vh;
+  background-color: var(--background_color);
+}
+
+.main-content {
+  padding: 20px;
+  margin-top: 60px;
+}
+</style>

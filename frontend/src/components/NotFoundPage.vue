@@ -1,5 +1,3 @@
 <template>
-
-    <h1> Not Found page </h1>
-
+  <h1>Not Found page</h1>
 </template>
