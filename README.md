@@ -83,3 +83,4 @@ Données : https://www.dcode.fr/donnees-exif
 
 - Google Chrome
 - Mozilla Firefox
+- Opera

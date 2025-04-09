@@ -9,6 +9,8 @@ import {
 } from './http-api';
 import Gallery from './Gallery.vue';
 import Similar from './Similar.vue';
+import ImageSelected from './ImageSelected.vue';
+
 import { images, type ImageGallery } from './images.ts';
 import Notification, { type NotificationType } from './Notification.vue';
 
@@ -221,17 +223,8 @@ watchEffect(async () => {
       <!-- Selected Image Area - 60% height -->
       <div class="selected-image-container">
         <h2>Image sélectionnée</h2>
-        <div v-if="selectedImage" class="image-display">
-          <img
-            v-if="selectedImage.dataUrl"
-            :src="selectedImage.dataUrl"
-            :alt="selectedImage.name"
-            @click="toggleFullscreen"
-            style="cursor: pointer"
-          />
-          <p v-else>Chargement de l'image...</p>
-        </div>
-        <p v-else>Aucune image sélectionnée</p>
+          <ImageSelected :image="selectedImage"/>
+
       </div>
 
       <!-- Similar Images - 40% height -->
