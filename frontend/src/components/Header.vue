@@ -101,7 +101,7 @@ function handleLogout() {
 .app-header h1 {
   color: white;
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 2 rem;
   width: 100%;
   text-align: center;
 }
