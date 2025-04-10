@@ -262,7 +262,14 @@ const Apply_filter = async () => {
                 <option value="invert">Inversion</option>
                 <option value="rotation">Rotation</option>
             </select>
-          <input type="number" v-model="FilterPourcent" min="0" max="100" />
+          <input v-if ="infoFilter === 'gradienImage' || infoFilter === 'modif_lum'" type="number" v-model="FilterPourcent" min="0" max="100" />
+          
+          <select v-if ="infoFilter === 'rotation' " v-model="FilterPourcent">
+                <option value="90">90°</option>
+                <option value="180">180°</option>
+                <option value="270">270°</option>
+            </select>
+
           <button @click="Apply_filter">Appliquer</button>
         </div>
 
