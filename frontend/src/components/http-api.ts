@@ -130,7 +130,9 @@ export async function refreshImages(): Promise<void> {
 export async function getImageFilter(id: number, filter: string) {
   filter = id + filter;
   return axios
-    .get(`/images/${id}`, { responseType: 'blob' })
+
+    .get(`/images/${id}/filter?filter=${filter}`
+      , { responseType: 'blob' })
     .then(function (response: AxiosResponse) {
       return new Promise<string>((resolve) => {
         const reader = new window.FileReader();
