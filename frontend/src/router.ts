@@ -27,6 +27,12 @@ const routes: Array<RouteRecordRaw> = [
     props: false
   },
   {
+    path: "/edit2",
+    name: "modif2",
+    component: () => import("./components/Edit.vue"),
+    props: false
+  },
+  {
     path: "/register",
     name: "register",
     component: () => import("./components/Register.vue"),

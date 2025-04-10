@@ -15,7 +15,6 @@ function toggleFullscreen() {
 
 <template>
 
-<div class="selected-image-container">
         <div v-if="image" class="image-display">
           <img
             v-if="image.dataUrl"
@@ -27,5 +26,4 @@ function toggleFullscreen() {
           <p v-else>Chargement de l'image...</p>
         </div>
         <p v-else>Aucune image sélectionnée</p>
-</div>
 </template>

@@ -126,3 +126,16 @@ export async function refreshImages(): Promise<void> {
     console.error('Failed to refresh images:', error);
   }
 }
+
+export async function getImageFilter(id: number, filter: string) {
+  filter = id + filter;
+  return axios
+    .get(`/images/${id}`, { responseType: 'blob' })
+    .then(function (response: AxiosResponse) {
+      return new Promise<string>((resolve) => {
+        const reader = new window.FileReader();
+        reader.readAsDataURL(response.data);
+        reader.onload = () => resolve(reader.result as string);
+      });
+    })
+}
