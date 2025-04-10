@@ -1,4 +1,4 @@
-package pdl.backend;
+package pdl.backend.Image;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,9 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import pdl.backend.Database.ImageRepository;
 import pdl.backend.FileHandler.*;
-import pdl.backend.Database.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

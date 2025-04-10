@@ -118,35 +118,6 @@ onMounted(async () => {
   }
 });
 
-// const handleFileUpload = (event: Event) => {
-//   const target = event.target as HTMLInputElement;
-//   if (target.files) {
-//     file.value = target.files[0];
-//   }
-// };
-
-// const submitFile = async () => {
-//   if (!file.value || isUploading.value) return;
-
-//   isUploading.value = true;
-
-//   try {
-//     await uploadImage(file.value);
-//     file.value = null;
-//     notification.value?.showNotification('Image téléversée avec succès', 'success');
-//   } catch (error: any) {
-//     console.error('Upload failed:', error);
-//     const errorMessage = formatErrorMessage(error);
-//     notification.value?.showNotification(`Échec du téléversement: ${errorMessage}`, 'error');
-//   } finally {
-//     file.value = null;
-//     isFileValid.value = false;
-//     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-//     if (fileInput) fileInput.value = '';
-//     isUploading.value = false;
-//   }
-// };
-
 const downloadImage = () => {
   if (filtrerImage.value && filtrerImage.value.dataUrl) {
     const link = document.createElement('a');
@@ -333,48 +304,11 @@ const Apply_filter = async () => {
 </template>
 
 <style scoped>
-.fullscreen-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: hsla(0, 0%, 0%, 0.9);
-  z-index: 1000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-
-.fullscreen-overlay img {
-  max-width: 90%;
-  max-height: 90%;
-  object-fit: contain;
-}
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-}
-
-select {
-  background:var(--select_color);
-  color: white;
-  border: 1px solid hsl(0, 0%, 33%);
-  padding: 5px;
-  border-radius: 4px;
-  min-width: 120px;
-}
-
-input[type='number'] {
-  background:var(--select_color);
-  color: white;
-  border: 1px solid hsl(0, 0%, 33%);
-  padding: 5px;
-  border-radius: 4px;
-  width: 60px;
 }
 
 .two-column-layout {
@@ -392,7 +326,7 @@ input[type='number'] {
 
 .selected-image-container {
   height: 60%;
-  background-color: hsl(0, 0%, 16%);
+  background-color: var(--panel_color);
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 10px;
@@ -424,7 +358,7 @@ input[type='number'] {
 
 .similar-section {
   height: 40%;
-  background-color: hsl(0, 0%, 16%);
+  background-color: var(--panel_color);
   border-radius: 8px;
   padding: 10px;
 }
@@ -442,6 +376,8 @@ input[type='number'] {
   gap: 10px;
   margin-bottom: 10px;
   align-items: center;
+  background-color: var(--panel_color);
+  border-radius: 8px;
 }
 
 .similar-results {
@@ -457,7 +393,7 @@ input[type='number'] {
 
 .image-actions {
   height: 5%;
-  background-color: hsl(0, 0%, 16%);
+  background-color: var(--panel_color);
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 10px;
@@ -489,23 +425,10 @@ input[type='number'] {
   gap: 10px;
   flex-wrap: wrap;
 }
-.upload-area {
-  height: 10%;
-  background-color: #2a2a2a;
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
-  display: flex;
-  flex-direction: column;
-}
-
-.upload-area input {
-  margin-bottom: 5px;
-}
 
 .gallery-container {
   height: 40%;
-  background-color: hsl(0, 0%, 16%);
+  background-color: var(--panel_color);
   border-radius: 8px;
   padding: 10px;
 }
