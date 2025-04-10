@@ -21,7 +21,7 @@ type NotificationRef = {
 const notification = ref<NotificationRef | null>(null);
 const selectedImage = ref<ImageGallery | null>(null);
 const filtrerImage = ref<ImageGallery | null>(null);
-const infoFilter= ref('gradienImage');
+const infoFilter = ref('gradienImage');
 const FilterPourcent = ref(0);
 
 const file = ref<File | null>(null);
@@ -133,9 +133,9 @@ const downloadImage = () => {
     );
   }
   notification.value?.showNotification(
-        `Impossible de Télécharger l'image car pas de filtre appliqué à l'image sélectionnée}`,
-        'error'
-      );
+    `Impossible de Télécharger l'image car pas de filtre appliqué à l'image sélectionnée}`,
+    'error'
+  );
 };
 
 const handleDeleteImage = async () => {
@@ -185,7 +185,7 @@ watchEffect(async () => {
 watchEffect(async () => {
   if (filtrerImage.value) {
     try {
-        filtrerImage.value.dataUrl = await loadImageData(filtrerImage.value.id);
+      filtrerImage.value.dataUrl = await loadImageData(filtrerImage.value.id);
     } catch (error) {
       console.error('Failed to load image data:', error);
       const errorMessage = formatErrorMessage(error);
@@ -198,20 +198,20 @@ watchEffect(async () => {
 });
 
 const Apply_filter = async () => {
-    if (!selectedImage.value) return;
-    filtrerImage.value = JSON.parse(JSON.stringify(selectedImage.value));
-    if (!filtrerImage.value) return;
-    try{
-        filtrerImage.value.dataUrl = await getImageFilter(1,infoFilter.value);
-    }
-    catch(error){
-      console.error('Failed to load Altered image:', error);
-      const errorMessage = formatErrorMessage(error);
-      notification.value?.showNotification(
-        `Impossible de charger l'image alteré: ${errorMessage}`,
-        'error'
-      );
-    }
+  if (!selectedImage.value) return;
+  filtrerImage.value = JSON.parse(JSON.stringify(selectedImage.value));
+  if (!filtrerImage.value) return;
+  try {
+    filtrerImage.value.dataUrl = await getImageFilter(1, infoFilter.value);
+  }
+  catch (error) {
+    console.error('Failed to load Altered image:', error);
+    const errorMessage = formatErrorMessage(error);
+    notification.value?.showNotification(
+      `Impossible de charger l'image alteré: ${errorMessage}`,
+      'error'
+    );
+  }
 }
 
 </script>
@@ -220,37 +220,38 @@ const Apply_filter = async () => {
 <template>
   <Notification ref="notification" />
 
-    <h1>Choose an image</h1>
+  <h1>Choose an image</h1>
 
 
-    <div class="two-column-layout">
+  <div class="two-column-layout">
     <!-- LEFT COLUMN - 50% width -->
-        <div class="left-column">
-            <h2>Choissisez une image depuis la galerie</h2>
-            <div class="selected-image-container">
-                <DisplayImage :image="selectedImage"/>
-        </div>
-        <div v-if ="selectedImage" class="option-transfo">
-          <select v-model="infoFilter">
-                <option value="gradienImage">flouter</option>
-                <option value="modif_lum">Lumonisité</option>
-                <option value="invert">Inversion</option>
-                <option value="rotation">Rotation</option>
-            </select>
-          <input v-if ="infoFilter === 'gradienImage' || infoFilter === 'modif_lum'" type="number" v-model="FilterPourcent" min="0" max="100" />
-          
-          <select v-if ="infoFilter === 'rotation' " v-model="FilterPourcent">
-                <option value="90">90°</option>
-                <option value="180">180°</option>
-                <option value="270">270°</option>
-            </select>
+    <div class="left-column">
+      <h2>Choissisez une image depuis la galerie</h2>
+      <div class="selected-image-container">
+        <DisplayImage :image="selectedImage" />
+      </div>
+      <div v-if="selectedImage" class="option-transfo">
+        <select v-model="infoFilter">
+          <option value="gradienImage">flouter</option>
+          <option value="modif_lum">Lumonisité</option>
+          <option value="invert">Inversion</option>
+          <option value="rotation">Rotation</option>
+        </select>
+        <input v-if="infoFilter === 'gradienImage' || infoFilter === 'modif_lum'" type="number" v-model="FilterPourcent"
+          min="0" max="100" />
 
-          <button @click="Apply_filter">Appliquer</button>
-        </div>
+        <select v-if="infoFilter === 'rotation'" v-model="FilterPourcent">
+          <option value="90">90°</option>
+          <option value="180">180°</option>
+          <option value="270">270°</option>
+        </select>
+
+        <button @click="Apply_filter">Appliquer</button>
+      </div>
 
 
 
-        <div class="similar-section">
+      <div class="similar-section">
         <h3>Images similaires - Plus le score est bas, plus l'image est similaire</h3>
         <div class="similar-filters">
           <select v-model="descriptor">
@@ -266,45 +267,44 @@ const Apply_filter = async () => {
       </div>
 
 
-    <!-- RIGHT COLUMN - 50% width -->
-        </div>
-        <div class="right-column">
-            <h2>Image modifiée</h2>
-            <div class="selected-image-container">
-              <DisplayImage :image="filtrerImage"/>
-            </div>
-            <div class="image-actions">
-                <div class="action-buttons" v-if="selectedImage">
-                <button @click="downloadImage">Télécharger</button>
-                <button @click="toggleMetadata">Métadonnées</button>
-                <button @click="handleDeleteImage" class="delete-button">Supprimer</button>
-                </div>
-                <p v-else>Sélectionnez une image pour voir les actions disponibles</p>
-              </div>
-              <div v-if="showMetadata && selectedImage" class="metadata-popup">
-                <div class="metadata-content panel">
-                  <h3>Métadonnées</h3>
-                  <p><strong>Identifiant:</strong> {{ selectedImage.id }}</p>
-                  <p><strong>Nom:</strong> {{ selectedImage.name }}</p>
-                  <p><strong>Type:</strong> {{ selectedImage.type }}</p>
-                  <p><strong>Taille:</strong> {{ selectedImage.size }}</p>
-                  <button @click="toggleMetadata" class="close-button">Fermer</button>
-                </div>
-            </div>
-
-            <div class="gallery-container">
-                <h3>Galerie</h3>
-                <div class="scrollable-gallery">
-                <Gallery :images="images" @select="handleImageSelect" />
-                </div>
-            </div>
-        </div>
+      <!-- RIGHT COLUMN - 50% width -->
     </div>
+    <div class="right-column">
+      <h2>Image modifiée</h2>
+      <div class="selected-image-container">
+        <DisplayImage :image="filtrerImage" />
+      </div>
+      <div class="image-actions">
+        <div class="action-buttons" v-if="selectedImage">
+          <button @click="downloadImage">Télécharger</button>
+          <button @click="toggleMetadata">Métadonnées</button>
+          <button @click="handleDeleteImage" class="delete-button">Supprimer</button>
+        </div>
+        <p v-else>Sélectionnez une image pour voir les actions disponibles</p>
+      </div>
+      <div v-if="showMetadata && selectedImage" class="metadata-popup">
+        <div class="metadata-content panel">
+          <h3>Métadonnées</h3>
+          <p><strong>Identifiant:</strong> {{ selectedImage.id }}</p>
+          <p><strong>Nom:</strong> {{ selectedImage.name }}</p>
+          <p><strong>Type:</strong> {{ selectedImage.type }}</p>
+          <p><strong>Taille:</strong> {{ selectedImage.size }}</p>
+          <button @click="toggleMetadata" class="close-button">Fermer</button>
+        </div>
+      </div>
+
+      <div class="gallery-container">
+        <h3>Galerie</h3>
+        <div class="scrollable-gallery">
+          <Gallery :images="images" @select="handleImageSelect" />
+        </div>
+      </div>
+    </div>
+  </div>
 
 </template>
 
 <style scoped>
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -333,20 +333,6 @@ const Apply_filter = async () => {
   overflow: hidden;
 }
 
-.image-display {
-  height: 85%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.image-display img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  border-radius: 4px;
-}
-
 .metadata-area {
   height: 10%;
   background-color: hsl(0, 0%, 16%);
@@ -369,7 +355,8 @@ const Apply_filter = async () => {
   margin-bottom: 10px;
   align-items: center;
 }
-.option-transfo{
+
+.option-transfo {
   height: 5%;
   padding: 10px;
   display: flex;
@@ -441,5 +428,4 @@ const Apply_filter = async () => {
 .delete-button {
   background-color: rgb(196, 33, 33);
 }
-
 </style>
