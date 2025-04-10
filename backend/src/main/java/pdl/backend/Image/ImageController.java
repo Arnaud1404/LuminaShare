@@ -38,6 +38,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import boofcv.io.image.ConvertBufferedImage;
+import boofcv.struct.image.GrayU8;
+import boofcv.struct.image.Planar;
 
 @RestController
 public class ImageController {
@@ -369,13 +372,53 @@ public class ImageController {
 
   @RequestMapping(value = "/images/{id}/filter", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   @ResponseBody
-  public ResponseEntity<?> getSimilarImages(@PathVariable("id") long id, @RequestParam("filter") String filter,
+  public ResponseEntity<?> applyFilter(@PathVariable("id") long id, @RequestParam("filter") String filter,
       @RequestParam("number") long number) {
     try {
-      return getImage(id);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        Optional<Image> optionalImage = imageDao.retrieve(id);
+        if (optionalImage.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image introuvable.");
+        }
 
+        Image image = optionalImage.get();
+        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(image.getData()));
+
+        if (originalImage == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'image est corrompue ou invalide.");
+        }
+
+        // Appliquation des filtres
+        BufferedImage filteredImage;
+        switch (filter.toLowerCase()) {
+            case "gradienImage":
+                GrayU8 input = ConvertBufferedImage.convertFrom(originalImage, (GrayU8) null);
+                GrayU8 output = new GrayU8(input.width, input.height);
+
+                Convolution.meanFilter(input, output, (int) number);
+
+                filteredImage = ConvertBufferedImage.convertTo(output, null);                
+                break;
+            case "modif_lum":
+                Planar<GrayU8> planarImage = ConvertBufferedImage.convertFromPlanar(originalImage, null, true, GrayU8.class);
+                ColorProcessing.modif_lum(planarImage, (int) number);
+                filteredImage = ConvertBufferedImage.convertTo(planarImage, null, true);               
+                break;
+            case "invert":
+                filteredImage = imageService.invertColor(originalImage);
+                break;
+            case "rotation":
+                filteredImage = imageService.rotateImages(originalImage,(int) number);
+                break;
+            default:
+               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Filtre inconnu : " + filter);
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(filteredImage, "jpeg", outputStream);
+
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(outputStream.toByteArray());
+    } catch (IOException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors du traitement de l'image.");
     }
   }
 }
