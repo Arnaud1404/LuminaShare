@@ -21,9 +21,9 @@ function toggleFullscreen() {
   <div v-if="image" class="image-display">
     <img v-if="image.dataUrl" :src="image.dataUrl" :alt="image.name" @click="toggleFullscreen"
       style="cursor: pointer" />
-    <p v-else>Chargement de l'image...</p>
+    <p v-else> {{$t('display_image.loading')}} </p>
   </div>
-  <p v-else>Aucune image sélectionnée</p>
+  <p v-else> {{$t('display_image.no-image')}}  </p>
 </template>
 
 <style scoped>

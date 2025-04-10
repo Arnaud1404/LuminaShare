@@ -1,3 +1,5 @@
 <template>
-  <h1>Mon profil</h1>
+  <h1>
+    {{$t('user.title')}}
+  </h1>
 </template>

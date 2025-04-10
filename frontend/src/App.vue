@@ -1,5 +1,11 @@
 <script setup lang="ts">
 import Header from './components/Header.vue';
+import { onMounted } from 'vue';
+
+onMounted( () => {
+  document.cookie = 'locale=EN'
+})
+
 </script>
 
 <template>
