@@ -224,9 +224,10 @@ watchEffect(async () => {
 
 const Apply_filter = async () => {
     if (!selectedImage.value) return;
-    filtrerImage.value = selectedImage.value;
+    filtrerImage.value = JSON.parse(JSON.stringify(selectedImage.value));
+    if (!filtrerImage.value) return;
     try{
-        filtrerImage.value.dataUrl = await getImageFilter(selectedImage.value.id,infoFilter.value);
+        filtrerImage.value.dataUrl = await getImageFilter(1,infoFilter.value);
     }
     catch(error){
       console.error('Failed to load Altered image:', error);
