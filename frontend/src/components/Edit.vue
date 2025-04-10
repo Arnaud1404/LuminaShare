@@ -148,19 +148,23 @@ onMounted(async () => {
 // };
 
 const downloadImage = () => {
-  if (selectedImage.value && selectedImage.value.dataUrl) {
+  if (filtrerImage.value && filtrerImage.value.dataUrl) {
     const link = document.createElement('a');
-    link.href = selectedImage.value.dataUrl;
-    link.download = selectedImage.value.name;
+    link.href = filtrerImage.value.dataUrl;
+    link.download = filtrerImage.value.name;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
     notification.value?.showNotification(
-      `Téléchargement de ${selectedImage.value.name} démarré`,
+      `Téléchargement de ${filtrerImage.value.name} démarré`,
       'info'
     );
   }
+  notification.value?.showNotification(
+        `Impossible de Télécharger l'image car pas de filtre appliqué à l'image sélectionnée}`,
+        'error'
+      );
 };
 
 const handleDeleteImage = async () => {
@@ -306,6 +310,16 @@ const Apply_filter = async () => {
                 </div>
                 <p v-else>Sélectionnez une image pour voir les actions disponibles</p>
               </div>
+              <div v-if="showMetadata && selectedImage" class="metadata-popup">
+                <div class="metadata-content panel">
+                  <h3>Métadonnées</h3>
+                  <p><strong>Identifiant:</strong> {{ selectedImage.id }}</p>
+                  <p><strong>Nom:</strong> {{ selectedImage.name }}</p>
+                  <p><strong>Type:</strong> {{ selectedImage.type }}</p>
+                  <p><strong>Taille:</strong> {{ selectedImage.size }}</p>
+                  <button @click="toggleMetadata" class="close-button">Fermer</button>
+                </div>
+            </div>
 
             <div class="gallery-container">
                 <h3>Galerie</h3>
