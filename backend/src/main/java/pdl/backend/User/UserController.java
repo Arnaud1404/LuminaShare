@@ -17,10 +17,10 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserDao userDao;
-    
+
     // @Autowired
     // private PasswordService passwordService;
-    
+
     /**
      * Get all users
      * 
@@ -32,7 +32,7 @@ public class UserController {
         users.forEach(user -> user.setPassword(null));
         return ResponseEntity.ok(users);
     }
-    
+
     /**
      * Get a specific user by ID
      * 
@@ -51,7 +51,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
     }
-    
+
     /**
      * Update user information
      * 
@@ -60,23 +60,22 @@ public class UserController {
      * @return Updated user or error
      */
     @PutMapping("/{userid}")
-    public ResponseEntity<?> updateUser(
-            @PathVariable String userid,
-            @RequestBody User userData) {
-        
+    public ResponseEntity<?> updateUser(@PathVariable String userid, @RequestBody User userData) {
+
         Optional<User> existingUser = userDao.retrieve(userid);
         if (!existingUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
-        
+
         if (!userid.equals(userData.getUserid())) {
             return ResponseEntity.badRequest().body("User ID in path must match user ID in body");
         }
-        
-        boolean updatePassword = (userData.getPassword() != null && !userData.getPassword().isEmpty());
-        
+
+        boolean updatePassword =
+                (userData.getPassword() != null && !userData.getPassword().isEmpty());
+
         boolean success = userDao.update(userData, updatePassword);
-        
+
         if (success) {
             User updatedUser = userDao.retrieve(userid).get();
             updatedUser.setPassword(null);
@@ -86,7 +85,7 @@ public class UserController {
                     .body("Failed to update user");
         }
     }
-    
+
     /**
      * Delete a user
      * 
@@ -102,7 +101,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
     }
-    
+
     /**
      * Check if a user exists
      * 

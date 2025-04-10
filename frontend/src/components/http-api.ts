@@ -173,11 +173,26 @@ export async function getUserImages(
   includePrivate: boolean = false
 ): Promise<ImageGallery[]> {
   try {
-    const response = await axios.get(`/images/user/${userid}?includePrivate=${includePrivate}`);
+    // Add current user as a query parameter
+    const currentUserid = currentUser.value?.userid || '';
+
+    const response = await axios.get(
+      `/images/user/${userid}?includePrivate=${includePrivate}&currentUserid=${currentUserid}`
+    );
     return await loadImageDataUrls(response.data);
   } catch (error) {
     console.error(`Failed to get user images for ${userid}:`, error);
     return [];
+  }
+}
+
+export async function getUserProfile(userid: string): Promise<any> {
+  try {
+    const response = await axios.get(`/users/${userid}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to get user profile for ${userid}:`, error);
+    return null;
   }
 }
 
@@ -231,13 +246,12 @@ export async function getImageFilter(id: number, filter: string, number: number)
   filter = id + filter;
   return axios
 
-    .get(`/images/${id}/filter?filter=${filter}&number=${number}`
-      , { responseType: 'blob' })
+    .get(`/images/${id}/filter?filter=${filter}&number=${number}`, { responseType: 'blob' })
     .then(function (response: AxiosResponse) {
       return new Promise<string>((resolve) => {
         const reader = new window.FileReader();
         reader.readAsDataURL(response.data);
         reader.onload = () => resolve(reader.result as string);
       });
-    })
+    });
 }

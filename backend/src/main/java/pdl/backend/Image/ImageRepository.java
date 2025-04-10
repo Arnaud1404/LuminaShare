@@ -28,10 +28,8 @@ import java.awt.image.BufferedImage;
 /**
  * Handles database operations for images with vector similarity search.
  *
- * IMPORTANT: Only manages database records. Doesn't handle physical files or
- * in-memory records.
- * Synchronization with physical files and memory should be done by
- * ImageController.
+ * IMPORTANT: Only manages database records. Doesn't handle physical files or in-memory records.
+ * Synchronization with physical files and memory should be done by ImageController.
  */
 @Repository
 public class ImageRepository implements InitializingBean {
@@ -49,16 +47,30 @@ public class ImageRepository implements InitializingBean {
         img.setName(rs.getString("name"));
         img.setType(MediaType.valueOf(rs.getString("type")));
         img.setSize(rs.getString("size"));
-        img.setUserid(rs.getString("userid"));
-        img.setPublic(rs.getBoolean("ispublic"));
-        img.setLikes(rs.getInt("likes"));
+        try {
+            img.setUserid(rs.getString("userid"));
+        } catch (Exception e) {
+            img.setUserid("admin");
+        }
+
+        try {
+            img.setPublic(rs.getBoolean("ispublic"));
+        } catch (Exception e) {
+            img.setPublic(false);
+        }
+
+        try {
+            img.setLikes(rs.getInt("likes"));
+        } catch (Exception e) {
+            img.setLikes(0);
+        }
         return img;
     };
 
     @Override
     @PostConstruct
     public void afterPropertiesSet() throws Exception {
-            // Empty - initialization moved to DatabaseInitializer
+        // Empty - initialization moved to DatabaseInitializer
 
     }
 
@@ -129,7 +141,8 @@ public class ImageRepository implements InitializingBean {
      */
     public Image getById(long id) {
         try {
-            String sql = "SELECT id, name, type, size, rgbcube, hueSat FROM " + databaseTable + " WHERE id = ?";
+            String sql = "SELECT id, name, type, size, rgbcube, hueSat FROM " + databaseTable
+                    + " WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, Image.class, id);
         } catch (Exception e) {
             return null; // Non trouvé
@@ -137,8 +150,8 @@ public class ImageRepository implements InitializingBean {
     }
 
     /**
-     * Deletes an image from the database by its unique id
-     * This function does not delete an image server-side
+     * Deletes an image from the database by its unique id This function does not delete an image
+     * server-side
      * 
      * @param id The ID of the image to delete
      * @return Number of rows affected (1 if successful)
@@ -148,8 +161,7 @@ public class ImageRepository implements InitializingBean {
     }
 
     /**
-     * Deletes an image from the database
-     * This function does not delete an image server-side
+     * Deletes an image from the database This function does not delete an image server-side
      * 
      * @param img The Image
      * @return Number of rows affected (1 if successful)
@@ -165,7 +177,8 @@ public class ImageRepository implements InitializingBean {
      */
     public long getImageCount() {
         try {
-            Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + databaseTable, Long.class);
+            Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + databaseTable,
+                    Long.class);
             return count != null ? count : 0;
         } catch (Exception e) {
             return -1; // Non trouvé
@@ -176,8 +189,7 @@ public class ImageRepository implements InitializingBean {
      * Creates a 3D RGB histogram vector from an image
      *
      * @param img The image object containing metadata and path information
-     * @return PGvector containing the hue-saturation histogram, or null if
-     *         processing fails
+     * @return PGvector containing the hue-saturation histogram, or null if processing fails
      */
     private PGvector createRgbHistogramFromImage(Image img) {
         try {
@@ -187,7 +199,8 @@ public class ImageRepository implements InitializingBean {
                 return null;
             }
 
-            Planar<GrayU8> image = ConvertBufferedImage.convertFromPlanar(input, null, true, GrayU8.class);
+            Planar<GrayU8> image =
+                    ConvertBufferedImage.convertFromPlanar(input, null, true, GrayU8.class);
             return ImagePGVector.createRgb(image, 8);
         } catch (Exception e) {
             System.err.println("Failed to create histogram: " + e.getMessage());
@@ -199,8 +212,7 @@ public class ImageRepository implements InitializingBean {
      * Creates a hue-saturation histogram vector from an image
      *
      * @param img The image object containing metadata and path information
-     * @return PGvector containing the hue-saturation histogram, or null if
-     *         processing fails
+     * @return PGvector containing the hue-saturation histogram, or null if processing fails
      */
     private PGvector createHueSaturationHistogramFromImage(Image img) {
         try {
@@ -210,7 +222,8 @@ public class ImageRepository implements InitializingBean {
                 return null;
             }
 
-            Planar<GrayU8> image = ConvertBufferedImage.convertFromPlanar(input, null, true, GrayU8.class);
+            Planar<GrayU8> image =
+                    ConvertBufferedImage.convertFromPlanar(input, null, true, GrayU8.class);
             return ImagePGVector.createHueSaturation(image);
         } catch (Exception e) {
             System.err.println("Failed to create histogram: " + e.getMessage());
@@ -226,40 +239,30 @@ public class ImageRepository implements InitializingBean {
      */
     public boolean imageExists(String imageName) {
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM " + databaseTable + " WHERE name = ?",
-                Integer.class, imageName);
+                "SELECT COUNT(*) FROM " + databaseTable + " WHERE name = ?", Integer.class,
+                imageName);
         return count != null && count > 0;
     }
 
     /**
      * Inserts an image record into the database
      *
-     * @param img     The Image object containing metadata (name, type, size) to
-     *                insert
-     * @param rgbcube The PGvector containing the RGB histogram data for
-     *                similarity search
-     * @param hueSat  The PGvector containing the Hue-Saturation histogram
-     *                data for similarity search
+     * @param img The Image object containing metadata (name, type, size) to insert
+     * @param rgbcube The PGvector containing the RGB histogram data for similarity search
+     * @param hueSat The PGvector containing the Hue-Saturation histogram data for similarity search
      * @return 1 if insertion was successful, 0 if it failed
      */
     private int insertImageRecord(Image img, PGvector rgbcube, PGvector hueSat) {
         try {
-              jdbcTemplate.update(
-                "INSERT INTO " + databaseTable + 
-                " (name, type, size, rgbcube, hueSat, userid, ispublic, likes) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                img.getName(),
-                img.getType().toString(),
-                img.getSize(),
-                rgbcube,
-                hueSat,
-                img.getUserid(), 
-                img.isPublic(),  
-                img.getLikes()
-        );
-        img.setHueSat(hueSat);
-        img.setRgbCube(rgbcube);
-        return 1;
+            jdbcTemplate.update(
+                    "INSERT INTO " + databaseTable
+                            + " (name, type, size, rgbcube, hueSat, userid, ispublic, likes) "
+                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    img.getName(), img.getType().toString(), img.getSize(), rgbcube, hueSat,
+                    img.getUserid(), img.isPublic(), img.getLikes());
+            img.setHueSat(hueSat);
+            img.setRgbCube(rgbcube);
+            return 1;
         } catch (Exception e) {
             System.err.println("Database insertion failed: " + e.getMessage());
             return 0;
@@ -268,62 +271,55 @@ public class ImageRepository implements InitializingBean {
 
 
     /**
-    * Gets all images belonging to a specific user
-    */
+     * Gets all images belonging to a specific user
+     */
     public List<Image> getByUserId(String userid) {
-        return jdbcTemplate.query(
-            "SELECT * FROM " + databaseTable + " WHERE userid = ?",
-            rowMapper,
-            userid
-        );
+        return jdbcTemplate.query("SELECT * FROM " + databaseTable + " WHERE userid = ?", rowMapper,
+                userid);
     }
 
-/**
- * Increments the like count for an image
- * 
- * @param imageId The ID of the image to like
- * @return The new like count, or -1 if operation failed
- */
-public int likeImage(long imageId) {
-    try {
-        jdbcTemplate.update("UPDATE " + databaseTable + " SET likes = likes + 1 WHERE id = ?",
-                imageId);
+    /**
+     * Increments the like count for an image
+     * 
+     * @param imageId The ID of the image to like
+     * @return The new like count, or -1 if operation failed
+     */
+    public int likeImage(long imageId) {
+        try {
+            jdbcTemplate.update("UPDATE " + databaseTable + " SET likes = likes + 1 WHERE id = ?",
+                    imageId);
 
-        Integer likes = jdbcTemplate.queryForObject(
-                "SELECT likes FROM " + databaseTable + " WHERE id = ?", Integer.class, imageId);
+            Integer likes = jdbcTemplate.queryForObject(
+                    "SELECT likes FROM " + databaseTable + " WHERE id = ?", Integer.class, imageId);
 
-        return likes != null ? likes : -1;
-    } catch (Exception e) {
-        System.err.println("Failed to like image: " + e.getMessage());
-        return -1;
+            return likes != null ? likes : -1;
+        } catch (Exception e) {
+            System.err.println("Failed to like image: " + e.getMessage());
+            return -1;
+        }
     }
-}
 
-/**
- * Decrements the like count for an image (minimum 0)
- * 
- * @param imageId The ID of the image to unlike
- * @return The new like count, or -1 if operation failed
- */
-public int unlikeImage(long imageId) {
-    try {
-        jdbcTemplate.update(
-            "UPDATE " + databaseTable + " SET likes = GREATEST(likes - 1, 0) WHERE id = ?",
-            imageId
-        );
-        
-        Integer likes = jdbcTemplate.queryForObject(
-            "SELECT likes FROM " + databaseTable + " WHERE id = ?",
-            Integer.class,
-            imageId
-        );
-        
-        return likes != null ? likes : -1;
-    } catch (Exception e) {
-        System.err.println("Failed to unlike image: " + e.getMessage());
-        return -1;
+    /**
+     * Decrements the like count for an image (minimum 0)
+     * 
+     * @param imageId The ID of the image to unlike
+     * @return The new like count, or -1 if operation failed
+     */
+    public int unlikeImage(long imageId) {
+        try {
+            jdbcTemplate.update(
+                    "UPDATE " + databaseTable + " SET likes = GREATEST(likes - 1, 0) WHERE id = ?",
+                    imageId);
+
+            Integer likes = jdbcTemplate.queryForObject(
+                    "SELECT likes FROM " + databaseTable + " WHERE id = ?", Integer.class, imageId);
+
+            return likes != null ? likes : -1;
+        } catch (Exception e) {
+            System.err.println("Failed to unlike image: " + e.getMessage());
+            return -1;
+        }
     }
-}
 
     /**
      * Gets only public images belonging to a specific user
@@ -333,15 +329,15 @@ public int unlikeImage(long imageId) {
                 "SELECT * FROM " + databaseTable + " WHERE userid = ? AND ispublic = true",
                 rowMapper, userid);
     }
-    
+
 
     /**
-     * Returns the list of images similar to this image from the database
-     * Sets the similarity score in the Image object
+     * Returns the list of images similar to this image from the database Sets the similarity score
+     * in the Image object
      *
-     * @param img        the image to compare with
+     * @param img the image to compare with
      * @param descriptor the descriptor to use for comparison (huesat or rgbcube)
-     * @param n          the number of similar images to get
+     * @param n the number of similar images to get
      *
      * @return A List<Image> with the n most similar images
      */
@@ -373,7 +369,7 @@ public int unlikeImage(long imageId) {
             return image;
         }, histo, histo);
     }
-    
 
-    
+
+
 }

@@ -1,3 +1,111 @@
+<script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { getUserImages, getUserProfile, likeImage as likeImageApi } from './http-api';
+import { currentUser } from './users';
+import { type ImageGallery } from './images.ts';
+import Gallery from './Gallery.vue';
+const route = useRoute();
+const router = useRouter();
+const userExists = ref(true);
+const loading = ref(true);
+const loadingImages = ref(true);
+const userImages = ref<ImageGallery[]>([]);
+const username = ref<string>('');
+const userBio = ref<string>('');
+const selectedImage = ref<ImageGallery | null>(null);
+
+const userid = ref<string>((route.params.userid as string) || currentUser.value?.userid || '');
+watch(
+  () => route.params.userid,
+  (newUserid) => {
+    if (newUserid) {
+      userid.value = newUserid as string;
+      loadUserProfile();
+    } else if (currentUser.value) {
+      userid.value = currentUser.value.userid;
+      loadUserProfile();
+    }
+  }
+);
+
+const isOwnProfile = computed(() => {
+  return currentUser.value?.userid === userid.value;
+});
+
+async function loadUserImages() {
+  loadingImages.value = true;
+  const includePrivate = isOwnProfile.value;
+  userImages.value = await getUserImages(userid.value, includePrivate);
+  loadingImages.value = false;
+}
+
+async function loadUserData() {
+  if (isOwnProfile.value && currentUser.value) {
+    // For own profile, use current user data
+    username.value = currentUser.value.name;
+    userBio.value = currentUser.value.bio || '';
+  } else {
+    // For other users, fetch their profile
+    const userProfile = await getUserProfile(userid.value);
+    if (userProfile) {
+      username.value = userProfile.name;
+      userBio.value = userProfile.bio || '';
+    } else {
+      username.value = userid.value;
+      userBio.value = '';
+    }
+  }
+}
+
+async function loadUserProfile() {
+  try {
+    loading.value = true;
+    selectedImage.value = null;
+
+    if (!userid.value) {
+      userExists.value = false;
+      return;
+    }
+
+    await Promise.all([loadUserImages(), loadUserData()]);
+
+    userExists.value = true;
+  } catch (error) {
+    console.error('Failed to load user profile:', error);
+    userExists.value = false;
+  } finally {
+    loading.value = false;
+  }
+}
+
+function navigateToUpload() {
+  router.push('/edit');
+}
+
+async function likeImage(imageId: number): Promise<void> {
+  await likeImageApi(imageId);
+
+  // Update like count in both arrays
+  const image = userImages.value.find((img) => img.id === imageId);
+  if (image) {
+    image.likes = (image.likes || 0) + 1;
+  }
+
+  if (selectedImage.value?.id === imageId) {
+    selectedImage.value.likes = (selectedImage.value.likes || 0) + 1;
+  }
+}
+
+function handleImageSelect(image: ImageGallery) {
+  selectedImage.value = image;
+}
+
+onMounted(() => {
+  loadUserProfile();
+});
+</script>
+
 <template>
   <div class="profile panel">
     <div v-if="loading" class="loading">Loading profile...</div>
@@ -27,18 +135,22 @@
           </button>
         </div>
 
-        <div v-else class="image-grid">
-          <div v-for="image in userImages" :key="image.id" class="image-card">
-            <img :src="image.dataUrl" :alt="image.name" />
-            <div class="image-info">
-              <div class="image-name">{{ image.name }}</div>
+        <!-- Replace custom grid with Gallery component -->
+        <div v-else class="gallery-wrapper">
+          <Gallery :images="userImages" @select="handleImageSelect" />
+
+          <!-- Image details overlay when an image is selected -->
+          <div v-if="selectedImage" class="image-details">
+            <div class="detail-card">
+              <div class="image-name">{{ selectedImage.name }}</div>
               <div v-if="isOwnProfile" class="image-privacy">
-                {{ image.ispublic ? 'Public' : 'Private' }}
+                {{ selectedImage.ispublic ? 'Public' : 'Private' }}
               </div>
               <div class="image-likes">
-                <span>{{ image.likes || 0 }} likes</span>
-                <button @click="likeImage(image.id)" class="like-button">❤️</button>
+                <span>{{ selectedImage.likes || 0 }} likes</span>
+                <button @click="likeImage(selectedImage.id)" class="like-button">❤️</button>
               </div>
+              <button @click="selectedImage = null" class="close-button">Close</button>
             </div>
           </div>
         </div>
@@ -46,90 +158,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { getUserImages, likeImage as likeImageApi } from './http-api';
-import { currentUser } from './users';
-import { type ImageGallery } from './images.ts';
-
-const route = useRoute();
-const router = useRouter();
-const userExists = ref(true);
-const loading = ref(true);
-const loadingImages = ref(true);
-const userImages = ref<ImageGallery[]>([]);
-const username = ref<string>('');
-const userBio = ref<string>('');
-
-const userid = ref<string>((route.params.userid as string) || currentUser.value?.userid || '');
-watch(
-  () => route.params.userid,
-  (newUserid) => {
-    if (newUserid) {
-      userid.value = newUserid as string;
-      loadUserProfile();
-    } else if (currentUser.value) {
-      userid.value = currentUser.value.userid;
-      loadUserProfile();
-    }
-  }
-);
-
-const isOwnProfile = computed(() => {
-  return currentUser.value?.userid === userid.value;
-});
-
-async function loadUserImages() {
-  loadingImages.value = true;
-  const includePrivate = isOwnProfile.value;
-  userImages.value = await getUserImages(userid.value, includePrivate);
-  loadingImages.value = false;
-}
-
-async function loadUserProfile() {
-  try {
-    loading.value = true;
-
-    if (!userid.value) {
-      userExists.value = false;
-      return;
-    }
-
-    await loadUserImages();
-
-    if (isOwnProfile.value && currentUser.value) {
-      username.value = currentUser.value.name;
-      userBio.value = currentUser.value.bio || '';
-    } else {
-      username.value = userid.value;
-    }
-
-    userExists.value = true;
-  } catch (error) {
-    console.error('Failed to load user profile:', error);
-    userExists.value = false;
-  } finally {
-    loading.value = false;
-  }
-}
-
-function navigateToUpload() {
-  router.push('/edit');
-}
-
-async function likeImage(imageId: number): Promise<void> {
-  await likeImageApi(imageId);
-  const image = userImages.value.find((img) => img.id === imageId);
-  if (image) {
-    image.likes = (image.likes || 0) + 1;
-  }
-}
-onMounted(() => {
-  loadUserProfile();
-});
-</script>
 
 <style scoped>
 .profile {
@@ -179,60 +207,69 @@ onMounted(() => {
   margin-top: 1rem;
 }
 
-.image-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
+.gallery-wrapper {
+  position: relative;
 }
 
-.image-card {
+.image-details {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.detail-card {
+  background-color: #222;
+  padding: 2rem;
   border-radius: 8px;
-  overflow: hidden;
-  background-color: rgba(255, 255, 255, 0.1);
-  transition: transform 0.2s;
-}
-
-.image-card:hover {
-  transform: scale(1.02);
-}
-
-.image-card img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  display: block;
-}
-
-.image-info {
-  padding: 1rem;
+  max-width: 80%;
+  text-align: center;
 }
 
 .image-name {
   font-weight: bold;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
 }
 
 .image-privacy {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   opacity: 0.7;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .image-likes {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .like-button {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   transition: transform 0.2s;
 }
 
 .like-button:hover {
   transform: scale(1.2);
+}
+
+.close-button {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
 }
 </style>
