@@ -167,13 +167,12 @@ export async function refreshImages(): Promise<void> {
 export async function getImageFilter(id: number, filter: string, number: number) {
   return axios
 
-    .get(`/images/${id}/filter?filter=${filter}&number=${number}`
-      , { responseType: 'blob' })
+    .get(`/images/${id}/filter?filter=${filter}&number=${number}`, { responseType: 'blob' })
     .then(function (response: AxiosResponse) {
       return new Promise<string>((resolve) => {
         const reader = new window.FileReader();
         reader.readAsDataURL(response.data);
         reader.onload = () => resolve(reader.result as string);
       });
-    })
+    });
 }

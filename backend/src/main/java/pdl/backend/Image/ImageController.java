@@ -1,5 +1,6 @@
 package pdl.backend.Image;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,20 +54,16 @@ public class ImageController {
    * Gets an image from its id
    * 
    * @param id The ID of the image
-   * @return An HTTP Response with the image bytes, or NOT_FOUND if image doesn't
-   *         exist
+   * @return An HTTP Response with the image bytes, or NOT_FOUND if image doesn't exist
    */
-  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = { MediaType.IMAGE_JPEG_VALUE,
-      MediaType.IMAGE_PNG_VALUE })
+  @RequestMapping(value = "/images/{id}", method = RequestMethod.GET,
+      produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
   public ResponseEntity<?> getImage(@PathVariable("id") long id) throws IOException {
     Optional<Image> img = imageDao.retrieve(id);
     if (img.isPresent()) {
       byte[] bytes = img.get().getData();
       MediaType mediaType = img.get().getType();
-      return ResponseEntity
-          .ok()
-          .contentType(mediaType)
-          .body(bytes);
+      return ResponseEntity.ok().contentType(mediaType).body(bytes);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
@@ -85,22 +82,21 @@ public class ImageController {
     }
     if (img.isPresent()) {
       imageDao.delete(img.get());
-      return ResponseEntity
-          .ok("Image deleted successfully\n");
+      return ResponseEntity.ok("Image deleted successfully\n");
     }
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
   }
 
   /**
-   * Adds a new image from an uploaded file
-   * Stores the image in memory, database, and filesystem
+   * Adds a new image from an uploaded file Stores the image in memory, database, and filesystem
    * 
-   * @param file               The uploaded image file
+   * @param file The uploaded image file
    * @param redirectAttributes Spring redirect attributes
    * @return OK if successful, BAD_REQUEST if file is invalid
    */
   @RequestMapping(value = "/images", method = RequestMethod.POST)
-  public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+  public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file,
+      RedirectAttributes redirectAttributes) {
     // Vérification des erreurs dans un seul bloc
     if (file == null || file.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Veuillez sélectionner un fichier.");
@@ -124,18 +120,15 @@ public class ImageController {
       // Lecture de l’image
       BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
       if (bufferedImage == null) {
-        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Format d'image non valide.");
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+            .body("Format d'image non valide.");
       }
 
       MediaType type = ImageService.parseMediaTypeFromFile(file);
 
-      Image img = new Image(
-          FileController.directory_location.toString(),
-          file.getOriginalFilename(),
-          file.getBytes(),
-          type,
-          bufferedImage.getWidth(),
-          bufferedImage.getHeight());
+      Image img =
+          new Image(FileController.directory_location.toString(), file.getOriginalFilename(),
+              file.getBytes(), type, bufferedImage.getWidth(), bufferedImage.getHeight());
       imageDao.create(img, file);
 
       return ResponseEntity.status(HttpStatus.CREATED).body("Image ajoutée avec succès.");
@@ -171,18 +164,20 @@ public class ImageController {
   /**
    * Gets a list of similar images to the one with the given id
    * 
-   * @param id         The ID of the image to compare
-   * @param n          The number of similar images to return
+   * @param id The ID of the image to compare
+   * @param n The number of similar images to return
    * @param descriptor The descriptor to use for comparison (e.g. "rgbcube")
    * @return JSON array with similar image metadata
    */
-  @RequestMapping(value = "/images/{id}/similar", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  @RequestMapping(value = "/images/{id}/similar", method = RequestMethod.GET,
+      produces = "application/json; charset=UTF-8")
   @ResponseBody
-  public ResponseEntity<?> getSimilarImages(@PathVariable("id") long id, @RequestParam("number") int n,
-      @RequestParam("descriptor") String descriptor) {
+  public ResponseEntity<?> getSimilarImages(@PathVariable("id") long id,
+      @RequestParam("number") int n, @RequestParam("descriptor") String descriptor) {
     try {
       if (n <= 0) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le paramètre 'number' doit être supérieur à 0");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body("Le paramètre 'number' doit être supérieur à 0");
       }
 
       Image image = imageDao.retrieve(id).get();
@@ -209,28 +204,36 @@ public class ImageController {
     }
   }
 
-  @RequestMapping(value = "/images/{id}/filter", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  @RequestMapping(value = "/images/{id}/filter", method = RequestMethod.GET,
+      produces = "application/json; charset=UTF-8")
   @ResponseBody
-  public ResponseEntity<?> applyFilter(@PathVariable("id") long id, @RequestParam("filter") String filter,
-      @RequestParam("number") int number) {
+  public ResponseEntity<?> applyFilter(@PathVariable("id") long id,
+      @RequestParam("filter") String filter, @RequestParam("number") int number) {
     try {
       Image img = imageDao.retrieve(id).get();
 
       BufferedImage img_input = ImageIO.read(FileController.get_file(img.getName()));
-      GrayU8 input = new GrayU8(img_input.getWidth(), img_input.getHeight());
-      ConvertBufferedImage.convertFrom(img_input, input);
+      Planar<GrayU8> input =
+          new Planar<>(GrayU8.class, img_input.getWidth(), img_input.getHeight(), 3);
 
-      GrayU8 output = input.createSameShape();
+      // Transmet le contenu de img_input vers input
+      ConvertBufferedImage.convertFrom(img_input, input, true);
+      Planar<GrayU8> output = input.createSameShape();
 
-      Convolution.meanFilter(input, output, number);
+      ColorProcessing.meanFilter(input, output, number);
 
-      byte[] bytes = output.getData();
+      BufferedImage resultImage =
+          new BufferedImage(output.width, output.height, img_input.getType());
+      ConvertBufferedImage.convertTo(output, resultImage, true);
+
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      String formatName =
+          img.getType().getSubtype().equals("jpeg") ? "jpg" : img.getType().getSubtype();
+      ImageIO.write(resultImage, formatName, baos);
+      byte[] imageBytes = baos.toByteArray();
 
       MediaType mediaType = img.getType();
-      return ResponseEntity
-          .ok()
-          .contentType(mediaType)
-          .body(bytes);
+      return ResponseEntity.ok().contentType(mediaType).body(imageBytes);
 
     } catch (
 
