@@ -1,4 +1,4 @@
-package pdl.backend.Image.Processing;
+package pdl.backend.Image;
 
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import pdl.backend.Image.Processing.Image;
+import pdl.backend.Image.Image;
 import pdl.backend.FileHandler.*;
 import pdl.backend.Image.Processing.*;
 

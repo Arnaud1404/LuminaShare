@@ -25,8 +25,9 @@ import boofcv.io.image.ConvertBufferedImage;
 import boofcv.io.image.UtilImageIO;
 import boofcv.struct.image.GrayU8;
 import boofcv.struct.image.Planar;
-import pdl.backend.Database.ImageRepository;
-import pdl.backend.imageProcessing.ImagePGVector;
+import pdl.backend.Image.ImageRepository;
+import pdl.backend.Image.*;
+import pdl.backend.Image.Processing.ImagePGVector;
 
 @SpringBootTest
 @ActiveProfiles("test")

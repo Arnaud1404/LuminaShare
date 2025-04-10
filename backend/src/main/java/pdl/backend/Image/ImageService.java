@@ -1,13 +1,13 @@
-package pdl.backend.Image.Processing;
+package pdl.backend.Image;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.annotation.PostConstruct;
-import pdl.backend.Image.Processing.ImageRepository;
+import pdl.backend.Image.ImageRepository;
 import pdl.backend.FileHandler.FileController;
-import pdl.backend.imageProcessing.Traitement;
+import pdl.backend.Image.Processing.Traitement;
 
 import java.io.File;
 import java.io.IOException;
