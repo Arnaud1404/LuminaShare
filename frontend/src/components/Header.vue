@@ -38,9 +38,9 @@ function handleLogout() {
     <h1> {{$t('header.title')}} </h1>
 
     <select v-model="$i18n.locale">
-      <option value="EN">EN</option>
-      <option value="FR">FR</option>
-      <option value="AR">AR</option>
+      <option value="EN">🇬🇧 EN</option>
+      <option value="FR">🇫🇷 FR</option>
+      <option value="AR">🇦🇪 AR</option>
     </select>
 
   </header>
