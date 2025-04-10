@@ -14,6 +14,13 @@ function toggleFullscreen() {
 </script>
 
 <template>
+    <div v-if="isFullscreen" class="fullscreen-overlay" @click="toggleFullscreen">
+    <img
+      v-if="image && image.dataUrl"
+      :src="image.dataUrl"
+      :alt="image.name"
+    />
+    </div>
 
         <div v-if="image" class="image-display">
           <img
