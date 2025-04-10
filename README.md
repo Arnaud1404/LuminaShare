@@ -72,6 +72,7 @@ sudo apt-get install openjdk-17-jdk
 
 Données : https://www.dcode.fr/donnees-exif
 Langue  : https://www.youtube.com/watch?v=_QTRUA7bZvU&t=303s
+routeur : https://www.youtube.com/watch?v=fvr1E8SWFrg&t=932s
 
 ## Testé Sur
 
