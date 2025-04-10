@@ -224,7 +224,7 @@ public class ImageController {
 
       Convolution.meanFilter(input, output, number);
 
-      byte[] bytes = img.getData();
+      byte[] bytes = output.getData();
 
       MediaType mediaType = img.getType();
       return ResponseEntity
