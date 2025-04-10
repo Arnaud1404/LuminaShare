@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { type ImageGallery } from './images';
-import {ref } from 'vue';
+import { ref } from 'vue';
 
 
-defineProps<{ image: ImageGallery|null }>();
+defineProps<{ image: ImageGallery | null }>();
 
 const isFullscreen = ref(false);
 
@@ -14,16 +14,30 @@ function toggleFullscreen() {
 </script>
 
 <template>
+  <div v-if="isFullscreen" class="fullscreen-overlay" @click="toggleFullscreen">
+    <img v-if="image && image.dataUrl" :src="image.dataUrl" :alt="image.name" />
+  </div>
 
-        <div v-if="image" class="image-display">
-          <img
-            v-if="image.dataUrl"
-            :src="image.dataUrl"
-            :alt="image.name"
-            @click="toggleFullscreen"
-            style="cursor: pointer"
-          />
-          <p v-else>Chargement de l'image...</p>
-        </div>
-        <p v-else>Aucune image sélectionnée</p>
+  <div v-if="image" class="image-display">
+    <img v-if="image.dataUrl" :src="image.dataUrl" :alt="image.name" @click="toggleFullscreen"
+      style="cursor: pointer" />
+    <p v-else> {{$t('display_image.loading')}} </p>
+  </div>
+  <p v-else> {{$t('display_image.no-image')}}  </p>
 </template>
+
+<style scoped>
+.image-display {
+  height: 85%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-display img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+}
+</style>

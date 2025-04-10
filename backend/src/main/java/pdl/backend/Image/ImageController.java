@@ -369,7 +369,8 @@ public class ImageController {
 
   @RequestMapping(value = "/images/{id}/filter", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   @ResponseBody
-  public ResponseEntity<?> getSimilarImages(@PathVariable("id") long id, @RequestParam("filter") String filter) {
+  public ResponseEntity<?> getSimilarImages(@PathVariable("id") long id, @RequestParam("filter") String filter,
+      @RequestParam("number") long number) {
     try {
       return getImage(id);
     } catch (Exception e) {

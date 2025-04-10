@@ -1,0 +1,71 @@
+{
+  "header": {
+    "title": "LuminaShare - Partagez vos photos",
+    "home": "Accueil",
+    "user": "Utilisateur",
+    "users": "Les autres",
+    "edit": "Modifier",
+    "login": "Connexion",
+    "register": "S'inscrire"
+  },
+  "display_image": {
+    "title": "Image",
+    "loading": "Chargement de l'image ...",
+    "no-image": "Aucune image sélectionnée"
+  },
+  "image_similar": {
+    "title": "Images similaires - Plus le score est bas, plus l'image est similaire"
+  },
+  "upload_img": {
+    "title": "Téléverser une image"
+  },
+  "button": {
+    "3D": "3D RGB",
+    "2D": "2D Teinte Saturation",
+    "upload": "Téléverser",
+    "delete": "Supprimer",
+    "download": "Télécharger",
+    "metadata": "Métadonnées",
+    "blur": "Flouter",
+    "brightness": "Luminosité",
+    "reverse": "Inverser",
+    "rotation": "Rotation",
+    "apply": "Appliquer",
+    "research": "Rechercher"
+  },
+  "login": {
+    "id": "ID Utilisateur:",
+    "enter_id": "Entrez votre ID",
+    "mdp": "Mot de passe:",
+    "enter_mdp": "Entrez votre mot de passe",
+    "no-account": "Pas encore de compte ?",
+    "login_now": "Se connecter",
+    "connecting": "Connexion...",
+    "erreur": {
+      "handle": "Veuillez entrer un ID et un mot de passe"
+    }
+  },
+  "notFound": {
+    "title": "Pas trouvée"
+  },
+  "register": {
+    "name": "Nom Complet",
+    "exist": "Déjà inscrit ?"
+  },
+  "user": {
+    "title": "Mon profil"
+  },
+  "users": {
+    "title": "Les Utilisateurs"
+  },
+  "edit": {
+    "title_selected_img": "Choisissez une image depuis la galerie",
+    "title_filter_img": "Image altérée",
+    "title_gallery": "Galerie",
+    "id": "Identifiant:",
+    "name": "Nom:",
+    "type": "Type:",
+    "length": "Taille:",
+    "close": "Fermer"
+  }
+}

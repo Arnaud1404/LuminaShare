@@ -35,7 +35,14 @@ function handleLogout() {
       <span class="burger-icon"></span>
     </button>
 
-    <h1>LuminaShare - Partage de Photos</h1>
+    <h1> {{$t('header.title')}} </h1>
+
+    <select v-model="$i18n.locale">
+      <option value="EN">🇬🇧 EN</option>
+      <option value="FR">🇫🇷 FR</option>
+      <option value="AR">🇦🇪 AR</option>
+    </select>
+
   </header>
 
   <div class="sidebar-backdrop" v-if="isSidebarOpen" @click="toggleSidebar"></div>
@@ -50,26 +57,26 @@ function handleLogout() {
 
     <div class="main-links">
       <RouterLink :to="{ name: 'home' }" class="nav-link" @click="toggleSidebar"
-        >Home Page</RouterLink
+        >{{$t('header.home')}}</RouterLink
       >
       <RouterLink :to="{ name: 'user' }" class="nav-link" @click="toggleSidebar"
-        >Utilisateur</RouterLink
+        >{{$t('header.user')}}</RouterLink
       >
       <RouterLink :to="{ name: 'users' }" class="nav-link" @click="toggleSidebar"
-        >Les autres</RouterLink
+        >{{$t('header.users')}}</RouterLink
       >
       <RouterLink :to="{ name: 'modif' }" class="nav-link" @click="toggleSidebar"
-        >Modifier</RouterLink
+        >{{$t('header.edit')}}</RouterLink
       >
     </div>
 
     <div class="auth-links">
       <template v-if="!isLoggedIn()">
         <RouterLink :to="{ name: 'login' }" class="nav-link" @click="toggleSidebar">
-          Connexion
+          {{$t('header.login')}}
         </RouterLink>
         <RouterLink :to="{ name: 'register' }" class="nav-link" @click="toggleSidebar">
-          S'inscrire
+          {{$t('header.register')}}
         </RouterLink>
       </template>
 
@@ -101,7 +108,7 @@ function handleLogout() {
 .app-header h1 {
   color: white;
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 2 rem;
   width: 100%;
   text-align: center;
 }
