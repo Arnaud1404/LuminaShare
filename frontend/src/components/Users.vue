@@ -1,5 +1,3 @@
 <template>
-
-    <h1> Les Utilisateurs </h1>
-
+  <h1>Les Utilisateurs</h1>
 </template>

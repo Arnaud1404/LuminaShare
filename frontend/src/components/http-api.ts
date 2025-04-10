@@ -1,5 +1,42 @@
 import axios, { type AxiosResponse } from 'axios';
 import { images, type ImageGallery } from './images';
+import { currentUser } from './users';
+
+export async function loginUser(userid: string, password: string): Promise<boolean> {
+  try {
+    const response = await axios.post('/api/auth/login', { userid, password });
+    console.log('Login response:', response.data);
+    currentUser.value = response.data;
+    localStorage.setItem('user', JSON.stringify(response.data));
+    return true;
+  } catch (error) {
+    console.error('Login failed:', error);
+    return false;
+  }
+}
+
+export async function registerUser(
+  userid: string,
+  name: string,
+  password: string
+): Promise<boolean> {
+  try {
+    await axios.post('/api/auth/register', {
+      userid,
+      name,
+      password,
+    });
+    return true;
+  } catch (error) {
+    console.error('Registration failed:', error);
+    return false;
+  }
+}
+
+export function logoutUser(): void {
+  currentUser.value = null;
+  localStorage.removeItem('user');
+}
 
 export async function getImagesAsJSON() {
   let json: ImageGallery[] = [];

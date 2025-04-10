@@ -219,7 +219,7 @@ watchEffect(async () => {
     <!-- LEFT COLUMN - 50% width -->
     <div class="left-column">
       <!-- Selected Image Area - 60% height -->
-      <div class="selected-image-container">
+      <div class="selected-image-container panel">
         <h2>Image sélectionnée</h2>
         <div v-if="selectedImage" class="image-display">
           <img
@@ -235,7 +235,7 @@ watchEffect(async () => {
       </div>
 
       <!-- Similar Images - 40% height -->
-      <div class="similar-section">
+      <div class="similar-section panel">
         <h3>Images similaires - Plus le score est bas, plus l'image est similaire</h3>
         <div class="similar-filters">
           <select v-model="descriptor">
@@ -254,7 +254,7 @@ watchEffect(async () => {
     <!-- RIGHT COLUMN - 40% width -->
     <div class="right-column">
       <!-- Image Actions - 10% height -->
-      <div class="image-actions">
+      <div class="image-actions panel">
         <h3>Actions</h3>
         <div class="action-buttons" v-if="selectedImage">
           <button @click="downloadImage">Télécharger</button>
@@ -265,7 +265,7 @@ watchEffect(async () => {
       </div>
 
       <div v-if="showMetadata && selectedImage" class="metadata-popup">
-        <div class="metadata-content">
+        <div class="metadata-content panel">
           <h3>Métadonnées</h3>
           <p><strong>Identifiant:</strong> {{ selectedImage.id }}</p>
           <p><strong>Nom:</strong> {{ selectedImage.name }}</p>
@@ -276,7 +276,7 @@ watchEffect(async () => {
       </div>
 
       <!-- Upload Area - 10% height -->
-      <div class="upload-area">
+      <div class="upload-area panel">
         <h3>Téléverser une image</h3>
         <div style="display: flex; gap: 10px">
           <input type="file" @change="handleFileUpload" style="flex: 1" />
@@ -287,7 +287,7 @@ watchEffect(async () => {
       </div>
 
       <!-- Gallery - 80% height, scrollable -->
-      <div class="gallery-container">
+      <div class="gallery-container panel">
         <h3>Galerie</h3>
         <div class="scrollable-gallery">
           <Gallery :images="images" @select="handleImageSelect" />
@@ -298,50 +298,7 @@ watchEffect(async () => {
 </template>
 
 <style scoped>
-.fullscreen-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: hsla(0, 0%, 0%, 0.9);
-  z-index: 1000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-
-.fullscreen-overlay img {
-  max-width: 90%;
-  max-height: 90%;
-  object-fit: contain;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-select {
-  background:var(--select_color);
-  color: white;
-  border: 1px solid hsl(0, 0%, 33%);
-  padding: 5px;
-  border-radius: 4px;
-  min-width: 120px;
-}
-
-input[type='number'] {
-  background:var(--select_color);
-  color: white;
-  border: 1px solid hsl(0, 0%, 33%);
-  padding: 5px;
-  border-radius: 4px;
-  width: 60px;
-}
-
+/* Layout structure specific to this component */
 .two-column-layout {
   display: flex;
   height: 85vh;
@@ -355,12 +312,16 @@ input[type='number'] {
   flex-direction: column;
 }
 
+.right-column {
+  width: 50%;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Component-specific containers with dimensions */
 .selected-image-container {
   height: 60%;
-  background-color: hsl(0, 0%, 16%);
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
   overflow: hidden;
 }
 
@@ -378,20 +339,8 @@ input[type='number'] {
   border-radius: 4px;
 }
 
-.metadata-area {
-  height: 10%;
-  background-color: hsl(0, 0%, 16%);
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
-  overflow: auto;
-}
-
 .similar-section {
   height: 40%;
-  background-color: hsl(0, 0%, 16%);
-  border-radius: 8px;
-  padding: 10px;
 }
 
 .similar-filters {
@@ -405,19 +354,8 @@ input[type='number'] {
   overflow: hidden;
 }
 
-.right-column {
-  width: 50%;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-}
-
 .image-actions {
   height: 10%;
-  background-color: hsl(0, 0%, 16%);
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
 }
 
 .metadata-popup {
@@ -434,24 +372,15 @@ input[type='number'] {
 }
 
 .metadata-content {
-  background-color: hsl(0, 0%, 16%);
+  background-color: var(--panel_color);
   padding: 20px;
   border-radius: 8px;
   max-width: 500px;
   width: 100%;
 }
 
-.action-buttons {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
 .upload-area {
   height: 10%;
-  background-color: #2a2a2a;
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
   display: flex;
   flex-direction: column;
 }
@@ -462,18 +391,10 @@ input[type='number'] {
 
 .gallery-container {
   height: 80%;
-  background-color: hsl(0, 0%, 16%);
-  border-radius: 8px;
-  padding: 10px;
 }
 
 .scrollable-gallery {
   height: 90%;
   overflow-y: auto;
 }
-
-.delete-button {
-  background-color: rgb(196, 33, 33);
-}
-
 </style>

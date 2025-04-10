@@ -1,7 +1,7 @@
-package pdl.backend.Database;
+package pdl.backend.Image;
 
-import pdl.backend.Image;
-import pdl.backend.imageProcessing.*;
+import pdl.backend.Image.Processing.ImagePGVector;
+import pdl.backend.Image.Processing.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -56,13 +56,23 @@ public class ImageRepository implements InitializingBean {
     @PostConstruct
     public void afterPropertiesSet() throws Exception {
         this.jdbcTemplate.execute("CREATE EXTENSION IF NOT EXISTS vector");
+        
         if (resetDatabase) {
             this.jdbcTemplate.execute("DROP TABLE IF EXISTS " + databaseTable);
         }
-        this.jdbcTemplate
-                .execute(
-                        "CREATE TABLE IF NOT EXISTS " + databaseTable
-                                + " (id bigserial PRIMARY KEY, name character varying(255) UNIQUE, type character varying(10), size character varying(255), rgbcube vector(512), hueSat vector(101))");
+        
+        this.jdbcTemplate.execute(
+            "CREATE TABLE IF NOT EXISTS " + databaseTable + " (" +
+            "id bigserial PRIMARY KEY, " +
+            "name character varying(255) UNIQUE, " +
+            "type character varying(10), " +
+            "size character varying(255), " +
+            "rgbcube vector(512), " +
+            "hueSat vector(101), " +
+            "userid VARCHAR(50) REFERENCES users(userid), " +
+            "ispublic BOOLEAN DEFAULT false" +
+            ")"
+        );
     }
 
     /**

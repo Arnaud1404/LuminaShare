@@ -3,27 +3,42 @@
   margin: 0;
 }
 
-:root{
-  --title: rgb(153, 130, 153);
-  --background_color:rgba(0, 0, 0, 0.85);
-  --select_color: hsl(0, 25%, 30%);
-  --color_button: hsl(0, 19%, 28%);
+:root {
+  --title: hsl(210, 100%, 80%);
+  --background_color: hsl(220, 15%, 10%);
+  --select_color: hsl(210, 70%, 35%);
+  --color_button: hsl(210, 60%, 30%);
+  --panel_color: hsl(220, 10%, 18%);
 }
 
-h1,h2,h3 {
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.panel {
+  background-color: var(--panel_color);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+h1,
+h2,
+h3 {
   color: var(--title);
   text-align: center;
   margin-bottom: 10px;
 }
 
 body {
-  background:  var(--background_color);
-  font-family: 'Arial', Times, serif;
+  background: var(--background_color);
+  font-family: 'Helvetica', Times, serif;
   margin: 0;
   min-height: 100vh;
   color: white;
 }
-
 
 button {
   background-color: var(--color_button);
@@ -43,10 +58,67 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.a:hover{
-  color:green;
+select {
+  background: var(--select_color);
+  color: white;
+  border: 1px solid hsl(0, 0%, 33%);
+  padding: 5px;
+  border-radius: 4px;
+  min-width: 120px;
 }
 
-.a{
-  color:greenyellow;
+input[type='number'],
+input[type='text'],
+input[type='file'] {
+  background: var(--select_color);
+  color: white;
+  border: 1px solid hsl(0, 0%, 33%);
+  padding: 5px;
+  border-radius: 4px;
+}
+
+input[type='number'] {
+  width: 60px;
+}
+
+.panel {
+  background-color: var(--panel_color);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.delete-button {
+  background-color: rgb(196, 33, 33);
+}
+
+.fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: hsla(0, 0%, 0%, 0.9);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.fullscreen-overlay img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+a {
+  color: var(--title);
+  text-decoration: none;
 }

@@ -25,6 +25,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.http.MediaType;
 
 import pdl.backend.FileHandler.*;
+import pdl.backend.Image.Image;
+import pdl.backend.Image.ImageDao;
 
 @SpringBootTest
 @AutoConfigureMockMvc
