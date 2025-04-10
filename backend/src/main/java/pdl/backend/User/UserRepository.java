@@ -30,17 +30,7 @@ public class UserRepository implements InitializingBean {
     
     @Override
     public void afterPropertiesSet() throws Exception {
-         if (resetDatabase) {
-            this.jdbcTemplate.execute("DROP TABLE IF EXISTS users CASCADE");
-        }
-        
-        this.jdbcTemplate.execute(
-            "CREATE TABLE IF NOT EXISTS users (" +
-            "userid VARCHAR(50) PRIMARY KEY, " +
-            "name VARCHAR(100) NOT NULL, " +
-            "password VARCHAR(100) NOT NULL, " +
-            "bio VARCHAR(500))"
-        );
+        // Empty - initialization moved to DatabaseInitializer
     }
     
     /**
