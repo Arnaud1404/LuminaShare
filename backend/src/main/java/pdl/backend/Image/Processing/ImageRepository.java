@@ -1,6 +1,6 @@
-package pdl.backend.Database;
+package pdl.backend.Image.Processing;
 
-import pdl.backend.Image;
+import pdl.backend.Image.Processing.Image;
 import pdl.backend.imageProcessing.*;
 
 import java.util.HashMap;

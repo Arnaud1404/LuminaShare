@@ -1,4 +1,4 @@
-package pdl.backend;
+package pdl.backend.Image.Processing;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;

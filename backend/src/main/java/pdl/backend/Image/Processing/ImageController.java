@@ -1,4 +1,4 @@
-package pdl.backend;
+package pdl.backend.Image.Processing;
 
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
@@ -17,9 +17,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import pdl.backend.Database.ImageRepository;
+import pdl.backend.Image.Processing.Image;
 import pdl.backend.FileHandler.*;
-import pdl.backend.Database.*;
+import pdl.backend.Image.Processing.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

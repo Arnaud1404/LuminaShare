@@ -1,4 +1,4 @@
-package pdl.backend;
+package pdl.backend.Image.Processing;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -16,7 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
-import pdl.backend.Database.ImageRepository;
+import pdl.backend.Image.Processing.ImageRepository;
 import pdl.backend.FileHandler.FileController;
 
 /**
