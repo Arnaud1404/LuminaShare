@@ -9,7 +9,7 @@ import {
 } from './http-api';
 import Gallery from './Gallery.vue';
 import Similar from './Similar.vue';
-import ImageSelected from './ImageSelected.vue';
+import DisplayImage from './DisplayImage.vue';
 
 import { images, type ImageGallery } from './images.ts';
 import Notification, { type NotificationType } from './Notification.vue';
@@ -223,8 +223,7 @@ watchEffect(async () => {
       <!-- Selected Image Area - 60% height -->
       <div class="selected-image-container">
         <h2>Image sélectionnée</h2>
-          <ImageSelected :image="selectedImage"/>
-
+          <DisplayImage :image="selectedImage"/>
       </div>
 
       <!-- Similar Images - 40% height -->

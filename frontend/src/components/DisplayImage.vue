@@ -3,7 +3,7 @@ import { type ImageGallery } from './images';
 import {ref } from 'vue';
 
 
-defineProps<{ image: ImageGallery }>();
+defineProps<{ image: ImageGallery|null }>();
 
 const isFullscreen = ref(false);
 
