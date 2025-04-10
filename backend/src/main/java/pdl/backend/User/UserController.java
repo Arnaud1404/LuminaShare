@@ -29,7 +29,6 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userDao.retrieveAll();
-        // Don't return passwords in response
         users.forEach(user -> user.setPassword(null));
         return ResponseEntity.ok(users);
     }

@@ -28,19 +28,12 @@ public class UserDao {
      * @return true if successful, false if userid already exists
      */
     public boolean create(final User user) {
-        // Check if user already exists
         if (users.containsKey(user.getUserid())) {
             return false;
         }
         
-        // Encrypt the password before storing
-        String encryptedPassword = passwordService.encryptPassword(user.getPassword());
-        user.setPassword(encryptedPassword);
-        
-        // Add to in-memory map
         users.put(user.getUserid(), user);
         
-        // Add to database
         return userRepository.addUser(user) > 0;
     }
     
@@ -79,7 +72,6 @@ public class UserDao {
             String encryptedPassword = passwordService.encryptPassword(user.getPassword());
             user.setPassword(encryptedPassword);
         } else {
-            // Keep existing password
             User existingUser = users.get(user.getUserid());
             user.setPassword(existingUser.getPassword());
         }
@@ -111,13 +103,11 @@ public class UserDao {
      * @return Optional user if credentials valid, empty otherwise
      */
     public Optional<User> authenticate(String userid, String password) {
-        // Get user from database (passwords stored in DB)
         Optional<User> userOpt = userRepository.getUserById(userid);
         
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             if (passwordService.matchPassword(password, user.getPassword())) {
-                // Add to in-memory cache if not present
                 users.putIfAbsent(userid, user);
                 return Optional.of(user);
             }
