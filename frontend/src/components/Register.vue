@@ -56,7 +56,7 @@ async function handleRegister() {
           id="userid"
           v-model="userid"
           required
-          placeholder="Choisissez un ID unique"
+          :placeholder="$t('register.choose_userid')"
         />
       </div>
 
@@ -64,7 +64,7 @@ async function handleRegister() {
         <label for="name">
           {{ $t('register.name') }}
         </label>
-        <input type="text" id="name" v-model="name" required placeholder="Entrez votre nom" />
+        <input type="text" id="name" v-model="name" required :placeholder="$t('register.name')" />
       </div>
 
       <div class="form-group">
@@ -76,7 +76,7 @@ async function handleRegister() {
           id="password"
           v-model="password"
           required
-          placeholder="Choisissez un mot de passe"
+          :placeholder="$t('login.enter_mdp')"
         />
       </div>
 

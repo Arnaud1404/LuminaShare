@@ -49,6 +49,7 @@
     "title": "Pas trouvée"
   },
   "register": {
+    "choose_userid": "Choisissez un ID unique",
     "name": "Nom Complet",
     "exist": "Déjà inscrit ?"
   },
