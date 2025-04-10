@@ -202,7 +202,7 @@ const Apply_filter = async () => {
   filtrerImage.value = JSON.parse(JSON.stringify(selectedImage.value));
   if (!filtrerImage.value) return;
   try {
-    filtrerImage.value.dataUrl = await getImageFilter(1, infoFilter.value);
+    filtrerImage.value.dataUrl = await getImageFilter(1, infoFilter.value, FilterPourcent.value);
   }
   catch (error) {
     console.error('Failed to load Altered image:', error);
