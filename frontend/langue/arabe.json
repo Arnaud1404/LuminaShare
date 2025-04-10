@@ -1,29 +1,29 @@
 {
     "header" : {
-        "home": "HomePage",
-        "user": "My profile",
-        "users": "Others",
-        "edit": "`Edit",
-        "login": "Login",
-        "register": "Register"
+        "home": "الصفحة الرئيسية",
+        "user": "المستخدم",
+        "users": "الآخرون",
+        "edit": "`تعديل",
+        "login": "تسجيل الدخول",
+        "register": "تسجيل"
     },
     "display_image" : {
-        "title": "Image",
-        "description": "No image selected"
+        "title": "الصورة",
+        "description": "لا توجد صورة محددة"
     },
     "image_similar" : {
-        "title": "Similar image - The lower the score the more similar is the image",
-        "button": "shearch"
+        "title": "صور مشابهة - كلما كان الرقم أقل، كانت الصورة أكثر تشابهاً",
+        "button": "بحث"
     },
     "upload_img" : {
-        "title" : "Upload an image"
+        "title" : "رفع صورة"
     },
     "button" : {
-        "3D": "3D RGB",
-        "2D": "2D Teinte Saturation",
-        "upload" : "Téléverser",
-        "delete" : "Supprimer",
-        "download" : "Télécharger"
+        "3D": "ثلاثي الأبعاد أحمر أخضر أزرق",
+        "2D": "ثنائي الأبعاد تشبع اللون ",
+        "upload" : "رفع",
+        "delete" : "حذف",
+        "download" : "تحميل"
     }
 
 }
