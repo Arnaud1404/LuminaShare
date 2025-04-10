@@ -17,9 +17,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+
 import pdl.backend.Image.Image;
 import pdl.backend.FileHandler.*;
 import pdl.backend.Image.Processing.*;
+
+import pdl.backend.FileHandler.*;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -214,6 +218,7 @@ public class ImageController {
       }
     }
   }
+
   /**
    * Handles the resizing of an image with the specified ID.
    *
@@ -228,37 +233,37 @@ public class ImageController {
   public ResponseEntity<?> resizeImage(@PathVariable("id") long id, 
                                        @RequestParam("width") int width,
                                        @RequestParam("height") int height) {
-    try {
-        // Validation des dimensions
-        if (width <= 0 || height <= 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Les dimensions doivent être positives.");
-        }
-        Optional<Image> optionalImage = imageDao.retrieve(id);
-        if (optionalImage.isEmpty()) {
+        try {
+          // Validation des dimensions
+          if (width <= 0 || height <= 0) {
+              return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Les dimensions doivent être positives.");
+          }
+          Optional<Image> optionalImage = imageDao.retrieve(id);
+          if (optionalImage.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image introuvable.");
-        }
+          }
 
-        Image image = optionalImage.get();
-        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(image.getData()));
+          Image image = optionalImage.get();
+          BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(image.getData()));
 
-        if (originalImage == null) {
+          if (originalImage == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'image est corrompue ou invalide.");
+          }
+
+          BufferedImage resizedImage = imageService.resizedImage(originalImage, width, height);
+
+          ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+          ImageIO.write(resizedImage, "jpeg", outputStream);
+
+          image.setData(outputStream.toByteArray());
+          image.setWidth(width);
+          image.setHeight(height);
+          imageDao.create(image);
+
+          return ResponseEntity.ok().body("Image redimensionnée avec succès.");
+        } catch (IOException e) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors du redimensionnement de l'image.");
         }
-
-        BufferedImage resizedImage = imageService.resizedImage(originalImage, width, height);
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(resizedImage, "jpeg", outputStream);
-
-        image.setData(outputStream.toByteArray());
-        image.setWidth(width);
-        image.setHeight(height);
-        imageDao.create(image);
-
-        return ResponseEntity.ok().body("Image redimensionnée avec succès.");
-    } catch (IOException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors du redimensionnement de l'image.");
-    }
   }
   /**
    * Handles the inversion of colors for an image identified by its ID.
@@ -359,6 +364,17 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors du traitement de l'image.");
     } catch (IllegalArgumentException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+  }
+
+  @RequestMapping(value = "/images/{id}/filter", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  @ResponseBody
+  public ResponseEntity<?> getSimilarImages(@PathVariable("id") long id, @RequestParam("filter") String filter) {
+    try {
+      return getImage(id);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
     }
   }
 }

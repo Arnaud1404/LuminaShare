@@ -25,12 +25,17 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.http.MediaType;
 
 import pdl.backend.FileHandler.*;
+
 import java.util.Optional;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import javax.imageio.ImageIO;
 import pdl.backend.Image.*;
+
+
+import pdl.backend.Image.Image;
+import pdl.backend.Image.ImageDao;
 
 
 @SpringBootTest
