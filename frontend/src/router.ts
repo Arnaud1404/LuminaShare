@@ -23,12 +23,6 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/edit",
     name: "modif",
-    component: () => import("./components/LuminaShare.vue"),
-    props: false
-  },
-  {
-    path: "/edit2",
-    name: "modif2",
     component: () => import("./components/Edit.vue"),
     props: false
   },

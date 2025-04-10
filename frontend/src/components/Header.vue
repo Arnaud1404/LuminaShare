@@ -3,7 +3,6 @@
         <RouterLink :to="{name: 'home'}" class="header">Home Page</RouterLink>
         <RouterLink :to="{name: 'user'}" class="header">Utilisateur</RouterLink>
         <RouterLink :to="{name: 'users'}" class="header">Les autres</RouterLink>
-        <RouterLink :to="{name: 'modif2'}" class="header">mm</RouterLink>
         <RouterLink :to="{name: 'modif'}" class="header">Modifier</RouterLink>
         <RouterLink :to="{name: 'login'}" class="header">Connexion</RouterLink>
         <RouterLink :to="{name: 'register'}" class="header">S'inscrire</RouterLink>
