@@ -1,3 +1,3 @@
 <template>
-  <h1>Not Found page</h1>
+  <h1>{{$t('notFound.title')}}</h1>
 </template>

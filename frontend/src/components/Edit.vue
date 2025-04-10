@@ -220,22 +220,29 @@ const Apply_filter = async () => {
 <template>
   <Notification ref="notification" />
 
-  <h1>Choose an image</h1>
-
-
   <div class="two-column-layout">
     <!-- LEFT COLUMN - 50% width -->
     <div class="left-column">
-      <h2>Choissisez une image depuis la galerie</h2>
+      <h2>
+        {{$t('edit.title_selected_img')}}
+      </h2>
       <div class="selected-image-container">
         <DisplayImage :image="selectedImage" />
       </div>
       <div v-if="selectedImage" class="option-transfo">
         <select v-model="infoFilter">
-          <option value="gradienImage">flouter</option>
-          <option value="modif_lum">Lumonisité</option>
-          <option value="invert">Inversion</option>
-          <option value="rotation">Rotation</option>
+          <option value="gradienImage">
+            {{$t('button.blur')}}
+          </option>
+          <option value="modif_lum">
+            {{$t('button.brightness')}}
+          </option>
+          <option value="invert">
+            {{$t('button.reverse')}}
+          </option>
+          <option value="rotation">
+            {{$t('button.rotation')}}
+          </option>
         </select>
         <input v-if="infoFilter === 'gradienImage' || infoFilter === 'modif_lum'" type="number" v-model="FilterPourcent"
           min="0" max="100" />
@@ -246,20 +253,30 @@ const Apply_filter = async () => {
           <option value="270">270°</option>
         </select>
 
-        <button @click="Apply_filter">Appliquer</button>
+        <button @click="Apply_filter">
+          {{$t('button.apply')}}
+        </button>
       </div>
 
 
 
       <div class="similar-section">
-        <h3>Images similaires - Plus le score est bas, plus l'image est similaire</h3>
+        <h3>
+          {{$t('image_similar.title')}}
+        </h3>
         <div class="similar-filters">
           <select v-model="descriptor">
-            <option value="rgbcube">3D RGB</option>
-            <option value="huesat">2D Teinte Saturation</option>
+            <option value="rgbcube">
+              {{$t('button.3D')}}
+            </option>
+            <option value="huesat">
+            {{$t('button.2D')}}
+            </option>
           </select>
           <input type="number" v-model="similarCount" min="1" max="10" />
-          <button @click="fetchSimilarImages">Rechercher</button>
+          <button @click="fetchSimilarImages">
+            {{$t('button.research')}}
+          </button>
         </div>
         <div class="similar-results">
           <Similar :images="similarImages" @select="handleImageSelect" />
@@ -270,31 +287,56 @@ const Apply_filter = async () => {
       <!-- RIGHT COLUMN - 50% width -->
     </div>
     <div class="right-column">
-      <h2>Image modifiée</h2>
+      <h2>
+        {{$t('edit.title_filter_img')}}
+      </h2>
       <div class="selected-image-container">
         <DisplayImage :image="filtrerImage" />
       </div>
-      <div class="image-actions">
-        <div class="action-buttons" v-if="selectedImage">
-          <button @click="downloadImage">Télécharger</button>
-          <button @click="toggleMetadata">Métadonnées</button>
-          <button @click="handleDeleteImage" class="delete-button">Supprimer</button>
+      <div v-if="selectedImage" class="image-actions">
+        <div class="action-buttons">
+          <button @click="downloadImage">
+            {{$t('button.download')}}
+          </button>
+          <button @click="toggleMetadata">
+            {{$t('button.metadata')}}
+          </button>
+          <button @click="handleDeleteImage" class="delete-button">
+            {{$t('button.Supprimer')}}
+          </button>
         </div>
-        <p v-else>Sélectionnez une image pour voir les actions disponibles</p>
       </div>
       <div v-if="showMetadata && selectedImage" class="metadata-popup">
         <div class="metadata-content panel">
-          <h3>Métadonnées</h3>
-          <p><strong>Identifiant:</strong> {{ selectedImage.id }}</p>
-          <p><strong>Nom:</strong> {{ selectedImage.name }}</p>
-          <p><strong>Type:</strong> {{ selectedImage.type }}</p>
-          <p><strong>Taille:</strong> {{ selectedImage.size }}</p>
-          <button @click="toggleMetadata" class="close-button">Fermer</button>
+          <h3>
+            {{$t('button.metadata')}}
+          </h3>
+          <p><strong>
+            {{$t('edit.id')}}
+            </strong> {{ selectedImage.id }}
+          </p>
+          <p><strong>
+            {{$t('edit.name')}}
+            </strong> {{ selectedImage.name }}
+          </p>
+          <p><strong>
+            {{$t('edit.type')}}
+          </strong> {{ selectedImage.type }}
+        </p>
+          <p><strong>
+            {{$t('edit.length')}}
+          </strong> {{ selectedImage.size }}
+        </p>
+          <button @click="toggleMetadata" class="close-button">
+            {{$t('edit.close')}}
+          </button>
         </div>
       </div>
 
       <div class="gallery-container">
-        <h3>Galerie</h3>
+        <h3>
+          {{$t('edit.title_gallery')}}
+        </h3>
         <div class="scrollable-gallery">
           <Gallery :images="images" @select="handleImageSelect" />
         </div>

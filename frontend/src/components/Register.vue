@@ -38,7 +38,9 @@ async function handleRegister() {
 
 <template>
   <div class="register-container panel">
-    <h1>Inscription</h1>
+    <h1>
+      {{$t('header.register')}}
+    </h1>
 
     <div v-if="errorMessage" class="error-message">
       {{ errorMessage }}
@@ -46,7 +48,9 @@ async function handleRegister() {
 
     <form @submit.prevent="handleRegister">
       <div class="form-group">
-        <label for="userid">ID Utilisateur:</label>
+        <label for="userid">
+          {{$t('login.mdp')}}
+        </label>
         <input
           type="text"
           id="userid"
@@ -57,12 +61,16 @@ async function handleRegister() {
       </div>
 
       <div class="form-group">
-        <label for="name">Nom Complet:</label>
+        <label for="name">
+          {{$t('register.name')}}
+        </label>
         <input type="text" id="name" v-model="name" required placeholder="Entrez votre nom" />
       </div>
 
       <div class="form-group">
-        <label for="password">Mot de passe:</label>
+        <label for="password">
+          {{$t('login.mdp')}}
+        </label>
         <input
           type="password"
           id="password"
@@ -79,8 +87,8 @@ async function handleRegister() {
       </div>
 
       <div class="login-link">
-        Déjà inscrit?
-        <RouterLink :to="{ name: 'login' }">Se connecter</RouterLink>
+        {{$t('register.exist')}}
+        <RouterLink :to="{ name: 'login' }">{{$t('login.login_now')}}</RouterLink>
       </div>
     </form>
   </div>
