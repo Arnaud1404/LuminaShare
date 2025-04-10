@@ -230,7 +230,7 @@ const Apply_filter = async () => {
             <div class="selected-image-container">
                 <DisplayImage :image="selectedImage"/>
         </div>
-        <div class="option-transfo">
+        <div v-if ="selectedImage" class="option-transfo">
           <select v-model="infoFilter">
                 <option value="gradienImage">flouter</option>
                 <option value="modif_lum">Lumonisité</option>
