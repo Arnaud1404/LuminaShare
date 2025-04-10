@@ -165,7 +165,6 @@ export async function refreshImages(): Promise<void> {
 }
 
 export async function getImageFilter(id: number, filter: string, number: number) {
-  filter = id + filter;
   return axios
 
     .get(`/images/${id}/filter?filter=${filter}&number=${number}`

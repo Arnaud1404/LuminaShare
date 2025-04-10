@@ -1,6 +1,8 @@
 package pdl.backend.Image;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.awt.image.BufferedImage;
@@ -11,7 +13,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import boofcv.io.image.ConvertBufferedImage;
+import boofcv.io.image.UtilImageIO;
+import boofcv.struct.image.GrayU8;
+import boofcv.struct.image.Planar;
 import pdl.backend.FileHandler.*;
+import pdl.backend.Image.Processing.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -204,11 +211,31 @@ public class ImageController {
 
   @RequestMapping(value = "/images/{id}/filter", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   @ResponseBody
-  public ResponseEntity<?> getSimilarImages(@PathVariable("id") long id, @RequestParam("filter") String filter,
-      @RequestParam("number") long number) {
+  public ResponseEntity<?> applyFilter(@PathVariable("id") long id, @RequestParam("filter") String filter,
+      @RequestParam("number") int number) {
     try {
-      return getImage(id);
-    } catch (Exception e) {
+      Image img = imageDao.retrieve(id).get();
+
+      BufferedImage img_input = ImageIO.read(FileController.get_file(img.getName()));
+      GrayU8 input = new GrayU8(img_input.getWidth(), img_input.getHeight());
+      ConvertBufferedImage.convertFrom(img_input, input);
+
+      GrayU8 output = input.createSameShape();
+
+      Convolution.meanFilter(input, output, number);
+
+      byte[] bytes = img.getData();
+
+      MediaType mediaType = img.getType();
+      return ResponseEntity
+          .ok()
+          .contentType(mediaType)
+          .body(bytes);
+
+    } catch (
+
+    Exception e) {
+      e.printStackTrace();
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 
     }
