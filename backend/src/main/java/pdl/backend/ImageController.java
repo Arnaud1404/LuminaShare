@@ -224,7 +224,7 @@ public class ImageController {
    *         - HTTP 400 (BAD REQUEST) if the image data is invalid or corrupted.
    *         - HTTP 500 (INTERNAL SERVER ERROR) if an error occurs during the resizing process.
    */
-  @RequestMapping(value = "/images/{id}/resize", method = RequestMethod.POST, produces = MediaType.IMAGE_JPEG_VALUE)
+  @RequestMapping(value = "/images/{id}/resize", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public ResponseEntity<?> resizeImage(@PathVariable("id") long id, 
                                        @RequestParam("width") int width,
                                        @RequestParam("height") int height) {
@@ -245,7 +245,7 @@ public class ImageController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'image est corrompue ou invalide.");
         }
 
-        BufferedImage resizedImage = imageService.resizeImage(originalImage, width, height);
+        BufferedImage resizedImage = imageService.resizedImage(originalImage, width, height);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(resizedImage, "jpeg", outputStream);
@@ -270,7 +270,7 @@ public class ImageController {
    *         - HTTP 400 (BAD REQUEST) if the image data is corrupted or invalid.
    *         - HTTP 500 (INTERNAL SERVER ERROR) if an error occurs during processing.
    */
-  @RequestMapping(value = "/images/{id}/invert", method = RequestMethod.POST, produces = MediaType.IMAGE_JPEG_VALUE)
+  @RequestMapping(value = "/images/{id}/invert", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public ResponseEntity<?> invertImageColors(@PathVariable("id") long id) {
     try {
         Optional<Image> optionalImage = imageDao.retrieve(id);
@@ -285,7 +285,7 @@ public class ImageController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'image est corrompue ou invalide.");
         }
 
-        BufferedImage invertedImage = imageService.invertColors(originalImage);
+        BufferedImage invertedImage = imageService.invertColor(originalImage);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         String formatName = image.getType().getSubtype();
@@ -299,7 +299,7 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'inversion des couleurs.");
     }
   }
-  @RequestMapping(value = "/images/{id}/mirror", method = RequestMethod.POST, produces = MediaType.IMAGE_JPEG_VALUE)
+  @RequestMapping(value = "/images/{id}/mirror", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public ResponseEntity<?> mirrorImage(@PathVariable("id") long id, @RequestParam("horizontal") boolean horizontal) {
     try {
         Optional<Image> optionalImage = imageDao.retrieve(id);
@@ -314,7 +314,7 @@ public class ImageController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'image est corrompue ou invalide.");
         }
 
-        BufferedImage mirroredImage = imageService.mirrorImage(originalImage, horizontal);
+        BufferedImage mirroredImage = imageService.mirrorImages(originalImage, horizontal);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         String formatName = image.getType().getSubtype();
@@ -330,8 +330,8 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
   }
-  @RequestMapping(value = "/images/{id}/rotate", method = RequestMethod.POST, produces = MediaType.IMAGE_JPEG_VALUE)
-  public ResponseEntity<?> rotateImage(@PathVariable("id") long id, @RequestParam("angle") int angle) {
+  @RequestMapping(value = "/images/{id}/rotate", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  public ResponseEntity<?> rotateImages(@PathVariable("id") long id, @RequestParam("angle") int angle) {
     try {
         Optional<Image> optionalImage = imageDao.retrieve(id);
         if (optionalImage.isEmpty()) {
@@ -345,7 +345,7 @@ public class ImageController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'image est corrompue ou invalide.");
         }
 
-        BufferedImage rotatedImage = imageService.rotateImage(originalImage, angle);
+        BufferedImage rotatedImage = imageService.rotateImages(originalImage, angle);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         String formatName = image.getType().getSubtype(); // Récupère le format (jpeg, png, etc.)
