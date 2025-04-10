@@ -71,6 +71,7 @@ sudo apt-get install openjdk-17-jdk
 ## Inspiration
 
 Données : https://www.dcode.fr/donnees-exif
+Langue  : https://www.youtube.com/watch?v=_QTRUA7bZvU&t=303s
 
 ## Testé Sur
 
