@@ -131,4 +131,64 @@ public class ImageDao implements Dao<Image> {
   public static long getImageCount() {
     return Image.getCount();
   }
+
+  // Add these methods to the ImageDao class
+
+/**
+ * Get all images belonging to a specific user
+ * 
+ * @param userid The user ID
+ * @return List of images owned by the user
+ */
+public List<Image> getByUserId(String userid) {
+    return imageRepository.getByUserId(userid);
+}
+
+/**
+ * Get only public images belonging to a specific user
+ * 
+ * @param userid The user ID
+ * @return List of public images owned by the user
+ */
+public List<Image> getPublicByUserId(String userid) {
+  return imageRepository.getPublicByUserId(userid);
+}
+
+/**
+ * Likes an image by incrementing its like count
+ * 
+ * @param imageId The ID of the image to like
+ * @return The new like count, or -1 if operation failed
+ */
+public int likeImage(long imageId) {
+    int newLikeCount = imageRepository.likeImage(imageId);
+    
+    // Also update in-memory image if it exists
+    Optional<Image> imgOpt = retrieve(imageId);
+    if (imgOpt.isPresent() && newLikeCount >= 0) {
+        Image img = imgOpt.get();
+        img.setLikes(newLikeCount);
+    }
+    
+    return newLikeCount;
+}
+
+/**
+ * Unlikes an image by decrementing its like count
+ * 
+ * @param imageId The ID of the image to unlike
+ * @return The new like count, or -1 if operation failed
+ */
+public int unlikeImage(long imageId) {
+    int newLikeCount = imageRepository.unlikeImage(imageId);
+    
+    // Also update in-memory image if it exists
+    Optional<Image> imgOpt = retrieve(imageId);
+    if (imgOpt.isPresent() && newLikeCount >= 0) {
+        Image img = imgOpt.get();
+        img.setLikes(newLikeCount);
+    }
+    
+    return newLikeCount;
+}
 }

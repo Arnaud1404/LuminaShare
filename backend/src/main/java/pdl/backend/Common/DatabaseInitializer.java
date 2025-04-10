@@ -55,7 +55,8 @@ public class DatabaseInitializer implements InitializingBean {
             "rgbcube vector(512), " +
             "hueSat vector(101), " +
             "userid VARCHAR(50) REFERENCES users(userid), " +
-            "ispublic BOOLEAN DEFAULT false" +
+            "ispublic BOOLEAN DEFAULT false, " +
+            "likes INT DEFAULT 0" +
             ")"
         );
         

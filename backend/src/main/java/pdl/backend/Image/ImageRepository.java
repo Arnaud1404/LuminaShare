@@ -49,6 +49,9 @@ public class ImageRepository implements InitializingBean {
         img.setName(rs.getString("name"));
         img.setType(MediaType.valueOf(rs.getString("type")));
         img.setSize(rs.getString("size"));
+        img.setUserid(rs.getString("userid"));
+        img.setPublic(rs.getBoolean("ispublic"));
+        img.setLikes(rs.getInt("likes"));
         return img;
     };
 
@@ -241,21 +244,96 @@ public class ImageRepository implements InitializingBean {
      */
     private int insertImageRecord(Image img, PGvector rgbcube, PGvector hueSat) {
         try {
-            jdbcTemplate.update(
-                    "INSERT INTO " + databaseTable + " (name, type, size, rgbcube, hueSat) VALUES (?, ?, ?, ?, ?)",
-                    img.getName(),
-                    img.getType().toString(),
-                    img.getSize(),
-                    rgbcube,
-                    hueSat);
-            img.setHueSat(hueSat);
-            img.setRgbCube(rgbcube);
-            return 1;
+              jdbcTemplate.update(
+                "INSERT INTO " + databaseTable + 
+                " (name, type, size, rgbcube, hueSat, userid, ispublic, likes) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                img.getName(),
+                img.getType().toString(),
+                img.getSize(),
+                rgbcube,
+                hueSat,
+                img.getUserid(), 
+                img.isPublic(),  
+                img.getLikes()
+        );
+        img.setHueSat(hueSat);
+        img.setRgbCube(rgbcube);
+        return 1;
         } catch (Exception e) {
             System.err.println("Database insertion failed: " + e.getMessage());
             return 0;
         }
     }
+
+
+    /**
+    * Gets all images belonging to a specific user
+    */
+    public List<Image> getByUserId(String userid) {
+        return jdbcTemplate.query(
+            "SELECT * FROM " + databaseTable + " WHERE userid = ?",
+            rowMapper,
+            userid
+        );
+    }
+
+/**
+ * Increments the like count for an image
+ * 
+ * @param imageId The ID of the image to like
+ * @return The new like count, or -1 if operation failed
+ */
+public int likeImage(long imageId) {
+    try {
+        jdbcTemplate.update("UPDATE " + databaseTable + " SET likes = likes + 1 WHERE id = ?",
+                imageId);
+
+        Integer likes = jdbcTemplate.queryForObject(
+                "SELECT likes FROM " + databaseTable + " WHERE id = ?", Integer.class, imageId);
+
+        return likes != null ? likes : -1;
+    } catch (Exception e) {
+        System.err.println("Failed to like image: " + e.getMessage());
+        return -1;
+    }
+}
+
+/**
+ * Decrements the like count for an image (minimum 0)
+ * 
+ * @param imageId The ID of the image to unlike
+ * @return The new like count, or -1 if operation failed
+ */
+public int unlikeImage(long imageId) {
+    try {
+        jdbcTemplate.update(
+            "UPDATE " + databaseTable + " SET likes = GREATEST(likes - 1, 0) WHERE id = ?",
+            imageId
+        );
+        
+        Integer likes = jdbcTemplate.queryForObject(
+            "SELECT likes FROM " + databaseTable + " WHERE id = ?",
+            Integer.class,
+            imageId
+        );
+        
+        return likes != null ? likes : -1;
+    } catch (Exception e) {
+        System.err.println("Failed to unlike image: " + e.getMessage());
+        return -1;
+    }
+}
+
+    /**
+     * Gets only public images belonging to a specific user
+     */
+    public List<Image> getPublicByUserId(String userid) {
+        return jdbcTemplate.query(
+                "SELECT * FROM " + databaseTable + " WHERE userid = ? AND ispublic = true",
+                rowMapper, userid);
+    }
+    
 
     /**
      * Returns the list of images similar to this image from the database
@@ -281,20 +359,21 @@ public class ImageRepository implements InitializingBean {
                 throw new RuntimeException("bad descriptor for image Similar");
         }
 
-        String sql = "SELECT id, name, type, size, " + descriptor + " <-> ? as similarity_score FROM " + databaseTable;
-        sql += " WHERE id != " + img.getId() +
-                " ORDER BY " + descriptor + " <-> ? LIMIT " + n;
+        String sql = "SELECT id, name, type, size, " + descriptor
+                + " <-> ? as similarity_score FROM " + databaseTable;
+        sql += " WHERE id != " + img.getId() + " ORDER BY " + descriptor + " <-> ? LIMIT " + n;
 
-        return jdbcTemplate.query(sql,
-                (rs, rowNum) -> {
-                    Image image = new Image();
-                    image.setId((long) rs.getInt("id"));
-                    image.setName(rs.getString("name"));
-                    image.setType(MediaType.valueOf(rs.getString("type")));
-                    image.setSize(rs.getString("size"));
-                    image.setSimilarityScore(rs.getFloat("similarity_score"));
-                    return image;
-                },
-                histo, histo);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Image image = new Image();
+            image.setId((long) rs.getInt("id"));
+            image.setName(rs.getString("name"));
+            image.setType(MediaType.valueOf(rs.getString("type")));
+            image.setSize(rs.getString("size"));
+            image.setSimilarityScore(rs.getFloat("similarity_score"));
+            return image;
+        }, histo, histo);
     }
+    
+
+    
 }

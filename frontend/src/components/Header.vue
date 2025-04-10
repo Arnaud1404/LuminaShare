@@ -35,14 +35,13 @@ function handleLogout() {
       <span class="burger-icon"></span>
     </button>
 
-    <h1> {{$t('header.title')}} </h1>
+    <h1>{{ $t('header.title') }}</h1>
 
     <select v-model="$i18n.locale">
       <option value="EN">🇬🇧 EN</option>
       <option value="FR">🇫🇷 FR</option>
       <option value="AR">🇦🇪 AR</option>
     </select>
-
   </header>
 
   <div class="sidebar-backdrop" v-if="isSidebarOpen" @click="toggleSidebar"></div>
@@ -56,27 +55,27 @@ function handleLogout() {
     </div>
 
     <div class="main-links">
-      <RouterLink :to="{ name: 'home' }" class="nav-link" @click="toggleSidebar"
-        >{{$t('header.home')}}</RouterLink
+      <RouterLink :to="{ name: 'home' }" class="nav-link" @click="toggleSidebar">{{
+        $t('header.home')
+      }}</RouterLink>
+      <RouterLink v-if="isLoggedIn()" :to="{ name: 'user' }" class="nav-link" @click="toggleSidebar"
+        >Utilisateur</RouterLink
       >
-      <RouterLink :to="{ name: 'user' }" class="nav-link" @click="toggleSidebar"
-        >{{$t('header.user')}}</RouterLink
-      >
-      <RouterLink :to="{ name: 'users' }" class="nav-link" @click="toggleSidebar"
-        >{{$t('header.users')}}</RouterLink
-      >
-      <RouterLink :to="{ name: 'modif' }" class="nav-link" @click="toggleSidebar"
-        >{{$t('header.edit')}}</RouterLink
-      >
+      <RouterLink :to="{ name: 'users' }" class="nav-link" @click="toggleSidebar">{{
+        $t('header.users')
+      }}</RouterLink>
+      <RouterLink :to="{ name: 'modif' }" class="nav-link" @click="toggleSidebar">{{
+        $t('header.edit')
+      }}</RouterLink>
     </div>
 
     <div class="auth-links">
       <template v-if="!isLoggedIn()">
         <RouterLink :to="{ name: 'login' }" class="nav-link" @click="toggleSidebar">
-          {{$t('header.login')}}
+          {{ $t('header.login') }}
         </RouterLink>
         <RouterLink :to="{ name: 'register' }" class="nav-link" @click="toggleSidebar">
-          {{$t('header.register')}}
+          {{ $t('header.register') }}
         </RouterLink>
       </template>
 

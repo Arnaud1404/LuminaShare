@@ -18,7 +18,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -93,7 +95,11 @@ public class ImageController {
    * @return OK if successful, BAD_REQUEST if file is invalid
    */
   @RequestMapping(value = "/images", method = RequestMethod.POST)
-  public ResponseEntity<?> addImage(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+  public ResponseEntity<?> addImage(
+    @RequestParam("file") MultipartFile file,
+    @RequestParam(value = "userid", required = false) String userid,
+    @RequestParam(value = "ispublic", required = false, defaultValue = "false") boolean isPublic,
+    RedirectAttributes redirectAttributes) {
     // Vérification des erreurs dans un seul bloc
     if (file == null || file.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Veuillez sélectionner un fichier.");
@@ -114,7 +120,6 @@ public class ImageController {
     }
     try {
 
-      // Lecture de l’image
       BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
       if (bufferedImage == null) {
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Format d'image non valide.");
@@ -129,6 +134,8 @@ public class ImageController {
           type,
           bufferedImage.getWidth(),
           bufferedImage.getHeight());
+      img.setUserid(userid);
+      img.setPublic(isPublic);
       imageDao.create(img, file);
 
       return ResponseEntity.status(HttpStatus.CREATED).body("Image ajoutée avec succès.");
@@ -156,6 +163,11 @@ public class ImageController {
       img_json.put("size", img.getSize());
       img_json.put("similarity", img.getSimilarityScore());
       img_json.put("url", "/images/" + img.getId());
+      img_json.put("likes", img.getLikes());
+      img_json.put("ispublic", img.isPublic());
+      if (img.getUserid() != null) {
+            img_json.put("userid", img.getUserid());
+        }
       nodes.add(img_json);
     }
     return nodes;
@@ -175,7 +187,8 @@ public class ImageController {
       @RequestParam("descriptor") String descriptor) {
     try {
       if (n <= 0) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le paramètre 'number' doit être supérieur à 0");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body("Le paramètre 'number' doit être supérieur à 0");
       }
 
       Image image = imageDao.retrieve(id).get();
@@ -201,16 +214,96 @@ public class ImageController {
       }
     }
   }
+  
+  /**
+  * Retrieves images belonging to a specific user
+  * 
+  * @param userid The ID of the user whose images to retrieve
+  * @param includePrivate Whether to include private images (true) or only public images (false)
+  * @return JSON array with user's image metadata, or error message if retrieval fails
+  */
+  @GetMapping("/images/user/{userid}")
+public ResponseEntity<?> getUserImages(
+      @PathVariable String userid,
+      @RequestParam(defaultValue = "false") boolean includePrivate,
+      @RequestHeader(value = "X-Current-User", required = false) String requestingUserId) {
 
-  @RequestMapping(value = "/images/{id}/filter", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-  @ResponseBody
-  public ResponseEntity<?> getSimilarImages(@PathVariable("id") long id, @RequestParam("filter") String filter,
-      @RequestParam("number") long number) {
-    try {
-      return getImage(id);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-
+  try {
+    if (includePrivate && (requestingUserId == null || !requestingUserId.equals(userid))) {
+      includePrivate = false;
     }
+
+    List<Image> images;
+    if (includePrivate) {
+      images = imageDao.getByUserId(userid);
+    } else {
+      images = imageDao.getPublicByUserId(userid);
+    }
+
+    ArrayNode nodes = mapper.createArrayNode();
+    for (Image img : images) {
+      ObjectNode img_json = mapper.createObjectNode();
+      img_json.put("id", img.getId());
+      img_json.put("name", img.getName());
+      img_json.put("type", img.getType().toString());
+      img_json.put("size", img.getSize());
+      img_json.put("similarity", img.getSimilarityScore());
+      img_json.put("url", "/images/" + img.getId());
+      img_json.put("ispublic", img.isPublic());
+      img_json.put("likes", img.getLikes());
+      if (img.getUserid() != null) {
+        img_json.put("userid", img.getUserid());
+      }
+      nodes.add(img_json);
+    }
+
+    return ResponseEntity.ok(nodes);
+  } catch (Exception e) {
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body("Error retrieving user images: " + e.getMessage());
   }
+}
+  
+/**
+ * Likes an image, incrementing its like count
+ * 
+ * @param id The ID of the image to like
+ * @return A response with the new like count, or an error message
+ */
+@RequestMapping(value = "/images/{id}/like", method = RequestMethod.POST)
+public ResponseEntity<?> likeImage(@PathVariable("id") long id) {
+    try {
+        int newLikeCount = imageDao.likeImage(id);
+        if (newLikeCount >= 0) {
+            return ResponseEntity.ok().body(mapper.createObjectNode().put("likes", newLikeCount));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
+        }
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("Error liking image: " + e.getMessage());
+    }
+}
+
+/**
+ * Unlikes an image, decrementing its like count
+ * 
+ * @param id The ID of the image to unlike
+ * @return A response with the new like count, or an error message
+ */
+@RequestMapping(value = "/images/{id}/unlike", method = RequestMethod.POST)
+public ResponseEntity<?> unlikeImage(@PathVariable("id") long id) {
+    try {
+        int newLikeCount = imageDao.unlikeImage(id);
+        if (newLikeCount >= 0) {
+            return ResponseEntity.ok().body(mapper.createObjectNode().put("likes", newLikeCount));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
+        }
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("Error unliking image: " + e.getMessage());
+    }
+}
+
 }

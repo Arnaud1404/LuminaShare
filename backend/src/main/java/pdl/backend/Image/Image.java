@@ -23,6 +23,7 @@ public class Image {
   private byte[] data;
   private String userid;
   private boolean isPublic = false;
+  private int likes = 0;
 
   /**
    * Constructs a new Image instance with the specified parameters.
@@ -129,7 +130,16 @@ public class Image {
   public void setPublic(boolean isPublic) {
       this.isPublic = isPublic;
   }
+
   public static long getCount() {
     return count;
   }
+  
+  public int getLikes() {
+    return likes;
+}
+
+public void setLikes(int likes) {
+    this.likes = likes;
+}
 }
