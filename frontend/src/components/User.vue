@@ -112,53 +112,47 @@ onMounted(() => {
 
 <template>
   <div class="profile panel">
-    <div v-if="loading" class="loading">Loading profile...</div>
+    <div v-if="loading" class="loading">{{ $t('user.loading_profile') }}</div>
 
-    <div v-else-if="!userExists" class="error-message">User not found</div>
+    <div v-else-if="!userExists" class="error-message">{{ $t('user.user_not_found') }}</div>
 
     <div v-else-if="userImages.length === 0" class="no-images">
-      <p>{{ isOwnProfile ? "You haven't" : "This user hasn't" }} uploaded any photos yet.</p>
+      <p>{{ isOwnProfile ? $t('user.no_photos_you') : $t('user.no_photos_other') }}</p>
       <button v-if="isOwnProfile" @click="navigateToUpload" class="upload-button">
-        Upload Photos
+        {{ $t('user.upload_photos') }}
       </button>
     </div>
 
     <div v-else>
       <div class="profile-header">
-        <h1>{{ isOwnProfile ? 'Your Profile' : `${username}'s Profile` }}</h1>
+        <h1>{{ isOwnProfile ? $t('user.your_profile') : $t('user.user_profile', { username }) }}</h1>
       </div>
 
       <div class="user-info">
         <h2>{{ username }}</h2>
         <p v-if="userBio">{{ userBio }}</p>
-        <p v-else class="no-bio">No bio provided</p>
+        <p v-else class="no-bio">{{ $t('user.no_bio') }}</p>
       </div>
 
       <div class="images-section">
-        <h2>{{ isOwnProfile ? 'Your Photos' : `${username}'s Photos` }}</h2>
+        <h2>{{ isOwnProfile ? $t('user.your_photos') : $t('user.user_photos', { username }) }}</h2>
 
-        <div v-if="loadingImages" class="loading">Loading images...</div>
+        <div v-if="loadingImages" class="loading">{{ $t('user.loading_images') }}</div>
 
         <div v-else-if="userImages.length === 0" class="no-images">
-          <p>{{ isOwnProfile ? "You haven't" : "This user hasn't" }} uploaded any photos yet.</p>
+          <p>{{ isOwnProfile ? $t('user.no_photos_you') : $t('user.no_photos_other') }}</p>
           <button v-if="isOwnProfile" @click="navigateToUpload" class="upload-button">
-            Upload Photos
+            {{ $t('user.upload_photos') }}
           </button>
         </div>
 
         <div v-else class="gallery-wrapper">
           <UserImages 
-        :images="userImages" 
-        :showPrivacyToggle="isOwnProfile" 
-        @select="handleImageSelect"
-        @imageUpdated="handleImageUpdate"
-      />
-
-
-
-
-         
-          
+            :images="userImages" 
+            :showPrivacyToggle="isOwnProfile" 
+            @select="handleImageSelect"
+            @imageUpdated="handleImageUpdate"
+          />
         </div>
       </div>
     </div>

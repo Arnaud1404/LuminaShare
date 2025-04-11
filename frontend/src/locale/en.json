@@ -54,7 +54,18 @@
     "exist": "Already registered?"
   },
   "user": {
-    "title": "My profile"
+    "title": "My profile",
+    "loading_profile": "Loading profile...",
+    "user_not_found": "User not found",
+    "no_photos_you": "You haven't uploaded any photos yet.",
+    "no_photos_other": "This user hasn't uploaded any photos yet.",
+    "upload_photos": "Upload Photos",
+    "your_profile": "Your Profile",
+    "user_profile": "{username}'s Profile",
+    "no_bio": "No bio provided",
+    "your_photos": "Your Photos",
+    "user_photos": "{username}'s Photos",
+    "loading_images": "Loading images..."
   },
   "users": {
     "title": "Users"

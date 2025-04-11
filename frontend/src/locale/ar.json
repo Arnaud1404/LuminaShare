@@ -53,7 +53,18 @@
     "exist": "Déjà inscrit ?"
   },
   "user": {
-    "title": "Mon profil"
+    "title": "ملفي الشخصي",
+    "loading_profile": "جاري تحميل الملف الشخصي...",
+    "user_not_found": "لم يتم العثور على المستخدم",
+    "no_photos_you": "لم تقم بتحميل أي صور بعد.",
+    "no_photos_other": "لم يقم هذا المستخدم بتحميل أي صور بعد.",
+    "upload_photos": "تحميل الصور",
+    "your_profile": "ملفك الشخصي",
+    "user_profile": "الملف الشخصي لـ {username}",
+    "no_bio": "لا توجد سيرة ذاتية",
+    "your_photos": "صورك",
+    "user_photos": "صور {username}",
+    "loading_images": "جاري تحميل الصور..."
   },
   "users": {
     "title": "Les Utilisateurs"
