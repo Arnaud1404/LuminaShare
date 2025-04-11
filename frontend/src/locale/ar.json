@@ -56,17 +56,17 @@
   },
   "user": {
       "title": "ملفي الشخصي",
-      "loading_profile": "Chargement du profil...",
-      "user_not_found": "Utilisateur introuvable",
-      "no_photos_you": "Vous n'avez pas encore téléchargé de photos.",
-      "no_photos_other": "Cet utilisateur n'a pas encore téléchargé de photos.",
-      "upload_photos": "Télécharger des photos",
-      "your_profile": "Votre Profil",
-      "user_profile": "Profil de {username}",
-      "no_bio": "Aucune biographie fournie",
-      "your_photos": "Vos Photos",
-      "user_photos": "Photos de {username}",
-      "loading_images": "Chargement des images..."
+      "loading_profile": "...جارٍ تحميل الملف الشخصي"
+      "user_not_found": "المستخدم غير موجود"
+      "no_photos_you": "لم تقم بتحميل أي صور بعد."
+      "no_photos_other": "هذا المستخدم لم يقم بتحميل أي صور بعد."
+      "upload_photos": "تحميل الصور"
+      "your_profile": "ملفك الشخصي"
+      "user_profile": "ملف  الشخصي"
+      "no_bio": "لم يتم تقديم سيرة ذاتية"
+      "your_photos": "صورك"
+      "user_photos": " صور المستخدمون "
+      "loading_images": "...جارٍ تحميل الصور"
   },
   "users": {
       "title": "المستخدمون"
