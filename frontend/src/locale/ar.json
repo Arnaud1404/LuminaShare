@@ -1,81 +1,85 @@
 {
   "header": {
-    "home": "الصفحة الرئيسية",
-    "user": "المستخدم",
-    "users": "الآخرون",
-    "edit": "`تعديل",
-    "login": "تسجيل الدخول",
-    "register": "تسجيل"
+      "title": "لوميناشار - شارك صورك",
+      "home": "الصفحة الرئيسية",
+      "user": "المستخدم",
+      "users": "الآخرون",
+      "edit": "`تعديل",
+      "login": "تسجيل الدخول",
+      "register": "تسجيل"
   },
   "display_image": {
-    "title": "الصورة",
-    "description": "لا توجد صورة محددة"
+      "title": "الصورة",
+      "loading": "...جارٍ تحميل الصورة ",
+      "no-image": "لم يتم اختيار أي صورة"
   },
   "image_similar": {
-    "title": "صور مشابهة - كلما كان الرقم أقل، كانت الصورة أكثر تشابهاً",
-    "button": "بحث"
+      "title": "صور مشابهة - كلما كان الرقم أقل، كانت الصورة أكثر تشابهاً",
+      "button": "بحث"
   },
   "upload_img": {
-    "title": "رفع صورة"
+      "title": "رفع صورة"
   },
   "button": {
-    "3D": "ثلاثي الأبعاد أحمر أخضر أزرق",
-    "2D": "ثنائي الأبعاد تشبع اللون ",
-    "upload": "رفع",
-    "delete": "حذف",
-    "download": "تحميل",
-    "metadata": "Métadonnées",
-    "blur": "flouter",
-    "brightness": "Luminosité",
-    "reverse": "Inverser",
-    "rotation": "Rotation",
-    "apply": "Appliquer",
-    "research": "Rechercher"
+      "3D": "ثلاثي الأبعاد أحمر أخضر أزرق",
+      "2D": "ثنائي الأبعاد تشبع اللون ",
+      "upload": "رفع",
+      "delete": "حذف",
+      "download": "تحميل",
+      "metadata": "البيانات الوصفية",
+      "blur": "تشويش",
+      "brightness": "سطوع",
+      "reverse": "عكس",
+      "rotation": "تدوير",
+      "apply": "تطبيق",
+      "research": "بحث"
   },
   "login": {
-    "id": "ID Utilisateur:",
-    "enter_id": "Entrez votre ID",
-    "mdp": "Mot de passse:",
-    "enter_mdp": "Entrez votre mot de passe",
-    "no-account": "Pas encore de compte ?",
-    "login_now": "Se connecter",
-    "connecting": "Connexion...",
-    "erreur": {
-      "handle": "Veuillez entrer un ID et un mot de passe"
-    }
+      "id": ":معرف المستخدم",
+      "enter_id": "أدخل معرفك",
+      "mdp": ":كلمة المرور",
+      "enter_mdp": "أدخل كلمة المرور الخاصة بك",
+      "no-account": "ليس لديك حساب بعد؟",
+      "login_now": "تسجيل الدخول ",
+      "connecting": "...جارٍ الاتصال",
+      "erreur": {
+          "handle": "يرجى إدخال معرف وكلمة المرور"
+      }
   },
   "notFound": {
-    "title": "Pas trouvée"
+      "title": "غير موجود"
   },
   "register": {
-    "choose_userid": "Choose a unique ID",
-    "name": "Nom Complet",
-    "exist": "Déjà inscrit ?"
+    "choose_userid": "Choisissez un ID unique",
+      "name": "الاسم الكامل",
+      "exist": "مسجل بالفعل؟"
   },
   "user": {
-    "title": "ملفي الشخصي",
-    "loading_profile": "جاري تحميل الملف الشخصي...",
-    "user_not_found": "لم يتم العثور على المستخدم",
-    "no_photos_you": "لم تقم بتحميل أي صور بعد.",
-    "no_photos_other": "لم يقم هذا المستخدم بتحميل أي صور بعد.",
-    "upload_photos": "تحميل الصور",
-    "your_profile": "ملفك الشخصي",
-    "user_profile": "الملف الشخصي لـ {username}",
-    "no_bio": "لا توجد سيرة ذاتية",
-    "your_photos": "صورك",
-    "user_photos": "صور {username}",
-    "loading_images": "جاري تحميل الصور..."
+      "title": "ملفي الشخصي",
+      "loading_profile": "Chargement du profil...",
+      "user_not_found": "Utilisateur introuvable",
+      "no_photos_you": "Vous n'avez pas encore téléchargé de photos.",
+      "no_photos_other": "Cet utilisateur n'a pas encore téléchargé de photos.",
+      "upload_photos": "Télécharger des photos",
+      "your_profile": "Votre Profil",
+      "user_profile": "Profil de {username}",
+      "no_bio": "Aucune biographie fournie",
+      "your_photos": "Vos Photos",
+      "user_photos": "Photos de {username}",
+      "loading_images": "Chargement des images..."
   },
   "users": {
-    "title": "Les Utilisateurs"
+      "title": "المستخدمون"
   },
   "edit": {
-    "title_selected_img": "Choissisez une image depuis la galerie",
-    "title_filter_img": "Choissisez une image depuis la galerie",
-    "id": "Identifiant:",
-    "name": "Nom:",
-    "type": "Type:",
-    "length": "Taille:",
-    "close": "Fermer"
+      "title_selected_img": "اختر صورة من المعرض",
+      "title_filter_img": "اختر صورة من المعرض",
+      "title_gallery": "Galerie",
+      "id": ":المعرف",
+      "name": ":الاسم",
+      "type": ":النوع",
+      "length": ":الحجم",
+      "close": "إغلاق"
   }
+
 }
