@@ -51,6 +51,23 @@ sudo docker compose down
 4. Obtenir des images de test (Optionnel)
    https://picsum.photos/images
 
+   Vous pouvez aussi utiliser notre script pour télécharger automatiquement des images de test:
+
+   ```bash
+   # Utilisation simple avec les paramètres par défaut
+   # (télécharge 10 images de 800x600 dans backend/src/main/resources/images)
+   ./download_pics.sh
+
+   # Télécharger 5 images
+   ./download_pics.sh --count 5
+
+   # Spécifier dimensions et répertoire de sortie
+   ./download_pics.sh -c 20 -w 1024 -h 768 -o ./mes-images
+
+   # Afficher l'aide
+   ./download_pics.sh --help
+   ```
+
 ## Documentation
 
 Pour générer la documentation Javadoc, exécutez la commande suivante:

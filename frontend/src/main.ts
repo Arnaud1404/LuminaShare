@@ -7,11 +7,14 @@ import EN from './locale/en.json'
 import FR from './locale/fr.json'
 import AR from './locale/ar.json'
 
+if (!document.cookie.includes('locale')) {
+    document.cookie = 'locale=EN';
+}
 
 // createApp(App).use(router).mount('#app')
 
 const i18n = createI18n({
-    locale: document.cookie.split('=')[1],
+    locale: document.cookie.split('=')[1] || 'EN',
     messages: {
         EN: EN,
         FR: FR,

@@ -51,7 +51,13 @@ async function handleLogin() {
     <form @submit.prevent="handleLogin">
       <div class="form-group">
         <label for="userid"> {{ $t('login.id') }} </label>
-        <input type="text" id="userid" v-model="userid" required placeholder="Entrez votre ID" />
+        <input
+          type="text"
+          id="userid"
+          v-model="userid"
+          required
+          :placeholder="$t('login.enter_id')"
+        />
       </div>
 
       <div class="form-group">
@@ -61,7 +67,7 @@ async function handleLogin() {
           id="password"
           v-model="password"
           required
-          placeholder="Entrez votre mot de passe"
+          :placeholder="$t('login.enter_mdp')"
         />
       </div>
 

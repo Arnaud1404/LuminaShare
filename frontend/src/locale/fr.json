@@ -28,7 +28,7 @@
     "metadata": "Métadonnées",
     "blur": "Flouter",
     "brightness": "Luminosité",
-    "reverse": "Inverser",
+    "reverse": "Inverser coleur",
     "rotation": "Rotation",
     "apply": "Appliquer",
     "research": "Rechercher"
@@ -49,6 +49,7 @@
     "title": "Pas trouvée"
   },
   "register": {
+    "choose_userid": "Choisissez un ID unique",
     "name": "Nom Complet",
     "exist": "Déjà inscrit ?"
   },
