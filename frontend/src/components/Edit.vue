@@ -5,7 +5,7 @@ import {
   loadImageData,
   deleteImage,
   getSimilarImages,
-  getImageFilter
+  getImageFilter,
 } from './http-api';
 import Gallery from './Gallery.vue';
 import Similar from './Similar.vue';
@@ -131,11 +131,12 @@ const downloadImage = () => {
       `Téléchargement de ${filtrerImage.value.name} démarré`,
       'info'
     );
+  } else {
+    notification.value?.showNotification(
+      `Impossible de Télécharger l'image car pas de filtre appliqué à l'image sélectionnée}`,
+      'error'
+    );
   }
-  notification.value?.showNotification(
-    `Impossible de Télécharger l'image car pas de filtre appliqué à l'image sélectionnée}`,
-    'error'
-  );
 };
 
 const handleDeleteImage = async () => {
@@ -202,9 +203,14 @@ const Apply_filter = async () => {
   filtrerImage.value = JSON.parse(JSON.stringify(selectedImage.value));
   if (!filtrerImage.value) return;
   try {
-    filtrerImage.value.dataUrl = await getImageFilter(1, infoFilter.value, FilterPourcent.value);
-  }
-  catch (error) {
+    console.log('avant url est ' + filtrerImage.value.dataUrl);
+    filtrerImage.value.dataUrl = await getImageFilter(
+      filtrerImage.value.id,
+      infoFilter.value,
+      FilterPourcent.value
+    );
+    console.log('image = ' + filtrerImage.value.name + 'url est' + filtrerImage.value.dataUrl);
+  } catch (error) {
     console.error('Failed to load Altered image:', error);
     const errorMessage = formatErrorMessage(error);
     notification.value?.showNotification(
@@ -212,10 +218,8 @@ const Apply_filter = async () => {
       'error'
     );
   }
-}
-
+};
 </script>
-
 
 <template>
   <Notification ref="notification" />
@@ -224,7 +228,7 @@ const Apply_filter = async () => {
     <!-- LEFT COLUMN - 50% width -->
     <div class="left-column">
       <h2>
-        {{$t('edit.title_selected_img')}}
+        {{ $t('edit.title_selected_img') }}
       </h2>
       <div class="selected-image-container">
         <DisplayImage :image="selectedImage" />
@@ -232,20 +236,25 @@ const Apply_filter = async () => {
       <div v-if="selectedImage" class="option-transfo">
         <select v-model="infoFilter">
           <option value="gradienImage">
-            {{$t('button.blur')}}
+            {{ $t('button.blur') }}
           </option>
           <option value="modif_lum">
-            {{$t('button.brightness')}}
+            {{ $t('button.brightness') }}
           </option>
           <option value="invert">
-            {{$t('button.reverse')}}
+            {{ $t('button.reverse') }}
           </option>
           <option value="rotation">
-            {{$t('button.rotation')}}
+            {{ $t('button.rotation') }}
           </option>
         </select>
-        <input v-if="infoFilter === 'gradienImage' || infoFilter === 'modif_lum'" type="number" v-model="FilterPourcent"
-          min="0" max="100" />
+        <input
+          v-if="infoFilter === 'gradienImage' || infoFilter === 'modif_lum'"
+          type="number"
+          v-model="FilterPourcent"
+          min="0"
+          max="100"
+        />
 
         <select v-if="infoFilter === 'rotation'" v-model="FilterPourcent">
           <option value="90">90°</option>
@@ -254,28 +263,26 @@ const Apply_filter = async () => {
         </select>
 
         <button @click="Apply_filter">
-          {{$t('button.apply')}}
+          {{ $t('button.apply') }}
         </button>
       </div>
 
-
-
       <div class="similar-section">
         <h3>
-          {{$t('image_similar.title')}}
+          {{ $t('image_similar.title') }}
         </h3>
         <div class="similar-filters">
           <select v-model="descriptor">
             <option value="rgbcube">
-              {{$t('button.3D')}}
+              {{ $t('button.3D') }}
             </option>
             <option value="huesat">
-            {{$t('button.2D')}}
+              {{ $t('button.2D') }}
             </option>
           </select>
           <input type="number" v-model="similarCount" min="1" max="10" />
           <button @click="fetchSimilarImages">
-            {{$t('button.research')}}
+            {{ $t('button.research') }}
           </button>
         </div>
         <div class="similar-results">
@@ -283,12 +290,11 @@ const Apply_filter = async () => {
         </div>
       </div>
 
-
       <!-- RIGHT COLUMN - 50% width -->
     </div>
     <div class="right-column">
       <h2>
-        {{$t('edit.title_filter_img')}}
+        {{ $t('edit.title_filter_img') }}
       </h2>
       <div class="selected-image-container">
         <DisplayImage :image="filtrerImage" />
@@ -296,46 +302,54 @@ const Apply_filter = async () => {
       <div v-if="selectedImage" class="image-actions">
         <div class="action-buttons">
           <button @click="downloadImage">
-            {{$t('button.download')}}
+            {{ $t('button.download') }}
           </button>
           <button @click="toggleMetadata">
-            {{$t('button.metadata')}}
+            {{ $t('button.metadata') }}
           </button>
           <button @click="handleDeleteImage" class="delete-button">
-            {{$t('button.Supprimer')}}
+            {{ $t('button.Supprimer') }}
           </button>
         </div>
       </div>
       <div v-if="showMetadata && selectedImage" class="metadata-popup">
         <div class="metadata-content panel">
           <h3>
-            {{$t('button.metadata')}}
+            {{ $t('button.metadata') }}
           </h3>
-          <p><strong>
-            {{$t('edit.id')}}
-            </strong> {{ selectedImage.id }}
+          <p>
+            <strong>
+              {{ $t('edit.id') }}
+            </strong>
+            {{ selectedImage.id }}
           </p>
-          <p><strong>
-            {{$t('edit.name')}}
-            </strong> {{ selectedImage.name }}
+          <p>
+            <strong>
+              {{ $t('edit.name') }}
+            </strong>
+            {{ selectedImage.name }}
           </p>
-          <p><strong>
-            {{$t('edit.type')}}
-          </strong> {{ selectedImage.type }}
-        </p>
-          <p><strong>
-            {{$t('edit.length')}}
-          </strong> {{ selectedImage.size }}
-        </p>
+          <p>
+            <strong>
+              {{ $t('edit.type') }}
+            </strong>
+            {{ selectedImage.type }}
+          </p>
+          <p>
+            <strong>
+              {{ $t('edit.length') }}
+            </strong>
+            {{ selectedImage.size }}
+          </p>
           <button @click="toggleMetadata" class="close-button">
-            {{$t('edit.close')}}
+            {{ $t('edit.close') }}
           </button>
         </div>
       </div>
 
       <div class="gallery-container">
         <h3>
-          {{$t('edit.title_gallery')}}
+          {{ $t('edit.title_gallery') }}
         </h3>
         <div class="scrollable-gallery">
           <Gallery :images="images" @select="handleImageSelect" />
@@ -343,7 +357,6 @@ const Apply_filter = async () => {
       </div>
     </div>
   </div>
-
 </template>
 
 <style scoped>

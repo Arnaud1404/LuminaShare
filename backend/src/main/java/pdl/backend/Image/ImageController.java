@@ -1,5 +1,6 @@
 package pdl.backend.Image;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +12,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import boofcv.io.image.ConvertBufferedImage;
+import boofcv.struct.image.GrayU8;
+import boofcv.struct.image.Planar;
 import pdl.backend.FileHandler.*;
+import pdl.backend.Image.Processing.ColorProcessing;
+import pdl.backend.Image.Processing.Traitement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -292,6 +298,69 @@ public class ImageController {
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body("Error unliking image: " + e.getMessage());
+    }
+  }
+  @RequestMapping(value = "/images/{id}/filter", method = RequestMethod.GET,
+      produces = "application/json; charset=UTF-8")
+  @ResponseBody
+  public ResponseEntity<?> applyFilter(@PathVariable("id") long id,
+      @RequestParam("filter") String filter, @RequestParam("number") int number) {
+    try {
+      Image img = imageDao.retrieve(id).get();
+      boolean alreday= false;
+
+      BufferedImage img_input = ImageIO.read(FileController.get_file(img.getName()));
+      Planar<GrayU8> input =
+          new Planar<>(GrayU8.class, img_input.getWidth(), img_input.getHeight(), 3);
+
+      // Transmet le contenu de img_input vers input
+      ConvertBufferedImage.convertFrom(img_input, input, true);
+      Planar<GrayU8> output = input.createSameShape();
+
+      BufferedImage filteredImage = null;
+      switch (filter) {
+        case "gradienImage":
+          ColorProcessing.meanFilter(input, output, number);
+          break;
+        case "modif_lum":{
+          output = input.clone();
+          ColorProcessing.modif_lum(output, number);
+          break;
+        }
+        case "invert":{
+          alreday = true;
+            filteredImage = Traitement.invertColors(img_input);
+          break;
+        }
+        case "rotation":{
+          alreday = true;
+          filteredImage = Traitement.rotateImage(img_input, number);
+          break;
+        }
+        default:
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Filtre inconnu : " + filter);
+      }
+
+      if (alreday == false){
+          filteredImage =
+          new BufferedImage(output.width, output.height, img_input.getType());
+      ConvertBufferedImage.convertTo(output, filteredImage, true);
+      }
+
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      String formatName = img.getType().getSubtype().equals("jpeg") ? "jpg" : img.getType().getSubtype();
+      ImageIO.write(filteredImage, formatName, baos);
+      byte[] imageBytes = baos.toByteArray();
+
+      MediaType mediaType = img.getType();
+      return ResponseEntity.ok().contentType(mediaType).body(imageBytes);
+
+    } catch (
+
+    Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
     }
   }
 
