@@ -22,7 +22,7 @@ const notification = ref<NotificationRef | null>(null);
 const selectedImage = ref<ImageGallery | null>(null);
 const filtrerImage = ref<ImageGallery | null>(null);
 const infoFilter = ref('gradienImage');
-const FilterPourcent = ref(0);
+const FilterPourcent = ref(1);
 
 const file = ref<File | null>(null);
 const allowedFileTypes = ['image/jpeg', 'image/png'];
