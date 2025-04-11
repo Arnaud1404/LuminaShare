@@ -380,10 +380,10 @@ public class ImageController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image introuvable.");
         }
 
-        Image image = optionalImage.get();
-        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(image.getData()));
+        Image img = optionalImage.get();
+        BufferedImage img_input = ImageIO.read(FileController.get_file(img.getName()));
 
-        if (originalImage == null) {
+        if (img_input == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'image est corrompue ou invalide.");
         }
 
@@ -391,7 +391,7 @@ public class ImageController {
         BufferedImage filteredImage;
         switch (filter.toLowerCase()) {
             case "gradienImage":
-                GrayU8 input = ConvertBufferedImage.convertFrom(originalImage, (GrayU8) null);
+                GrayU8 input = ConvertBufferedImage.convertFrom(img_input, (GrayU8) null);
                 GrayU8 output = new GrayU8(input.width, input.height);
 
                 Convolution.meanFilter(input, output, (int) number);
@@ -399,15 +399,15 @@ public class ImageController {
                 filteredImage = ConvertBufferedImage.convertTo(output, null);                
                 break;
             case "modif_lum":
-                Planar<GrayU8> planarImage = ConvertBufferedImage.convertFromPlanar(originalImage, null, true, GrayU8.class);
+                Planar<GrayU8> planarImage = ConvertBufferedImage.convertFromPlanar(img_input, null, true, GrayU8.class);
                 ColorProcessing.modif_lum(planarImage, (int) number);
                 filteredImage = ConvertBufferedImage.convertTo(planarImage, null, true);               
                 break;
             case "invert":
-                filteredImage = imageService.invertColor(originalImage);
+                filteredImage = imageService.invertColor(img_input);
                 break;
             case "rotation":
-                filteredImage = imageService.rotateImages(originalImage,(int) number);
+                filteredImage = imageService.rotateImages(img_input, (int) number);
                 break;
             default:
                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Filtre inconnu : " + filter);
@@ -421,4 +421,6 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors du traitement de l'image.");
     }
   }
+  
+
 }
