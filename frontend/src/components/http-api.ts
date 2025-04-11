@@ -38,6 +38,19 @@ export function logoutUser(): void {
   localStorage.removeItem('user');
 }
 
+
+export async function toggleImagePrivacy(imageId: number): Promise<void> {
+  const response = await fetch(`/images/${imageId}/privacy`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to toggle image privacy');
+  }
+}
 export async function getImagesAsJSON() {
   let json: ImageGallery[] = [];
   await axios
@@ -119,24 +132,47 @@ export async function getSimilarImages(
 }
 
 /**
- * Likes an image
+ * Likes an image, each user can only like an image once
  * @param imageId The ID of the image to like
- * @returns The new like count, or -1 if failed
+ * @returns The new like count and like status
  */
-export async function likeImage(imageId: number): Promise<number> {
+export async function toggleLike(imageId: number): Promise<{likes: number, isLiked: boolean}> {
   try {
-    const response = await axios.post(`/images/${imageId}/like`);
-
-    // Update the in-memory images data
-    const image = images.value.find((img) => img.id === imageId);
-    if (image && response.data && typeof response.data.likes === 'number') {
-      image.likes = response.data.likes;
+    if (!currentUser.value?.userid) {
+      throw new Error('User must be logged in to like images');
     }
-
-    return response.data.likes;
+    
+    const response = await axios.post(
+      `/images/${imageId}/toggle-like?userid=${currentUser.value.userid}`
+    );
+    
+    const image = images.value.find((img) => img.id === imageId);
+    if (image && response.data) {
+      image.likes = response.data.likes;
+      image.isLiked = response.data.isLiked;
+    }
+    
+    return response.data;
   } catch (error) {
-    console.error(`Failed to like image ${imageId}:`, error);
-    return -1;
+    console.error(`Failed to toggle like for image ${imageId}:`, error);
+    throw error;
+  }
+}
+
+export async function checkLikeStatus(imageId: number): Promise<boolean> {
+  try {
+    if (!currentUser.value?.userid) {
+      return false;
+    }
+    
+    const response = await axios.get(
+      `/images/${imageId}/like-status?userid=${currentUser.value.userid}`
+    );
+    
+    return response.data.isLiked;
+  } catch (error) {
+    console.error(`Failed to check like status for image ${imageId}:`, error);
+    return false;
   }
 }
 
@@ -149,7 +185,6 @@ export async function unlikeImage(imageId: number): Promise<number> {
   try {
     const response = await axios.post(`/images/${imageId}/unlike`);
 
-    // Update the in-memory images data
     const image = images.value.find((img) => img.id === imageId);
     if (image && response.data && typeof response.data.likes === 'number') {
       image.likes = response.data.likes;
@@ -159,6 +194,22 @@ export async function unlikeImage(imageId: number): Promise<number> {
   } catch (error) {
     console.error(`Failed to unlike image ${imageId}:`, error);
     return -1;
+  }
+}
+
+export async function setImageLikes(imageId: number, likes: number): Promise<boolean> {
+  try {
+    const response = await axios.put(`/images/${imageId}/set-likes?likes=${likes}`);
+    
+    const image = images.value.find((img) => img.id === imageId);
+    if (image && response.data) {
+      image.likes = response.data.likes;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error(`Failed to set like count for image ${imageId}:`, error);
+    return false;
   }
 }
 
@@ -173,7 +224,6 @@ export async function getUserImages(
   includePrivate: boolean = false
 ): Promise<ImageGallery[]> {
   try {
-    // Add current user as a query parameter
     const currentUserid = currentUser.value?.userid || '';
 
     const response = await axios.get(

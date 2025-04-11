@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component;
 import pdl.backend.Security.PasswordService;
 
 /**
- * Initiliazes the databases in the right order Users table is created first and then the images
+ * Initiliazes the databases in the right order Users table is created first and
+ * then the images
  * table which references users
  */
 @Component
@@ -33,6 +34,8 @@ public class DatabaseInitializer implements InitializingBean {
         jdbcTemplate.execute("CREATE EXTENSION IF NOT EXISTS vector");
 
         if (resetDatabase) {
+            jdbcTemplate.execute("DROP TABLE IF EXISTS user_likes CASCADE");
+            jdbcTemplate.execute("DROP TABLE IF EXISTS " + databaseTable + " CASCADE");
             jdbcTemplate.execute("DROP TABLE IF EXISTS users CASCADE");
         }
 
@@ -48,9 +51,6 @@ public class DatabaseInitializer implements InitializingBean {
                         + "VALUES ('admin', 'Administrator', ?, 'System administrator')",
                 hashedPassword);
         System.out.println("Created default admin user");
-        if (resetDatabase) {
-            jdbcTemplate.execute("DROP TABLE IF EXISTS " + databaseTable);
-        }
 
         jdbcTemplate.execute(
                 "CREATE TABLE IF NOT EXISTS " + databaseTable + " (" + "id bigserial PRIMARY KEY, "
@@ -60,5 +60,14 @@ public class DatabaseInitializer implements InitializingBean {
                         + "ispublic BOOLEAN DEFAULT false, " + "likes INT DEFAULT 0" + ")");
 
         System.out.println("Image table initialized");
+
+        jdbcTemplate.execute(
+                "CREATE TABLE IF NOT EXISTS user_likes (" +
+                        "userid VARCHAR(50) REFERENCES users(userid) ON DELETE CASCADE, " +
+                        "image_id BIGINT REFERENCES " + databaseTable + "(id) ON DELETE CASCADE, " +
+                        "PRIMARY KEY (userid, image_id)" +
+                        ")");
+
+        System.out.println("User likes table initialized");
     }
 }

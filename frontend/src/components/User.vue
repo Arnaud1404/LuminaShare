@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getUserImages, getUserProfile, likeImage as likeImageApi } from './http-api';
+import { getUserImages, getUserProfile, setImageLikes } from './http-api';
 import { currentUser } from './users';
 import { type ImageGallery } from './images.ts';
-import Gallery from './Gallery.vue';
+import UserImages from './UserImages.vue';
+
 const route = useRoute();
 const router = useRouter();
 const userExists = ref(true);
@@ -42,11 +43,9 @@ async function loadUserImages() {
 
 async function loadUserData() {
   if (isOwnProfile.value && currentUser.value) {
-    // For own profile, use current user data
     username.value = currentUser.value.name;
     userBio.value = currentUser.value.bio || '';
   } else {
-    // For other users, fetch their profile
     const userProfile = await getUserProfile(userid.value);
     if (userProfile) {
       username.value = userProfile.name;
@@ -55,6 +54,22 @@ async function loadUserData() {
       username.value = userid.value;
       userBio.value = '';
     }
+  }
+}
+
+function handleImageSelect(image: ImageGallery) {
+  selectedImage.value = image;
+  router.push(`/edit?imageId=${image.id}`);
+}
+
+function handleImageUpdate(updatedImage: ImageGallery) {
+  const index = userImages.value.findIndex(img => img.id === updatedImage.id);
+  if (index !== -1) {
+    userImages.value[index] = updatedImage;
+  }
+  
+  if (selectedImage.value?.id === updatedImage.id) {
+    selectedImage.value = updatedImage;
   }
 }
 
@@ -83,26 +98,12 @@ function navigateToUpload() {
   router.push('/edit');
 }
 
-async function likeImage(imageId: number): Promise<void> {
-  await likeImageApi(imageId);
 
-  // Update like count in both arrays
-  const image = userImages.value.find((img) => img.id === imageId);
-  if (image) {
-    image.likes = (image.likes || 0) + 1;
-  }
-
-  if (selectedImage.value?.id === imageId) {
-    selectedImage.value.likes = (selectedImage.value.likes || 0) + 1;
-  }
-}
-
-function handleImageSelect(image: ImageGallery) {
-  selectedImage.value = image;
-}
-
-onMounted(() => {
+onMounted(async () => {
+  await setImageLikes(1, 5); 
+  await setImageLikes(2, 15);
   loadUserProfile();
+  
 });
 </script>
 
@@ -111,6 +112,13 @@ onMounted(() => {
     <div v-if="loading" class="loading">Loading profile...</div>
 
     <div v-else-if="!userExists" class="error-message">User not found</div>
+
+    <div v-else-if="userImages.length === 0" class="no-images">
+      <p>{{ isOwnProfile ? "You haven't" : "This user hasn't" }} uploaded any photos yet.</p>
+      <button v-if="isOwnProfile" @click="navigateToUpload" class="upload-button">
+        Upload Photos
+      </button>
+    </div>
 
     <div v-else>
       <div class="profile-header">
@@ -135,24 +143,19 @@ onMounted(() => {
           </button>
         </div>
 
-        <!-- Replace custom grid with Gallery component -->
         <div v-else class="gallery-wrapper">
-          <Gallery :images="userImages" @select="handleImageSelect" />
+          <UserImages 
+        :images="userImages" 
+        :showPrivacyToggle="isOwnProfile" 
+        @select="handleImageSelect"
+        @imageUpdated="handleImageUpdate"
+      />
 
-          <!-- Image details overlay when an image is selected -->
-          <div v-if="selectedImage" class="image-details">
-            <div class="detail-card">
-              <div class="image-name">{{ selectedImage.name }}</div>
-              <div v-if="isOwnProfile" class="image-privacy">
-                {{ selectedImage.ispublic ? 'Public' : 'Private' }}
-              </div>
-              <div class="image-likes">
-                <span>{{ selectedImage.likes || 0 }} likes</span>
-                <button @click="likeImage(selectedImage.id)" class="like-button">❤️</button>
-              </div>
-              <button @click="selectedImage = null" class="close-button">Close</button>
-            </div>
-          </div>
+
+
+
+         
+          
         </div>
       </div>
     </div>
