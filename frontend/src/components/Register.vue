@@ -39,7 +39,7 @@ async function handleRegister() {
 <template>
   <div class="register-container panel">
     <h1>
-      {{$t('header.register')}}
+      {{ $t('header.register') }}
     </h1>
 
     <div v-if="errorMessage" class="error-message">
@@ -49,7 +49,7 @@ async function handleRegister() {
     <form @submit.prevent="handleRegister">
       <div class="form-group">
         <label for="userid">
-          {{$t('login.mdp')}}
+          {{ $t('login.id') }}
         </label>
         <input
           type="text"
@@ -62,14 +62,14 @@ async function handleRegister() {
 
       <div class="form-group">
         <label for="name">
-          {{$t('register.name')}}
+          {{ $t('register.name') }}
         </label>
         <input type="text" id="name" v-model="name" required placeholder="Entrez votre nom" />
       </div>
 
       <div class="form-group">
         <label for="password">
-          {{$t('login.mdp')}}
+          {{ $t('login.mdp') }}
         </label>
         <input
           type="password"
@@ -87,8 +87,8 @@ async function handleRegister() {
       </div>
 
       <div class="login-link">
-        {{$t('register.exist')}}
-        <RouterLink :to="{ name: 'login' }">{{$t('login.login_now')}}</RouterLink>
+        {{ $t('register.exist') }}
+        <RouterLink :to="{ name: 'login' }">{{ $t('login.login_now') }}</RouterLink>
       </div>
     </form>
   </div>

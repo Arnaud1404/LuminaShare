@@ -9,9 +9,9 @@ import pdl.backend.Security.PasswordService;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
-    
+
     @Autowired
     private PasswordService passwordService;
-    
+
     // Authentication and user management methods
 }

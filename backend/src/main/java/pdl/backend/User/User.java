@@ -5,13 +5,12 @@ public class User {
     private String name;
     private String password;
     private String bio;
-    
+
     /**
      * Default constructor
      */
-    public User() {
-    }
-    
+    public User() {}
+
     /**
      * Full constructor
      * 
@@ -26,7 +25,7 @@ public class User {
         this.password = password;
         this.bio = bio;
     }
-    
+
     /**
      * Gets user ID
      * 
@@ -35,7 +34,7 @@ public class User {
     public String getUserid() {
         return userid;
     }
-    
+
     /**
      * Sets user ID
      * 
@@ -44,7 +43,7 @@ public class User {
     public void setUserid(String userid) {
         this.userid = userid;
     }
-    
+
     /**
      * Gets user display name
      * 
@@ -53,7 +52,7 @@ public class User {
     public String getName() {
         return name;
     }
-    
+
     /**
      * Sets user display name
      * 
@@ -62,7 +61,7 @@ public class User {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     /**
      * Gets user password (hashed)
      * 
@@ -71,7 +70,7 @@ public class User {
     public String getPassword() {
         return password;
     }
-    
+
     /**
      * Sets user password
      * 
@@ -80,7 +79,7 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
     /**
      * Gets user bio
      * 
@@ -89,7 +88,7 @@ public class User {
     public String getBio() {
         return bio;
     }
-    
+
     /**
      * Sets user bio
      * 

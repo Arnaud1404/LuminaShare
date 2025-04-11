@@ -22,40 +22,40 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
-         if (userDao.retrieve(user.getUserid()).isPresent()) {
+        if (userDao.retrieve(user.getUserid()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists");
         }
-        
+
         String hashedPassword = passwordService.encryptPassword(user.getPassword());
         user.setPassword(hashedPassword);
-        
+
         userDao.create(user);
-        
+
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
-    
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
         String userid = credentials.get("userid");
         String password = credentials.get("password");
-        
+
         if (userid == null || password == null) {
             return ResponseEntity.badRequest().body("User ID and password are required");
         }
-        
+
         Optional<User> userOpt = userDao.retrieve(userid);
-        
+
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             if (passwordService.matchPassword(password, user.getPassword())) {
                 Map<String, Object> response = new HashMap<>();
                 response.put("userid", user.getUserid());
                 response.put("name", user.getName());
-                
+
                 return ResponseEntity.ok(response);
             }
         }
-        
+
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
 }
