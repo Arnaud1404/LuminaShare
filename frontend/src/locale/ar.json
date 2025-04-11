@@ -1,69 +1,70 @@
 {
-    "header": {
-        "home": "الصفحة الرئيسية",
-        "user": "المستخدم",
-        "users": "الآخرون",
-        "edit": "`تعديل",
-        "login": "تسجيل الدخول",
-        "register": "تسجيل"
-    },
-    "display_image": {
-        "title": "الصورة",
-        "description": "لا توجد صورة محددة"
-    },
-    "image_similar": {
-        "title": "صور مشابهة - كلما كان الرقم أقل، كانت الصورة أكثر تشابهاً",
-        "button": "بحث"
-    },
-    "upload_img": {
-        "title": "رفع صورة"
-    },
-    "button": {
-        "3D": "ثلاثي الأبعاد أحمر أخضر أزرق",
-        "2D": "ثنائي الأبعاد تشبع اللون ",
-        "upload": "رفع",
-        "delete": "حذف",
-        "download": "تحميل",
-        "metadata": "البيانات الوصفية",
-        "blur": "تشويش",
-        "brightness": "سطوع",
-        "reverse": "عكس",
-        "rotation": "تدوير",
-        "apply": "تطبيق",
-        "research": "بحث"
-    },
-    "login": {
-        "id": ":معرف المستخدم",
-        "enter_id": "أدخل معرفك",
-        "mdp": ":كلمة المرور",
-        "enter_mdp": "أدخل كلمة المرور الخاصة بك",
-        "no-account": "ليس لديك حساب بعد؟",
-        "login_now": "تسجيل الدخول ",
-        "connecting": "...جارٍ الاتصال",
-        "erreur": {
-            "handle": "يرجى إدخال معرف وكلمة المرور"
-        }
-    },
-    "notFound": {
-        "title": "غير موجود"
-    },
-    "register": {
-        "name": "الاسم الكامل",
-        "exist": "مسجل بالفعل؟"
-    },
-    "user": {
-        "title": "ملفي الشخصي"
-    },
-    "users": {
-        "title": "المستخدمون"
-    },
-    "edit": {
-        "title_selected_img": "اختر صورة من المعرض",
-        "title_filter_img": "اختر صورة من المعرض",
-        "id": ":المعرف",
-        "name": ":الاسم",
-        "type": ":النوع",
-        "length": ":الحجم",
-        "close": "إغلاق"
+  "header": {
+    "home": "الصفحة الرئيسية",
+    "user": "المستخدم",
+    "users": "الآخرون",
+    "edit": "`تعديل",
+    "login": "تسجيل الدخول",
+    "register": "تسجيل"
+  },
+  "display_image": {
+    "title": "الصورة",
+    "description": "لا توجد صورة محددة"
+  },
+  "image_similar": {
+    "title": "صور مشابهة - كلما كان الرقم أقل، كانت الصورة أكثر تشابهاً",
+    "button": "بحث"
+  },
+  "upload_img": {
+    "title": "رفع صورة"
+  },
+  "button": {
+    "3D": "ثلاثي الأبعاد أحمر أخضر أزرق",
+    "2D": "ثنائي الأبعاد تشبع اللون ",
+    "upload": "رفع",
+    "delete": "حذف",
+    "download": "تحميل",
+    "metadata": "Métadonnées",
+    "blur": "flouter",
+    "brightness": "Luminosité",
+    "reverse": "Inverser",
+    "rotation": "Rotation",
+    "apply": "Appliquer",
+    "research": "Rechercher"
+  },
+  "login": {
+    "id": "ID Utilisateur:",
+    "enter_id": "Entrez votre ID",
+    "mdp": "Mot de passse:",
+    "enter_mdp": "Entrez votre mot de passe",
+    "no-account": "Pas encore de compte ?",
+    "login_now": "Se connecter",
+    "connecting": "Connexion...",
+    "erreur": {
+      "handle": "Veuillez entrer un ID et un mot de passe"
     }
+  },
+  "notFound": {
+    "title": "Pas trouvée"
+  },
+  "register": {
+    "choose_userid": "Choose a unique ID",
+    "name": "Nom Complet",
+    "exist": "Déjà inscrit ?"
+  },
+  "user": {
+    "title": "Mon profil"
+  },
+  "users": {
+    "title": "Les Utilisateurs"
+  },
+  "edit": {
+    "title_selected_img": "Choissisez une image depuis la galerie",
+    "title_filter_img": "Choissisez une image depuis la galerie",
+    "id": "Identifiant:",
+    "name": "Nom:",
+    "type": "Type:",
+    "length": "Taille:",
+    "close": "Fermer"
+  }
 }

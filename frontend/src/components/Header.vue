@@ -8,7 +8,6 @@ const router = useRouter();
 const isSidebarOpen = ref(false);
 const user = ref(null);
 
-// Load user data on component mount
 onMounted(() => {
   const userData = localStorage.getItem('user');
   if (userData) {

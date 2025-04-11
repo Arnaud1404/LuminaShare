@@ -22,21 +22,25 @@ import pdl.backend.FileHandler.FileController;
 /**
  * Handles in-memory image collection.
  * 
- * IMPORTANT: Only manages in-memory image objects. Doesn't manage database records or filesystem.
- * Synchronization with database and physical files should be done by ImageController.
+ * IMPORTANT: Only manages in-memory image objects. Doesn't manage database
+ * records or filesystem.
+ * Synchronization with database and physical files should be done by
+ * ImageController.
  */
 @Repository
 public class ImageDao implements Dao<Image> {
 
   private final Map<Long, Image> images = new HashMap<>();
+
   @Autowired
   private ImageRepository imageRepository;
 
   /**
-   * Saves an image to the in-memory collection. Processes the raw file data to extract image
+   * Saves an image to the in-memory collection. Processes the raw file data to
+   * extract image
    * metadata.
    * 
-   * @param fileName Name of the image file
+   * @param fileName    Name of the image file
    * @param fileContent Raw byte array of the image file
    * @throws RuntimeException if image processing fails
    */
@@ -155,40 +159,74 @@ public class ImageDao implements Dao<Image> {
   }
 
   /**
-   * Likes an image by incrementing its like count
+   * Checks if a user has liked an image
    * 
-   * @param imageId The ID of the image to like
-   * @return The new like count, or -1 if operation failed
+   * @param imageId The ID of the image
+   * @param userid  The ID of the user
+   * @return true if the user has liked the image, false otherwise
    */
-  public int likeImage(long imageId) {
-    int newLikeCount = imageRepository.likeImage(imageId);
-
-    // Also update in-memory image if it exists
-    Optional<Image> imgOpt = retrieve(imageId);
-    if (imgOpt.isPresent() && newLikeCount >= 0) {
-      Image img = imgOpt.get();
-      img.setLikes(newLikeCount);
-    }
-
-    return newLikeCount;
+  public boolean hasUserLikedImage(long imageId, String userid) {
+    return imageRepository.hasUserLikedImage(userid, imageId);
   }
 
   /**
-   * Unlikes an image by decrementing its like count
+   * Updates the privacy status of an image
    * 
-   * @param imageId The ID of the image to unlike
-   * @return The new like count, or -1 if operation failed
+   * @param imageId  The ID of the image to update
+   * @param isPublic The new privacy status
+   * @return true if update was successful, false otherwise
    */
-  public int unlikeImage(long imageId) {
-    int newLikeCount = imageRepository.unlikeImage(imageId);
+  public boolean updatePrivacy(long imageId, boolean isPublic) {
+    boolean dbUpdateSuccess = imageRepository.updateImagePrivacy(imageId, isPublic);
 
-    // Also update in-memory image if it exists
     Optional<Image> imgOpt = retrieve(imageId);
-    if (imgOpt.isPresent() && newLikeCount >= 0) {
+    if (imgOpt.isPresent() && dbUpdateSuccess) {
       Image img = imgOpt.get();
-      img.setLikes(newLikeCount);
+      img.setPublic(isPublic);
+      return true;
     }
 
-    return newLikeCount;
+    return dbUpdateSuccess;
+  }
+
+  /**
+   * Updates the like count for an image (for testing purposes)
+   * 
+   * @param imageId The ID of the image
+   * @param likes   The new number of likes
+   * @return true if update was successful, false otherwise
+   */
+  public boolean updateLikeCount(long imageId, int likes) {
+    boolean success = imageRepository.updateLikeCount(imageId, likes);
+
+    if (success) {
+      Optional<Image> imgOpt = retrieve(imageId);
+      if (imgOpt.isPresent()) {
+        Image img = imgOpt.get();
+        img.setLikes(likes);
+      }
+    }
+
+    return success;
+  }
+
+  /**
+   * Toggles a user's like on an image
+   * 
+   * @param id     The ID of the image
+   * @param userid The ID of the user
+   * @return true if the image is now liked, false if unliked
+   */
+  public boolean toggleLike(long id, String userid) {
+    boolean isLiked = imageRepository.toggleLike(userid, id);
+
+    Optional<Image> imgOpt = retrieve(id);
+    if (imgOpt.isPresent()) {
+      Image img = imgOpt.get();
+      int currentLikes = imageRepository.getLikeCount(id);
+      img.setLikes(currentLikes);
+    }
+
+    return isLiked;
   }
 }

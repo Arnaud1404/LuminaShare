@@ -5,10 +5,15 @@ export interface ImageGallery {
   name: string;
   type: string;
   size: string;
-  similarity?: number;
+  url: string;
   dataUrl?: string;
+  rgbcube?: number[];
+  huesat?: number[];
+  similarity?: number;
   userid?: string;
-  ispublic?: boolean;
-  likes?: number;
+  ispublic: boolean;
+  likes: number;
+  isLiked?: boolean;
 }
+
 export const images = ref<ImageGallery[]>([]);
