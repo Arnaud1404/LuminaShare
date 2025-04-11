@@ -24,9 +24,8 @@ import pdl.backend.FileHandler.FileController;
 /**
  * Handles in-memory image collection.
  * 
- * IMPORTANT: Only manages in-memory image objects. Doesn't manage database
- * records or filesystem. Synchronization with database and physical files
- * should be done by ImageController.
+ * IMPORTANT: Only manages in-memory image objects. Doesn't manage database records or filesystem.
+ * Synchronization with database and physical files should be done by ImageController.
  */
 @Repository
 public class ImageDao implements Dao<Image> {
@@ -36,10 +35,10 @@ public class ImageDao implements Dao<Image> {
   private ImageRepository imageRepository;
 
   /**
-   * Saves an image to the in-memory collection.
-   * Processes the raw file data to extract image metadata.
+   * Saves an image to the in-memory collection. Processes the raw file data to extract image
+   * metadata.
    * 
-   * @param fileName    Name of the image file
+   * @param fileName Name of the image file
    * @param fileContent Raw byte array of the image file
    * @throws RuntimeException if image processing fails
    */
@@ -52,7 +51,8 @@ public class ImageDao implements Dao<Image> {
 
       MediaType type = ImageService.parseMediaTypeFromFilename(fileName);
 
-      Image img = new Image(FileController.directory_location.toString(), fileName, fileContent, type, width, height);
+      Image img = new Image(FileController.directory_location.toString(), fileName, fileContent,
+          type, width, height);
 
       this.create(img);
       return img;
@@ -132,5 +132,65 @@ public class ImageDao implements Dao<Image> {
    */
   public static long getImageCount() {
     return Image.getCount();
+  }
+
+  // Add these methods to the ImageDao class
+
+  /**
+   * Get all images belonging to a specific user
+   * 
+   * @param userid The user ID
+   * @return List of images owned by the user
+   */
+  public List<Image> getByUserId(String userid) {
+    return imageRepository.getByUserId(userid);
+  }
+
+  /**
+   * Get only public images belonging to a specific user
+   * 
+   * @param userid The user ID
+   * @return List of public images owned by the user
+   */
+  public List<Image> getPublicByUserId(String userid) {
+    return imageRepository.getPublicByUserId(userid);
+  }
+
+  /**
+   * Likes an image by incrementing its like count
+   * 
+   * @param imageId The ID of the image to like
+   * @return The new like count, or -1 if operation failed
+   */
+  public int likeImage(long imageId) {
+    int newLikeCount = imageRepository.likeImage(imageId);
+
+    // Also update in-memory image if it exists
+    Optional<Image> imgOpt = retrieve(imageId);
+    if (imgOpt.isPresent() && newLikeCount >= 0) {
+      Image img = imgOpt.get();
+      img.setLikes(newLikeCount);
+    }
+
+    return newLikeCount;
+  }
+
+  /**
+   * Unlikes an image by decrementing its like count
+   * 
+   * @param imageId The ID of the image to unlike
+   * @return The new like count, or -1 if operation failed
+   */
+  public int unlikeImage(long imageId) {
+    int newLikeCount = imageRepository.unlikeImage(imageId);
+
+    // Also update in-memory image if it exists
+    Optional<Image> imgOpt = retrieve(imageId);
+    if (imgOpt.isPresent() && newLikeCount >= 0) {
+      Image img = imgOpt.get();
+      img.setLikes(newLikeCount);
+    }
+
+    return newLikeCount;
   }
 }

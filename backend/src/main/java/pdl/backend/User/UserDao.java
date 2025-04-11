@@ -8,19 +8,25 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
+import jakarta.annotation.PostConstruct;
 import pdl.backend.Security.PasswordService;
 
 @Repository
 public class UserDao {
     private final Map<String, User> users = new HashMap<>();
-    
+
     @Autowired
     private UserRepository userRepository;
-    
+
     @Autowired
     private PasswordService passwordService;
-    
+
+    @PostConstruct
+    public void init() {
+        loadAllUsers();
+        System.out.println("Loaded " + users.size() + " users from database");
+    }
+
     /**
      * Creates a new user in memory and database
      * 
@@ -31,12 +37,12 @@ public class UserDao {
         if (users.containsKey(user.getUserid())) {
             return false;
         }
-        
+
         users.put(user.getUserid(), user);
-        
+
         return userRepository.addUser(user) > 0;
     }
-    
+
     /**
      * Retrieves a user from in-memory collection
      * 
@@ -46,7 +52,7 @@ public class UserDao {
     public Optional<User> retrieve(final String userid) {
         return Optional.ofNullable(users.get(userid));
     }
-    
+
     /**
      * Retrieves all users from in-memory collection
      * 
@@ -55,7 +61,7 @@ public class UserDao {
     public List<User> retrieveAll() {
         return new ArrayList<>(users.values());
     }
-    
+
     /**
      * Updates a user's information
      * 
@@ -67,7 +73,7 @@ public class UserDao {
         if (!users.containsKey(user.getUserid())) {
             return false;
         }
-        
+
         if (updatePassword) {
             String encryptedPassword = passwordService.encryptPassword(user.getPassword());
             user.setPassword(encryptedPassword);
@@ -75,11 +81,11 @@ public class UserDao {
             User existingUser = users.get(user.getUserid());
             user.setPassword(existingUser.getPassword());
         }
-        
+
         users.put(user.getUserid(), user);
         return userRepository.updateUser(user) > 0;
     }
-    
+
     /**
      * Deletes a user
      * 
@@ -90,11 +96,11 @@ public class UserDao {
         if (!users.containsKey(userid)) {
             return false;
         }
-        
+
         users.remove(userid);
         return userRepository.deleteUser(userid) > 0;
     }
-    
+
     /**
      * Validates login credentials
      * 
@@ -104,7 +110,7 @@ public class UserDao {
      */
     public Optional<User> authenticate(String userid, String password) {
         Optional<User> userOpt = userRepository.getUserById(userid);
-        
+
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             if (passwordService.matchPassword(password, user.getPassword())) {
@@ -112,10 +118,10 @@ public class UserDao {
                 return Optional.of(user);
             }
         }
-        
+
         return Optional.empty();
     }
-    
+
     /**
      * Loads all users from database into memory
      */

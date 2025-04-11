@@ -41,7 +41,7 @@ async function handleLogin() {
 <template>
   <div class="login-container panel">
     <h1>
-      {{$t('header.login')}}
+      {{ $t('header.login') }}
     </h1>
 
     <div v-if="errorMessage" class="error-message">
@@ -50,13 +50,19 @@ async function handleLogin() {
 
     <form @submit.prevent="handleLogin">
       <div class="form-group">
-        <label for="userid"> {{$t('login.id')}} </label>
+        <label for="userid"> {{ $t('login.id') }} </label>
         <input type="text" id="userid" v-model="userid" required placeholder="Entrez votre ID" />
       </div>
 
       <div class="form-group">
-        <label for="password">{{$t('login.mdp')}}</label>
-        <input type="password" id="password" v-model="password" required placeholder="Entrez votre mot de passe" />
+        <label for="password">{{ $t('login.mdp') }}</label>
+        <input
+          type="password"
+          id="password"
+          v-model="password"
+          required
+          placeholder="Entrez votre mot de passe"
+        />
       </div>
 
       <div class="form-actions">
@@ -66,8 +72,8 @@ async function handleLogin() {
       </div>
 
       <div class="register-link">
-        {{$t('login.no-account')}}
-        <RouterLink :to="{ name: 'register' }">{{$t('header.register')}}</RouterLink>
+        {{ $t('login.no-account') }}
+        <RouterLink :to="{ name: 'register' }">{{ $t('header.register') }}</RouterLink>
       </div>
     </form>
   </div>

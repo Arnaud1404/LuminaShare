@@ -89,12 +89,9 @@ async function loadImageDataUrls(jsonImages: ImageGallery[]): Promise<ImageGalle
   for (const image of jsonImages) {
     try {
       const dataUrl = await loadImageData(image.id);
+
       imageDataUrlArray.push({
-        id: image.id,
-        name: image.name,
-        type: image.type,
-        size: image.size,
-        similarity: image.similarity,
+        ...image,
         dataUrl: dataUrl,
       });
     } catch (error) {
@@ -121,10 +118,91 @@ export async function getSimilarImages(
   return await loadImageDataUrls(json);
 }
 
-export async function uploadImage(file: File): Promise<boolean> {
+/**
+ * Likes an image
+ * @param imageId The ID of the image to like
+ * @returns The new like count, or -1 if failed
+ */
+export async function likeImage(imageId: number): Promise<number> {
+  try {
+    const response = await axios.post(`/images/${imageId}/like`);
+
+    // Update the in-memory images data
+    const image = images.value.find((img) => img.id === imageId);
+    if (image && response.data && typeof response.data.likes === 'number') {
+      image.likes = response.data.likes;
+    }
+
+    return response.data.likes;
+  } catch (error) {
+    console.error(`Failed to like image ${imageId}:`, error);
+    return -1;
+  }
+}
+
+/**
+ * Unlikes an image
+ * @param imageId The ID of the image to unlike
+ * @returns The new like count, or -1 if failed
+ */
+export async function unlikeImage(imageId: number): Promise<number> {
+  try {
+    const response = await axios.post(`/images/${imageId}/unlike`);
+
+    // Update the in-memory images data
+    const image = images.value.find((img) => img.id === imageId);
+    if (image && response.data && typeof response.data.likes === 'number') {
+      image.likes = response.data.likes;
+    }
+
+    return response.data.likes;
+  } catch (error) {
+    console.error(`Failed to unlike image ${imageId}:`, error);
+    return -1;
+  }
+}
+
+/**
+ * Gets all images for a specific user
+ * @param userid The user ID to get images for
+ * @param includePrivate Whether to include private images
+ * @returns Array of images with data URLs
+ */
+export async function getUserImages(
+  userid: string,
+  includePrivate: boolean = false
+): Promise<ImageGallery[]> {
+  try {
+    // Add current user as a query parameter
+    const currentUserid = currentUser.value?.userid || '';
+
+    const response = await axios.get(
+      `/images/user/${userid}?includePrivate=${includePrivate}&currentUserid=${currentUserid}`
+    );
+    return await loadImageDataUrls(response.data);
+  } catch (error) {
+    console.error(`Failed to get user images for ${userid}:`, error);
+    return [];
+  }
+}
+
+export async function getUserProfile(userid: string): Promise<any> {
+  try {
+    const response = await axios.get(`/users/${userid}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to get user profile for ${userid}:`, error);
+    return null;
+  }
+}
+
+export async function uploadImage(file: File, isPublic: boolean = false): Promise<boolean> {
   const formData = new FormData();
   formData.append('file', file);
-
+  if (currentUser.value) {
+    formData.append('userid', currentUser.value.userid);
+    formData.append('ispublic', isPublic.toString());
+  }
   try {
     //   const fileNameExists = images.value.some(img => img.name === file.name);
     //   if (fileNameExists) {
@@ -168,13 +246,12 @@ export async function getImageFilter(id: number, filter: string, number: number)
   filter = id + filter;
   return axios
 
-    .get(`/images/${id}/filter?filter=${filter}&number=${number}`
-      , { responseType: 'blob' })
+    .get(`/images/${id}/filter?filter=${filter}&number=${number}`, { responseType: 'blob' })
     .then(function (response: AxiosResponse) {
       return new Promise<string>((resolve) => {
         const reader = new window.FileReader();
         reader.readAsDataURL(response.data);
         reader.onload = () => resolve(reader.result as string);
       });
-    })
+    });
 }

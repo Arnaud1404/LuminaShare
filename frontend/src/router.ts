@@ -10,7 +10,7 @@ const routes: Array<RouteRecordRaw> = [
     props: false,
   },
   {
-    path: '/user',
+    path: '/user/:userid?',
     name: 'user',
     component: () => import('./components/User.vue'),
     props: true,
@@ -22,10 +22,10 @@ const routes: Array<RouteRecordRaw> = [
     props: false,
   },
   {
-    path: "/edit",
-    name: "modif",
-    component: () => import("./components/Edit.vue"),
-    props: false
+    path: '/edit',
+    name: 'modif',
+    component: () => import('./components/Edit.vue'),
+    props: false,
   },
   {
     path: '/register',
