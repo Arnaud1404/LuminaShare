@@ -146,8 +146,7 @@ public class ImageController {
     ArrayNode nodes = mapper.createArrayNode();
     List<Image> imgs = imageDao.retrieveAll();
     for (Image img : imgs) {
-      // Only include public images in the response
-      if (img.isPublic()) {
+      {
         ObjectNode img_json = mapper.createObjectNode();
         img_json.put("id", img.getId());
         img_json.put("name", img.getName());
