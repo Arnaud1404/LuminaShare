@@ -56,16 +56,16 @@
   },
   "user": {
       "title": "ملفي الشخصي",
-      "loading_profile": "...جارٍ تحميل الملف الشخصي"
-      "user_not_found": "المستخدم غير موجود"
-      "no_photos_you": "لم تقم بتحميل أي صور بعد."
-      "no_photos_other": "هذا المستخدم لم يقم بتحميل أي صور بعد."
-      "upload_photos": "تحميل الصور"
-      "your_profile": "ملفك الشخصي"
-      "user_profile": "ملف  الشخصي"
-      "no_bio": "لم يتم تقديم سيرة ذاتية"
-      "your_photos": "صورك"
-      "user_photos": " صور المستخدمون "
+      "loading_profile": "...جارٍ تحميل الملف الشخصي",
+      "user_not_found": "المستخدم غير موجود",
+      "no_photos_you": "لم تقم بتحميل أي صور بعد.",
+      "no_photos_other": "هذا المستخدم لم يقم بتحميل أي صور بعد.",
+      "upload_photos": "تحميل الصور",
+      "your_profile": "ملفك الشخصي",
+      "user_profile": "ملف  الشخصي",
+      "no_bio": "لم يتم تقديم سيرة ذاتية",
+      "your_photos": "صورك",
+      "user_photos": " صور المستخدمون ",
       "loading_images": "...جارٍ تحميل الصور"
   },
   "users": {
@@ -74,7 +74,7 @@
   "edit": {
       "title_selected_img": "اختر صورة من المعرض",
       "title_filter_img": "اختر صورة من المعرض",
-      "title_gallery": "Galerie",
+      "title_gallery": "معرض الصور",
       "id": ":المعرف",
       "name": ":الاسم",
       "type": ":النوع",
