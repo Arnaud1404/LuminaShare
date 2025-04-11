@@ -211,6 +211,7 @@ public class ImageController {
       @RequestParam("filter") String filter, @RequestParam("number") int number) {
     try {
       Image img = imageDao.retrieve(id).get();
+      boolean alreday= false;
 
       BufferedImage img_input = ImageIO.read(FileController.get_file(img.getName()));
       Planar<GrayU8> input =
@@ -220,33 +221,39 @@ public class ImageController {
       ConvertBufferedImage.convertFrom(img_input, input, true);
       Planar<GrayU8> output = input.createSameShape();
 
+      BufferedImage filteredImage = null;
       switch (filter) {
         case "gradienImage":
           ColorProcessing.meanFilter(input, output, number);
           break;
-        case "modif_lum":
+        case "modif_lum":{
           output = input.clone();
-          ColorProcessing.modif_lum(input, number);
+          ColorProcessing.modif_lum(output, number);
           break;
-        case "invert":
-
+        }
+        case "invert":{
+          alreday = true;
+            filteredImage = Traitement.invertColors(img_input);
           break;
-        case "rotation":
-
+        }
+        case "rotation":{
+          alreday = true;
+          filteredImage = Traitement.rotateImage(img_input, number);
           break;
-      
+        }
         default:
-          break;
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Filtre inconnu : " + filter);
       }
 
-
-      BufferedImage resultImage =
+      if (alreday == false){
+          filteredImage =
           new BufferedImage(output.width, output.height, img_input.getType());
-      ConvertBufferedImage.convertTo(output, resultImage, true);
+      ConvertBufferedImage.convertTo(output, filteredImage, true);
+      }
 
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       String formatName = img.getType().getSubtype().equals("jpeg") ? "jpg" : img.getType().getSubtype();
-      ImageIO.write(resultImage, formatName, baos);
+      ImageIO.write(filteredImage, formatName, baos);
       byte[] imageBytes = baos.toByteArray();
 
       MediaType mediaType = img.getType();
