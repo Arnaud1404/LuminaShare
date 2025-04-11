@@ -136,29 +136,32 @@ public class ImageController {
   }
 
   /**
-   * Lists all images in memory
+   * Lists all public images in memory
    * 
-   * @return JSON array with image metadata
+   * @return JSON array with public image metadata
    */
   @RequestMapping(value = "/images", method = RequestMethod.GET, produces = "application/json")
   @ResponseBody
-  public ArrayNode getImageList() { // format attendu
+  public ArrayNode getImageList() {
     ArrayNode nodes = mapper.createArrayNode();
     List<Image> imgs = imageDao.retrieveAll();
     for (Image img : imgs) {
-      ObjectNode img_json = mapper.createObjectNode();
-      img_json.put("id", img.getId());
-      img_json.put("name", img.getName());
-      img_json.put("type", img.getType().toString());
-      img_json.put("size", img.getSize());
-      img_json.put("similarity", img.getSimilarityScore());
-      img_json.put("url", "/images/" + img.getId());
-      img_json.put("likes", img.getLikes());
-      img_json.put("ispublic", img.isPublic());
-      if (img.getUserid() != null) {
-        img_json.put("userid", img.getUserid());
+      // Only include public images in the response
+      if (img.isPublic()) {
+        ObjectNode img_json = mapper.createObjectNode();
+        img_json.put("id", img.getId());
+        img_json.put("name", img.getName());
+        img_json.put("type", img.getType().toString());
+        img_json.put("size", img.getSize());
+        img_json.put("similarity", img.getSimilarityScore());
+        img_json.put("url", "/images/" + img.getId());
+        img_json.put("likes", img.getLikes());
+        img_json.put("ispublic", img.isPublic());
+        if (img.getUserid() != null) {
+          img_json.put("userid", img.getUserid());
+        }
+        nodes.add(img_json);
       }
-      nodes.add(img_json);
     }
     return nodes;
   }

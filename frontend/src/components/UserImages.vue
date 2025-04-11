@@ -97,9 +97,10 @@ async function togglePrivacy(event: Event, image: ImageGallery) {
 <style scoped>
 .image-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem;
-  padding: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  padding: 0.5rem;
+  width: 100%;
 }
 
 .image-card {
@@ -111,15 +112,11 @@ async function togglePrivacy(event: Event, image: ImageGallery) {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
-}
-
-.image-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  height: 100%;
 }
 
 .image-container {
-  height: 200px;
+  height: 220px;
   overflow: hidden;
 }
 

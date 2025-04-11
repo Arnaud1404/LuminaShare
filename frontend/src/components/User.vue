@@ -37,7 +37,10 @@ const isOwnProfile = computed(() => {
 async function loadUserImages() {
   loadingImages.value = true;
   const includePrivate = isOwnProfile.value;
-  userImages.value = await getUserImages(userid.value, includePrivate);
+  const images = await getUserImages(userid.value, includePrivate);
+  
+  userImages.value = images.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+  
   loadingImages.value = false;
 }
 
@@ -82,6 +85,9 @@ async function loadUserProfile() {
       userExists.value = false;
       return;
     }
+    
+    await setImageLikes(1, 5);
+    await setImageLikes(2, 15);
 
     await Promise.all([loadUserImages(), loadUserData()]);
 
@@ -99,11 +105,8 @@ function navigateToUpload() {
 }
 
 
-onMounted(async () => {
-  await setImageLikes(1, 5); 
-  await setImageLikes(2, 15);
+onMounted(() => {
   loadUserProfile();
-  
 });
 </script>
 
