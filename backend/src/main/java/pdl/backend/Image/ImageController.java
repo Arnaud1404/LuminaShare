@@ -220,15 +220,32 @@ public class ImageController {
       ConvertBufferedImage.convertFrom(img_input, input, true);
       Planar<GrayU8> output = input.createSameShape();
 
-      ColorProcessing.meanFilter(input, output, number);
+      switch (filter) {
+        case "gradienImage":
+          ColorProcessing.meanFilter(input, output, number);
+          break;
+        case "modif_lum":
+          output = input.clone();
+          ColorProcessing.modif_lum(input, number);
+          break;
+        case "invert":
+
+          break;
+        case "rotation":
+
+          break;
+      
+        default:
+          break;
+      }
+
 
       BufferedImage resultImage =
           new BufferedImage(output.width, output.height, img_input.getType());
       ConvertBufferedImage.convertTo(output, resultImage, true);
 
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      String formatName =
-          img.getType().getSubtype().equals("jpeg") ? "jpg" : img.getType().getSubtype();
+      String formatName = img.getType().getSubtype().equals("jpeg") ? "jpg" : img.getType().getSubtype();
       ImageIO.write(resultImage, formatName, baos);
       byte[] imageBytes = baos.toByteArray();
 
