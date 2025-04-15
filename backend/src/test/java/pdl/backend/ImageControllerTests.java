@@ -37,11 +37,13 @@ public class ImageControllerTests {
 	@Autowired
 	private MockMvc mockMvc;
 
+	private String json = "application/json;charset=UTF-8";
+
 	@Test
 	@Order(1)
 	public void getImageListShouldReturnSuccess() throws Exception {
 		this.mockMvc.perform(get("/images")).andDo(print()).andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON));
+				.andExpect(content().contentType(json));
 	}
 
 	@Test
@@ -93,6 +95,15 @@ public class ImageControllerTests {
 	@Order(7)
 	public void getImageShouldReturnSuccessPNG() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
+	}
+
+	@Test
+	@Order(7)
+	public void getImageSimilarShouldReturnSuccess() throws Exception {
+		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=5&descriptor=huesat"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(json));
 	}
 
 	@Test
@@ -166,4 +177,12 @@ public class ImageControllerTests {
 	public void imageShouldNotBeFound() throws Exception {
 		this.mockMvc.perform(get("/images/0")).andExpect(status().isNotFound());
 	}
+
+	@Test
+	@Order(15)
+	public void getImageSimilarShouldReturnBadRequest() throws Exception {
+		this.mockMvc.perform(get("/images/-1/similar?number=5&descriptor=huesat")).andDo(print())
+				.andExpect(status().isBadRequest());
+	}
+
 }
