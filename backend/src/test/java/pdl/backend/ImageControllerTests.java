@@ -108,6 +108,21 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(8)
+	public void getImageSimilarShouldReturnBadRequestDescriptor() throws Exception {
+		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) +
+				"/similar?number=5&descriptor=bad"))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@Order(8)
+	public void getImageSimilarShouldReturnBadRequestNumber() throws Exception {
+		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=-1&descriptor=huesat"))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@Order(8)
 	public void deleteImageShouldReturnSuccessPNG() throws Exception {
 		assertTrue(FileController.file_exists("test_certain_est_test12312315646216.png"));
 		this.mockMvc.perform(delete("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
@@ -180,7 +195,7 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(15)
-	public void getImageSimilarShouldReturnBadRequest() throws Exception {
+	public void getImageSimilarShouldReturnBadRequestId() throws Exception {
 		this.mockMvc.perform(get("/images/-1/similar?number=5&descriptor=huesat")).andDo(print())
 				.andExpect(status().isBadRequest());
 	}

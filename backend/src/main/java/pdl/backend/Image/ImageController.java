@@ -218,6 +218,9 @@ public class ImageController {
       } else {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
       }
+    } catch (RuntimeException e) { // if the descriptor is not reconignize
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+
     }
   }
 
