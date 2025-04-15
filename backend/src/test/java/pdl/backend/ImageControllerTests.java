@@ -27,6 +27,7 @@ import org.springframework.http.MediaType;
 import pdl.backend.FileHandler.*;
 import pdl.backend.Image.Image;
 import pdl.backend.Image.ImageDao;
+import pdl.backend.Image.ImageService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -36,16 +37,13 @@ public class ImageControllerTests {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@BeforeAll
-	public static void reset() {
-		System.out.println("nb d'image dans dao" + ImageDao.getImageCount());
-	}
+	private String json = "application/json;charset=UTF-8";
 
 	@Test
 	@Order(1)
 	public void getImageListShouldReturnSuccess() throws Exception {
 		this.mockMvc.perform(get("/images")).andDo(print()).andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON));
+				.andExpect(content().contentType(json));
 	}
 
 	@Test
@@ -57,14 +55,12 @@ public class ImageControllerTests {
 	@Test
 	@Order(3)
 	public void createImageShouldReturnSuccessJPEG() throws Exception {
-		ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
+		// ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
 
-		ClassPathResource imgFile =
-				new ClassPathResource("images_test/test_certain_est_test12312315646216.jpg");
+		ClassPathResource imgFile = new ClassPathResource("images_test/test_certain_est_test12312315646216.jpg");
 
-		MockMultipartFile file_multipart =
-				new MockMultipartFile("file", "test_certain_est_test12312315646216.jpg",
-						MediaType.IMAGE_JPEG_VALUE, imgFile.getInputStream());
+		MockMultipartFile file_multipart = new MockMultipartFile("file", "test_certain_est_test12312315646216.jpg",
+				MediaType.IMAGE_JPEG_VALUE, imgFile.getInputStream());
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart))
 				.andDo(print()).andExpect(status().isCreated());
 	}
@@ -72,29 +68,25 @@ public class ImageControllerTests {
 	@Test
 	@Order(4)
 	public void getImageShouldReturnSuccessJPEG() throws Exception {
-		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk());
-
+		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
 	}
 
 	@Test
 	@Order(5)
 	public void deleteImageShouldReturnSuccessJPEG() throws Exception {
 		assertTrue(FileController.file_exists("test_certain_est_test12312315646216.jpg"));
-		this.mockMvc.perform(delete("/images/0")).andExpect(status().isOk());
+		this.mockMvc.perform(delete("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
 		assertFalse(FileController.file_exists("test_certain_est_test12312315646216.jpg"));
 	}
 
 	@Test
 	@Order(6)
 	public void createImageShouldReturnSuccessPNG() throws Exception {
-		ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
 
-		ClassPathResource imgFile =
-				new ClassPathResource("images_test/test_certain_est_test12312315646216.png");
+		ClassPathResource imgFile = new ClassPathResource("images_test/test_certain_est_test12312315646216.png");
 
-		MockMultipartFile file_multipart =
-				new MockMultipartFile("file", "test_certain_est_test12312315646216.png",
-						MediaType.IMAGE_JPEG_VALUE, imgFile.getInputStream());
+		MockMultipartFile file_multipart = new MockMultipartFile("file", "test_certain_est_test12312315646216.png",
+				MediaType.IMAGE_JPEG_VALUE, imgFile.getInputStream());
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart))
 				.andDo(print()).andExpect(status().isCreated());
 	}
@@ -102,14 +94,38 @@ public class ImageControllerTests {
 	@Test
 	@Order(7)
 	public void getImageShouldReturnSuccessPNG() throws Exception {
-		this.mockMvc.perform(get("/images/0")).andExpect(status().isOk());
+		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
+	}
+
+	@Test
+	@Order(7)
+	public void getImageSimilarShouldReturnSuccess() throws Exception {
+		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=5&descriptor=huesat"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(json));
+	}
+
+	@Test
+	@Order(8)
+	public void getImageSimilarShouldReturnBadRequestDescriptor() throws Exception {
+		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) +
+				"/similar?number=5&descriptor=bad"))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@Order(8)
+	public void getImageSimilarShouldReturnBadRequestNumber() throws Exception {
+		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=-1&descriptor=huesat"))
+				.andExpect(status().isBadRequest());
 	}
 
 	@Test
 	@Order(8)
 	public void deleteImageShouldReturnSuccessPNG() throws Exception {
 		assertTrue(FileController.file_exists("test_certain_est_test12312315646216.png"));
-		this.mockMvc.perform(delete("/images/0")).andExpect(status().isOk());
+		this.mockMvc.perform(delete("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
 		assertFalse(FileController.file_exists("test_certain_est_test12312315646216.png"));
 
 	}
@@ -129,10 +145,8 @@ public class ImageControllerTests {
 		fileContent = Files.readAllBytes(imgFile.getFile().toPath());
 
 		MockMultipartFile file_multipart = new MockMultipartFile("file", fileContent);
-		// attendu par POST
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart))
 				.andDo(print()).andExpect(status().isNoContent());
-
 	}
 
 	@Test
@@ -143,7 +157,6 @@ public class ImageControllerTests {
 		fileContent = Files.readAllBytes(imgFile.getFile().toPath());
 
 		MockMultipartFile file_multipart = new MockMultipartFile("file", fileContent);
-		// attendu par POST
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart))
 				.andDo(print()).andExpect(status().isUnsupportedMediaType());
 
@@ -157,7 +170,6 @@ public class ImageControllerTests {
 		fileContent = Files.readAllBytes(imgFile.getFile().toPath());
 
 		MockMultipartFile file_multipart = new MockMultipartFile("file", fileContent);
-		// attendu par POST
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart))
 				.andDo(print()).andExpect(status().isUnsupportedMediaType());
 
@@ -180,4 +192,12 @@ public class ImageControllerTests {
 	public void imageShouldNotBeFound() throws Exception {
 		this.mockMvc.perform(get("/images/0")).andExpect(status().isNotFound());
 	}
+
+	@Test
+	@Order(15)
+	public void getImageSimilarShouldReturnBadRequestId() throws Exception {
+		this.mockMvc.perform(get("/images/-1/similar?number=5&descriptor=huesat")).andDo(print())
+				.andExpect(status().isBadRequest());
+	}
+
 }
