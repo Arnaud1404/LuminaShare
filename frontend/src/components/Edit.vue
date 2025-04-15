@@ -6,6 +6,7 @@ import {
   deleteImage,
   getSimilarImages,
   getImageFilter,
+  uploadImage,
 } from './http-api';
 import Gallery from './Gallery.vue';
 import Similar from './Similar.vue';
@@ -30,9 +31,8 @@ const descriptor = ref('rgbcube');
 const similarCount = ref(3);
 const similarImages = ref<ImageGallery[]>([]);
 const isFileValid = ref(false);
-// const isFullscreen = ref(false);
+const isUploading = ref(false);
 const showMetadata = ref(false);
-// const isUploading = ref(false);
 
 const fetchSimilarImages = async () => {
   if (!selectedImage.value) return;
@@ -219,6 +219,29 @@ const Apply_filter = async () => {
     );
   }
 };
+
+const submitFile = async () => {
+  if (!file.value || isUploading.value) return;
+
+  isUploading.value = true;
+  
+
+  try {
+    await uploadImage(file.value);
+    file.value = null;
+    notification.value?.showNotification('Image téléversée avec succès', 'success');
+  } catch (error: any) {
+    console.error('Upload failed:', error);
+    const errorMessage = formatErrorMessage(error);
+    notification.value?.showNotification(`Échec du téléversement: ${errorMessage}`, 'error');
+  } finally {
+    file.value = null;
+    isFileValid.value = false;
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+    isUploading.value = false;
+  }
+};
 </script>
 
 <template>
@@ -309,6 +332,9 @@ const Apply_filter = async () => {
           </button>
           <button @click="handleDeleteImage" class="delete-button">
             {{ $t('button.Supprimer') }}
+          </button>
+          <button @click="submitFile" :disabled="isUploading">
+            {{ isUploading ? 'Téléversement...' : 'Téléverser' }}
           </button>
         </div>
       </div>
