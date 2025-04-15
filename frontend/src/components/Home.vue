@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { loadAllImages } from './http-api';
+import { loadAllPublicImages } from './http-api';
 import { type ImageGallery } from './images.ts';
 import UserImages from './UserImages.vue';
 import { useRouter } from 'vue-router';
@@ -14,15 +14,16 @@ async function loadPublicImages() {
   try {
     loading.value = true;
     console.log('Fetching public images...');
-    const images = await loadAllImages();
-    
-    // Sort images by like count (highest first)
+    const images = await loadAllPublicImages();
+
     publicImages.value = images.sort((a, b) => (b.likes || 0) - (a.likes || 0));
-    
+
     console.log('Loaded public images:', publicImages.value.length);
-    
+
     if (publicImages.value.length === 0) {
-      console.log('No public images found. Check if any images are marked as public in the database.');
+      console.log(
+        'No public images found. Check if any images are marked as public in the database.'
+      );
     }
   } catch (err) {
     console.error('Error loading public images:', err);
@@ -37,7 +38,7 @@ function handleImageSelect(image: ImageGallery) {
 }
 
 function handleImageUpdate(updatedImage: ImageGallery) {
-  const index = publicImages.value.findIndex(img => img.id === updatedImage.id);
+  const index = publicImages.value.findIndex((img) => img.id === updatedImage.id);
   if (index !== -1) {
     publicImages.value[index] = updatedImage;
   }
@@ -69,8 +70,8 @@ onMounted(() => {
     </div>
 
     <div v-else class="images-container">
-      <UserImages 
-        :images="publicImages" 
+      <UserImages
+        :images="publicImages"
         :showPrivacyToggle="false"
         @select="handleImageSelect"
         @imageUpdated="handleImageUpdate"
@@ -97,7 +98,9 @@ onMounted(() => {
   margin: 0;
 }
 
-.loading-container, .error-container, .empty-state {
+.loading-container,
+.error-container,
+.empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -117,8 +120,12 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .retry-button {
