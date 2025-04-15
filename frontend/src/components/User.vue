@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getUserImages, getUserProfile, setImageLikes } from './http-api';
+import { getUserImages, getUserProfile } from './http-api';
 import { currentUser } from './users';
 import { type ImageGallery } from './images.ts';
 import UserImages from './UserImages.vue';
@@ -86,9 +86,6 @@ async function loadUserProfile() {
       userExists.value = false;
       return;
     }
-
-    await setImageLikes(1, 5);
-    await setImageLikes(2, 15);
 
     await Promise.all([loadUserImages(), loadUserData()]);
 
