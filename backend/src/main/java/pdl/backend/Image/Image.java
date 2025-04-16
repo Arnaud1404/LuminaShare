@@ -25,7 +25,6 @@ public class Image {
   private int width;
   private int height;
 
-  private String userid;
   private String userid = "admin";
 
   private boolean isPublic = false;
