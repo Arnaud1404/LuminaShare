@@ -146,7 +146,7 @@ public class ImageController {
    * 
    * @return JSON array with public image metadata
    */
-  @RequestMapping(value = "/images", method = RequestMethod.GET, produces = "application/json")
+  @RequestMapping(value = "/images", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   @ResponseBody
   public ArrayNode getImageList() {
     ArrayNode nodes = mapper.createArrayNode();
@@ -183,13 +183,21 @@ public class ImageController {
   @ResponseBody
   public ResponseEntity<?> getSimilarImages(@PathVariable("id") long id,
       @RequestParam("number") int n, @RequestParam("descriptor") String descriptor) {
+
+    if (id <= 0) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body("Le paramètre 'id' doit être supérieur à 0");
+    }
     try {
       if (n <= 0) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body("Le paramètre 'number' doit être supérieur à 0");
       }
 
+      System.out.println("id = " + id + " taille imaegdao = " + ImageDao.getImageCount());
+
       Image image = imageDao.retrieve(id).get();
+
       List<Image> similarImages = imageRepository.imageSimilar(image, descriptor, n);
 
       ArrayNode nodes = mapper.createArrayNode();
@@ -210,6 +218,9 @@ public class ImageController {
       } else {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
       }
+    } catch (RuntimeException e) { // if the descriptor is not reconignize
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+
     }
   }
 
@@ -330,18 +341,17 @@ public class ImageController {
           .body("Error checking like status: " + e.getMessage());
     }
   }
-  @RequestMapping(value = "/images/{id}/filter", method = RequestMethod.GET,
-      produces = "application/json; charset=UTF-8")
+
+  @RequestMapping(value = "/images/{id}/filter", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   @ResponseBody
   public ResponseEntity<?> applyFilter(@PathVariable("id") long id,
       @RequestParam("filter") String filter, @RequestParam("number") int number) {
     try {
       Image img = imageDao.retrieve(id).get();
-      boolean alreday= false;
+      boolean alreday = false;
 
       BufferedImage img_input = ImageIO.read(FileController.get_file(img.getName()));
-      Planar<GrayU8> input =
-          new Planar<>(GrayU8.class, img_input.getWidth(), img_input.getHeight(), 3);
+      Planar<GrayU8> input = new Planar<>(GrayU8.class, img_input.getWidth(), img_input.getHeight(), 3);
 
       // Transmet le contenu de img_input vers input
       ConvertBufferedImage.convertFrom(img_input, input, true);
@@ -352,17 +362,17 @@ public class ImageController {
         case "gradienImage":
           ColorProcessing.meanFilter(input, output, number);
           break;
-        case "modif_lum":{
+        case "modif_lum": {
           output = input.clone();
           ColorProcessing.modif_lum(output, number);
           break;
         }
-        case "invert":{
+        case "invert": {
           alreday = true;
-            filteredImage = Traitement.invertColors(img_input);
+          filteredImage = Traitement.invertColors(img_input);
           break;
         }
-        case "rotation":{
+        case "rotation": {
           alreday = true;
           filteredImage = Traitement.rotateImage(img_input, number);
           break;
@@ -371,10 +381,9 @@ public class ImageController {
           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Filtre inconnu : " + filter);
       }
 
-      if (alreday == false){
-          filteredImage =
-          new BufferedImage(output.width, output.height, img_input.getType());
-      ConvertBufferedImage.convertTo(output, filteredImage, true);
+      if (alreday == false) {
+        filteredImage = new BufferedImage(output.width, output.height, img_input.getType());
+        ConvertBufferedImage.convertTo(output, filteredImage, true);
       }
 
       ByteArrayOutputStream baos = new ByteArrayOutputStream();

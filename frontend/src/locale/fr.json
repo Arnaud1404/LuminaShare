@@ -54,7 +54,18 @@
     "exist": "Déjà inscrit ?"
   },
   "user": {
-    "title": "Mon profil"
+    "title": "Mon profil",
+    "loading_profile": "Chargement du profil...",
+    "user_not_found": "Utilisateur introuvable",
+    "no_photos_you": "Vous n'avez pas encore téléchargé de photos.",
+    "no_photos_other": "Cet utilisateur n'a pas encore téléchargé de photos.",
+    "upload_photos": "Télécharger des photos",
+    "your_profile": "Votre Profil",
+    "user_profile": "Profil de {username}",
+    "no_bio": "Aucune biographie fournie",
+    "your_photos": "Vos Photos",
+    "user_photos": "Photos de {username}",
+    "loading_images": "Chargement des images..."
   },
   "users": {
     "title": "Les Utilisateurs"
