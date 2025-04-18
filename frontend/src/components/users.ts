@@ -1,11 +1,16 @@
 import { ref } from 'vue';
-
+/**
+ * User interface
+ *
+ * @export
+ * @interface User
+ */
 export interface User {
   userid: string;
   name: string;
   bio: string;
 }
-
+/** The current logged in user */
 export const currentUser = ref<User | null>(null);
 
 const storedUser = localStorage.getItem('user');

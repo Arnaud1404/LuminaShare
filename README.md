@@ -78,6 +78,7 @@ mvn javadoc:javadoc
 
 La documentation sera disponible dans `docs/api/index.html`
 
+La documentation du frontend `docs/api/frontend`
 Si vous n'avez pas Javadoc d'installé, installez tout le JDK
 
 ```

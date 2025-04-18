@@ -2,6 +2,17 @@ import axios, { type AxiosResponse } from 'axios';
 import { images, type ImageGallery } from './images';
 import { currentUser } from './users';
 
+/**
+ * Logs in a user with the backend server
+ * Side effects:
+ * - Sets the currentUser.value to the user data
+ * - Stores user data in localStorage to keep data between page refreshes
+ * @category Authentication
+ * @param userid - The user's login ID
+ * @param password - The user's password
+ * @returns Promise that resolves to true if login was successful, false otherwise
+ *
+ */
 export async function loginUser(userid: string, password: string): Promise<boolean> {
   try {
     const response = await axios.post('/api/auth/login', { userid, password });
@@ -14,6 +25,15 @@ export async function loginUser(userid: string, password: string): Promise<boole
   }
 }
 
+/**
+ * Registers a user with the backend server
+ *
+ * @category Authentication
+ * @param userid The chosen userid for the new user
+ * @param name The display name for the new user
+ * @param password The chosen userid for the new user
+ * @returns Promise that resolves to true if login was successful, false otherwise
+ */
 export async function registerUser(
   userid: string,
   name: string,
@@ -32,11 +52,22 @@ export async function registerUser(
   }
 }
 
+/**
+ * Logs out the current user and removes cookies
+ *
+ */
 export function logoutUser(): void {
   currentUser.value = null;
   localStorage.removeItem('user');
 }
 
+/**
+ * Toggles the privacy field of a given imageId.
+ * @requires Logged in
+ * @param imageId
+ *
+ * @returns a void Promise
+ */
 export async function toggleImagePrivacy(imageId: number): Promise<void> {
   try {
     const response = await axios.patch(
@@ -60,15 +91,14 @@ export async function toggleImagePrivacy(imageId: number): Promise<void> {
     throw error;
   }
 }
-export async function getImagesAsJSON() {
-  let json: ImageGallery[] = [];
-  await axios
-    .get('/images')
-    .then((response) => (json = response.data))
-    .catch((error) => console.error(error));
-  return json;
-}
-export async function getSimilarImagesAsJSON(
+/**
+ * Gets all similar images as a JSON WITHOUT the dataUrls (the body of the image)
+ * @param {number} id
+ * @param {number} [count=5]
+ * @param {string} [descriptor='rgbcube']
+ * @return {*}  {Promise<ImageGallery[]>}
+ */
+async function getSimilarImagesAsJSON(
   id: number,
   count: number = 5,
   descriptor: string = 'rgbcube'
@@ -84,6 +114,14 @@ export async function getSimilarImagesAsJSON(
   }
   return json;
 }
+
+/**
+ * Retrieves the dataUrl from the backend via its image id
+ *
+ * @export
+ * @param {number} imageID
+ * @return {*}  {Promise<string>} String representing the image pixels
+ */
 export async function loadImageData(imageID: number): Promise<string> {
   return axios
     .get(`/images/${imageID}`, { responseType: 'blob' })
@@ -101,8 +139,8 @@ export async function loadImageData(imageID: number): Promise<string> {
 }
 
 /**
- * Loads data URLs for an array of image metadata
- * @param jsonImages Array of image metadata without data URLs
+ * Loads data URLs for an array of image JSONs
+ * @param jsonImages Array of image JSONs without data URLs
  * @returns Array of complete images with data URLs
  */
 async function loadImageDataUrls(jsonImages: ImageGallery[]): Promise<ImageGallery[]> {
@@ -124,6 +162,12 @@ async function loadImageDataUrls(jsonImages: ImageGallery[]): Promise<ImageGalle
   return imageDataUrlArray;
 }
 
+/**
+ * Loads all images of a user, if the user is not logged in, the array is empty
+ *
+ * @export
+ * @return {*}  {Promise<ImageGallery[]>}
+ */
 export async function loadAllImages(): Promise<ImageGallery[]> {
   if (currentUser.value) {
     images.value = await getUserImages(currentUser.value.userid, true);
@@ -132,6 +176,15 @@ export async function loadAllImages(): Promise<ImageGallery[]> {
     return [];
   }
 }
+/**
+ * Retrieves the most similar images to the given one using L2 Distance
+ *
+ * @export
+ * @param {number} id the id of the input image
+ * @param {number} [count=5] the number of similar images to be returned
+ * @param {string} [descriptor='rgbcube'] the descriptor to use (rgbcube or huesat)
+ * @return {*}  A list of Similar images
+ */
 export async function getSimilarImages(
   id: number,
   count: number = 5,
@@ -184,6 +237,13 @@ export async function loadAllPublicImages(): Promise<ImageGallery[]> {
   }
 }
 
+/**
+ * Checks if an image has already been liked by the current user, useful on page reloads
+ *
+ * @export
+ * @param {number} imageId
+ * @return {*}  {Promise<boolean>}
+ */
 export async function checkLikeStatus(imageId: number): Promise<boolean> {
   try {
     if (!currentUser.value?.userid) {
@@ -221,7 +281,14 @@ export async function unlikeImage(imageId: number): Promise<number> {
     return -1;
   }
 }
-
+/**
+ * Used for debugging, sets the like count of the given image
+ *
+ * @export
+ * @param {number} imageId
+ * @param {number} likes
+ * @return {*}  {Promise<boolean>}
+ */
 export async function setImageLikes(imageId: number, likes: number): Promise<boolean> {
   try {
     const response = await axios.put(`/images/${imageId}/set-likes?likes=${likes}`);
@@ -260,7 +327,13 @@ export async function getUserImages(
     return [];
   }
 }
-
+/**
+ * Returns the user data (userid, name, bio)
+ *
+ * @export
+ * @param {string} userid
+ * @return {*}  {Promise<any>}
+ */
 export async function getUserProfile(userid: string): Promise<any> {
   try {
     const response = await axios.get(`/users/${userid}`);
@@ -270,7 +343,14 @@ export async function getUserProfile(userid: string): Promise<any> {
     return null;
   }
 }
-
+/**
+ * Uploads an image with the userid and ispublic tags set to the currentuser and private by default respectively
+ *
+ * @export
+ * @param {File} file
+ * @param {boolean} [isPublic=false]
+ * @return {*}  {Promise<boolean>}
+ */
 export async function uploadImage(file: File, isPublic: boolean = false): Promise<boolean> {
   const formData = new FormData();
   formData.append('file', file);
@@ -294,7 +374,13 @@ export async function uploadImage(file: File, isPublic: boolean = false): Promis
     throw error;
   }
 }
-
+/**
+ * Deletes an image from the backend
+ *
+ * @export
+ * @param {number} imageID
+ * @return {*}  {Promise<boolean>}
+ */
 export async function deleteImage(imageID: number): Promise<boolean> {
   try {
     await axios.delete(`/images/${imageID}`);
@@ -306,7 +392,12 @@ export async function deleteImage(imageID: number): Promise<boolean> {
     return false;
   }
 }
-
+/**
+ *Refreshes the image list
+ *
+ * @export
+ * @return {*}  {Promise<void>}
+ */
 export async function refreshImages(): Promise<void> {
   try {
     const updatedImages = await loadAllImages();
@@ -315,7 +406,16 @@ export async function refreshImages(): Promise<void> {
     console.error('Failed to refresh images:', error);
   }
 }
-
+/**
+ * Returns the dataUrl after the filter has been applied
+ *
+ * @export
+ * @param {number} id
+ * @param {string} filter
+ * @param {number} number
+ * @param {number} [height]
+ * @return {*}
+ */
 export async function getImageFilter(id: number, filter: string, number: number, height?: number) {
   const url = height
     ? `/images/${id}/filter?filter=${filter}&number=${number}&height=${height}`

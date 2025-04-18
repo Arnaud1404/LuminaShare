@@ -1,5 +1,10 @@
 import { ref } from 'vue';
-
+/**
+ * Image interface
+ *
+ * @export
+ * @interface ImageGallery
+ */
 export interface ImageGallery {
   id: number;
   name: string;
@@ -15,5 +20,5 @@ export interface ImageGallery {
   likes: number;
   isLiked?: boolean;
 }
-
+/** Images for the user, loaded by loadAllImages*/
 export const images = ref<ImageGallery[]>([]);
