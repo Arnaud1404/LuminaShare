@@ -427,7 +427,7 @@ public class ImageController {
 
   /**
    * Toggles the privacy status of an image (public/private)
-   * 
+   *
    * @param id The ID of the image to update
    * @return A response indicating success or failure
    */
