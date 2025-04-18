@@ -63,7 +63,7 @@ async function loadUserData() {
 
 function handleImageSelect(image: ImageGallery) {
   selectedImage.value = image;
-  router.push(`/edit?imageId=${image.id}`);
+  router.push(`/edit?imageid=${image.id}`);
 }
 
 function handleImageUpdate(updatedImage: ImageGallery) {

@@ -57,12 +57,13 @@ function handleLogout() {
       <RouterLink :to="{ name: 'home' }" class="nav-link" @click="toggleSidebar">{{
         $t('header.home')
       }}</RouterLink>
-      <RouterLink v-if="isLoggedIn()" :to="{ name: 'user' }" class="nav-link" @click="toggleSidebar"
-        >Utilisateur</RouterLink
+      <RouterLink
+        v-if="isLoggedIn()"
+        :to="{ name: 'user' }"
+        class="nav-link"
+        @click="toggleSidebar"
+        >{{ $t('user.title') }}</RouterLink
       >
-      <RouterLink :to="{ name: 'users' }" class="nav-link" @click="toggleSidebar">{{
-        $t('header.users')
-      }}</RouterLink>
       <RouterLink :to="{ name: 'modif' }" class="nav-link" @click="toggleSidebar">{{
         $t('header.edit')
       }}</RouterLink>

@@ -230,7 +230,7 @@ public class ImageController {
    * @return JSON array with user's image metadata, or error message if retrieval
    *         fails
    */
-  @GetMapping("/images/user/{userid}")
+  @RequestMapping(value = "/images/user/{userid}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public ResponseEntity<?> getUserImages(@PathVariable String userid,
       @RequestParam(defaultValue = "false") boolean includePrivate,
       @RequestParam(required = false) String currentUserid) {
@@ -280,7 +280,7 @@ public class ImageController {
    * @param userid The ID of the user performing the action
    * @return Response with updated like count and status
    */
-  @RequestMapping(value = "/images/{id}/toggle-like", method = RequestMethod.POST)
+  @RequestMapping(value = "/images/{id}/toggle-like", method = RequestMethod.PUT)
   public ResponseEntity<?> toggleLike(@PathVariable("id") long id,
       @RequestParam String userid) {
     try {
@@ -377,6 +377,7 @@ public class ImageController {
         }
         case "resize": {
           alreday = true;
+
           int targetHeight = (height != null) ? height : number;
           filteredImage = Traitement.resizeImage(img_input, number, targetHeight); 
           break;

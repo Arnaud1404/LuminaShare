@@ -14,11 +14,12 @@ import DisplayImage from './DisplayImage.vue';
 
 import { images, type ImageGallery } from './images.ts';
 import Notification, { type NotificationType } from './Notification.vue';
+import { useRoute } from 'vue-router';
 
 type NotificationRef = {
   showNotification: (message: string, type: NotificationType) => void;
 };
-
+const route = useRoute();
 const notification = ref<NotificationRef | null>(null);
 const selectedImage = ref<ImageGallery | null>(null);
 const filtrerImage = ref<ImageGallery | null>(null);
@@ -35,8 +36,7 @@ const isUploading = ref(false);
 const showMetadata = ref(false);
 const resizeWidth = ref(300);
 const resizeHeight = ref(300);
-const mirrorDirection = ref("mirrorh");
-
+const mirrorDirection = ref('mirrorh');
 
 const fetchSimilarImages = async () => {
   if (!selectedImage.value) return;
@@ -112,6 +112,14 @@ onMounted(async () => {
   try {
     await loadAllImages();
     notification.value?.showNotification('Images chargées avec succès', 'success');
+
+    const imageId = route.query.imageid ? Number(route.query.imageid) : null;
+    if (imageId) {
+      const imageToSelect = images.value.find((img) => img.id === imageId);
+      if (imageToSelect) {
+        selectedImage.value = imageToSelect;
+      }
+    }
   } catch (error: any) {
     console.error('Failed to load images:', error);
     const errorMessage = formatErrorMessage(error);
@@ -310,18 +318,8 @@ const submitFile = async () => {
           <option value="270">270°</option>
         </select>
         <div v-if="infoFilter === 'resize'">
-          <input
-            type="number"
-            v-model.number="resizeWidth"
-            min="1"
-            placeholder="Largeur (px)"
-          />
-          <input
-            type="number"
-            v-model.number="resizeHeight"
-            min="1"
-             placeholder="Hauteur (px)"
-          />
+          <input type="number" v-model.number="resizeWidth" min="1" placeholder="Largeur (px)" />
+          <input type="number" v-model.number="resizeHeight" min="1" placeholder="Hauteur (px)" />
         </div>
 
         <!-- Mirror : choix horizontal / vertical -->
