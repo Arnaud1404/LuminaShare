@@ -3,6 +3,7 @@ package pdl.backend;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -39,9 +40,6 @@ public class ImageControllerTests {
 
 	@Autowired
 	private MockMvc mockMvc;
-
-	@Autowired
-	private ImageRepository imageRepository;
 
 	private String json = "application/json;charset=UTF-8";
 
@@ -109,7 +107,7 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(7)
+	@Order(8)
 	public void getImageSimilarShouldReturnSuccessHue() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=5&descriptor=huesat"))
 				.andDo(print())
@@ -118,7 +116,7 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(7)
+	@Order(9)
 	public void getImageSimilarShouldReturnSuccessRGBCube() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=5&descriptor=rgbcube"))
 				.andDo(print())
@@ -127,7 +125,7 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(8)
+	@Order(10)
 	public void getImageSimilarShouldReturnBadRequestDescriptor() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) +
 				"/similar?number=5&descriptor=bad"))
@@ -135,14 +133,24 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(8)
+	@Order(11)
 	public void getImageSimilarShouldReturnBadRequestNumber() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=-1&descriptor=huesat"))
 				.andExpect(status().isBadRequest());
 	}
 
 	@Test
-	@Order(8)
+	@Order(12)
+	public void getcheckLikeStatusSucessFalse() throws Exception {
+		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/like-status?userid=admin"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(json))
+				.andExpect(jsonPath("isLiked").value("false"));
+	}
+
+	@Test
+	@Order(13)
 	public void getToggleLikeSucess() throws Exception {
 		this.mockMvc.perform(put("/images/" + (ImageDao.getImageCount() - 1) + "/toggle-like?userid=admin"))
 				.andDo(print())
@@ -152,7 +160,17 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(8)
+	@Order(14)
+	public void getcheckLikeStatusSucessTrue() throws Exception {
+		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/like-status?userid=admin"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(json))
+				.andExpect(jsonPath("isLiked").value("true"));
+	}
+
+	@Test
+	@Order(15)
 	public void getToggleLikeBadRequest() throws Exception {
 		this.mockMvc.perform(put("/images/" + (ImageDao.getImageCount() - 1) + "/toggle-like?userid="))
 				.andDo(print())
@@ -160,7 +178,7 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(8)
+	@Order(16)
 	public void getToggleLikeNotFound() throws Exception {
 		this.mockMvc.perform(put("/images/" + 0 + "/toggle-like?userid=admin"))
 				.andDo(print())
@@ -168,7 +186,7 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(8)
+	@Order(17)
 	public void deleteImageShouldReturnSuccessPNG() throws Exception {
 		assertTrue(FileController.file_exists("test_certain_est_test12312315646216.png"));
 		this.mockMvc.perform(delete("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
@@ -190,7 +208,7 @@ public class ImageControllerTests {
 	// }
 
 	@Test
-	@Order(10)
+	@Order(19)
 	public void createImageShouldReturnNoContent() throws Exception {
 		ClassPathResource imgFile = new ClassPathResource("images_test/empty.txt");
 		byte[] fileContent;
@@ -202,7 +220,7 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(11)
+	@Order(20)
 	public void createImageShouldReturnUnsupportedMediaType() throws Exception {
 		ClassPathResource imgFile = new ClassPathResource("images_test/test.gif");
 		byte[] fileContent;
@@ -215,7 +233,7 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(11)
+	@Order(21)
 	public void createImageShouldReturnUnsupportedMediaType2() throws Exception {
 		ClassPathResource imgFile = new ClassPathResource("images_test/test.txt");
 		byte[] fileContent;
@@ -228,35 +246,43 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(12)
+	@Order(22)
 	public void deleteImagesShouldReturnMethodNotAllowed() throws Exception {
 		this.mockMvc.perform(delete("/images")).andExpect(status().isMethodNotAllowed());
 	}
 
 	@Test
-	@Order(13)
+	@Order(23)
 	public void deleteImageShouldReturnNotFound() throws Exception {
 		this.mockMvc.perform(delete("/images/-1")).andExpect(status().isNotFound());
 	}
 
 	@Test
-	@Order(14)
+	@Order(24)
 	public void imageShouldNotBeFound() throws Exception {
 		this.mockMvc.perform(get("/images/0")).andExpect(status().isNotFound());
 	}
 
 	@Test
-	@Order(15)
+	@Order(25)
 	public void getImageSimilarShouldReturnBadRequestId() throws Exception {
 		this.mockMvc.perform(get("/images/-1/similar?number=5&descriptor=huesat")).andDo(print())
 				.andExpect(status().isBadRequest());
 	}
 
 	@Test
-	@Order(16)
+	@Order(26)
 	public void getUserImageSucess() throws Exception {
 		this.mockMvc.perform(get("/images/user/admin")).andDo(print())
 				.andExpect(content().contentType(json));
+	}
+
+	@Test
+	@Order(27)
+	public void getcheckLikeStatusShouldReturnBadRequest() throws Exception {
+		this.mockMvc.perform(get("/images/" + 0 + "/like-status?userid="))
+				.andDo(print())
+				.andExpect(status().isBadRequest());
 	}
 
 }
