@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "docs": "typedoc --options typedoc.json",
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
