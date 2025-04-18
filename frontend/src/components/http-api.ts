@@ -152,7 +152,7 @@ export async function toggleLike(imageId: number): Promise<{ likes: number; isLi
       throw new Error('User must be logged in to like images');
     }
 
-    const response = await axios.post(
+    const response = await axios.put(
       `/images/${imageId}/toggle-like?userid=${currentUser.value.userid}`
     );
 

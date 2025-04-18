@@ -280,7 +280,7 @@ public class ImageController {
    * @param userid The ID of the user performing the action
    * @return Response with updated like count and status
    */
-  @RequestMapping(value = "/images/{id}/toggle-like", method = RequestMethod.POST)
+  @RequestMapping(value = "/images/{id}/toggle-like", method = RequestMethod.PUT)
   public ResponseEntity<?> toggleLike(@PathVariable("id") long id,
       @RequestParam String userid) {
     try {
@@ -376,7 +376,7 @@ public class ImageController {
         }
         case "resize": {
           alreday = true;
-          filteredImage = Traitement.resizeImage(img_input, number, number); 
+          filteredImage = Traitement.resizeImage(img_input, number, number);
           break;
         }
         case "mirrorh": {
