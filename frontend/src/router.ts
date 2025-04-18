@@ -16,15 +16,10 @@ const routes: Array<RouteRecordRaw> = [
     props: true,
   },
   {
-    path: '/other_user',
-    name: 'users',
-    component: () => import('./components/Users.vue'),
-    props: false,
-  },
-  {
     path: '/edit',
     name: 'modif',
     component: () => import('./components/Edit.vue'),
+    meta: { requiresAuth: true },
     props: false,
   },
   {
