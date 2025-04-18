@@ -143,7 +143,7 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(8)
-	public void gettoggleLikeSucess() throws Exception {
+	public void getToggleLikeSucess() throws Exception {
 		this.mockMvc.perform(put("/images/" + 1 + "/toggle-like?userid=admin"))
 				.andDo(print())
 				.andExpect(status().isOk());
