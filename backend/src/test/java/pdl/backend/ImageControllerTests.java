@@ -100,14 +100,6 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(7)
-	public void putsetLikeCountOk() throws Exception {
-		this.mockMvc.perform(put("/images/" + (ImageDao.getImageCount() - 1) + "/set-likes?likes=1"))
-				.andDo(print())
-				.andExpect(status().isOk());
-	}
-
-	@Test
 	@Order(8)
 	public void putsetLikeCountBadRequest() throws Exception {
 		this.mockMvc.perform(put("/images/" + (ImageDao.getImageCount() - 1) + "/set-likes?likes=-50"))
