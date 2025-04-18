@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.image.GrayU8;
+import boofcv.struct.image.ImageAccessException;
 import boofcv.struct.image.Planar;
 import pdl.backend.FileHandler.*;
 import pdl.backend.Image.Processing.ColorProcessing;
@@ -406,6 +407,14 @@ public class ImageController {
 
       MediaType mediaType = img.getType();
       return ResponseEntity.ok().contentType(mediaType).body(imageBytes);
+
+    } catch (ImageAccessException e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+
+    } catch (IllegalArgumentException e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 
     } catch (
 

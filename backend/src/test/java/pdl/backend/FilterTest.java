@@ -28,7 +28,6 @@ import org.springframework.http.MediaType;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(OrderAnnotation.class)
-
 public class FilterTest {
 
     @Autowired
@@ -40,9 +39,9 @@ public class FilterTest {
     @Order(1)
     public void createImageSuccessJPEG() throws Exception {
 
-        ClassPathResource imgFile = new ClassPathResource("images_test/test_certain_est_test12312315646216.jpg");
+        ClassPathResource imgFile = new ClassPathResource("images_test/image_pour_filtre.png");
 
-        MockMultipartFile file_multipart = new MockMultipartFile("file", "test_certain_est_test12312315646216.jpg",
+        MockMultipartFile file_multipart = new MockMultipartFile("file", "image_pour_filtre.png",
                 MediaType.IMAGE_JPEG_VALUE, imgFile.getInputStream());
         this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart))
                 .andDo(print()).andExpect(status().isCreated());
@@ -77,6 +76,26 @@ public class FilterTest {
 
     @Test
     @Order(5)
+    public void applyFilterGradienImageBadNumber() throws Exception {
+        id = ImageDao.getImageCount() - 1;
+        this.mockMvc
+                .perform(get("/images/" + id + "/filter?filter=gradienImage&number=-50"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(6)
+    public void applyFilterGradienImageBadargument() throws Exception {
+        id = ImageDao.getImageCount() - 1;
+        this.mockMvc
+                .perform(get("/images/" + id + "/filter?filter=gradienImage&number=bad"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(7)
     public void applyFilterModif_Lum() throws Exception {
         id = ImageDao.getImageCount() - 1;
         this.mockMvc
@@ -85,8 +104,19 @@ public class FilterTest {
                 .andExpect(status().isOk());
     }
 
-    @Order(5)
-    public void applyFilterInvert() throws Exception {
+    @Test
+    @Order(8)
+    public void applyFilterModif_LumBadArgument() throws Exception {
+        id = ImageDao.getImageCount() - 1;
+        this.mockMvc
+                .perform(get("/images/" + id + "/filter?filter=modif_lum&number=bad"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(9)
+    public void applyFilterInvert() throws Exception { // the argument is not important so doesn't need test about it
         id = ImageDao.getImageCount() - 1;
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=invert&number=50"))
@@ -94,22 +124,83 @@ public class FilterTest {
                 .andExpect(status().isOk());
     }
 
-    @Order(5)
-    public void applyFilterRotation() throws Exception {
+    @Test
+    @Order(10)
+    public void applyFilterRotationBadAngle() throws Exception {
         id = ImageDao.getImageCount() - 1;
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=rotation&number=50"))
                 .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(11)
+    public void applyFilterRotation90() throws Exception {
+        id = ImageDao.getImageCount() - 1;
+        this.mockMvc
+                .perform(get("/images/" + id + "/filter?filter=rotation&number=90"))
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 
-    @Order(5)
-    public void applyFilterResize() throws Exception {
+    @Test
+    @Order(12)
+    public void applyFilterRotation180() throws Exception {
+        id = ImageDao.getImageCount() - 1;
+        this.mockMvc
+                .perform(get("/images/" + id + "/filter?filter=rotation&number=180"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(13)
+    public void applyFilterRotation270() throws Exception {
+        id = ImageDao.getImageCount() - 1;
+        this.mockMvc
+                .perform(get("/images/" + id + "/filter?filter=rotation&number=270"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(14)
+    public void applyFilterResizeSquare() throws Exception {
         id = ImageDao.getImageCount() - 1;
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=resize&number=50"))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(14)
+    public void applyFilterResize() throws Exception {
+        id = ImageDao.getImageCount() - 1;
+        this.mockMvc
+                .perform(get("/images/" + id + "/filter?filter=resize&number=500&height=300"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(14)
+    public void applyFilterResizeBadWidth() throws Exception {
+        id = ImageDao.getImageCount() - 1;
+        this.mockMvc
+                .perform(get("/images/" + id + "/filter?filter=resize&number=-50"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Order(14)
+    public void applyFilterResizeBadHeight() throws Exception {
+        id = ImageDao.getImageCount() - 1;
+        this.mockMvc
+                .perform(get("/images/" + id + "/filter?filter=resize&number=500&height=-50"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
     @Order(5)
@@ -127,14 +218,14 @@ public class FilterTest {
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=mirrorv&number=50"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(26)
     public void deleteImageSuccessJPEG() throws Exception {
-        assertTrue(FileController.file_exists("test_certain_est_test12312315646216.jpg"));
+        assertTrue(FileController.file_exists("image_pour_filtre.png"));
         this.mockMvc.perform(delete("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
-        assertFalse(FileController.file_exists("test_certain_est_test12312315646216.jpg"));
+        assertFalse(FileController.file_exists("image_pour_filtre.png"));
     }
 }
