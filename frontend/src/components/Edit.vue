@@ -224,7 +224,6 @@ const submitFile = async () => {
   if (!file.value || isUploading.value) return;
 
   isUploading.value = true;
-  
 
   try {
     await uploadImage(file.value);
@@ -331,7 +330,7 @@ const submitFile = async () => {
             {{ $t('button.metadata') }}
           </button>
           <button @click="handleDeleteImage" class="delete-button">
-            {{ $t('button.Supprimer') }}
+            {{ $t('button.delete') }}
           </button>
           <button @click="submitFile" :disabled="isUploading">
             {{ isUploading ? 'Téléversement...' : 'Téléverser' }}

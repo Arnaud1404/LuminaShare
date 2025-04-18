@@ -12,13 +12,16 @@ public class Traitement {
      * @param targetHeight The desired height of the resized image.
      * @return A new BufferedImage object with the specified dimensions.
      */
-    public static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
-        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, originalImage.getType());
+    public static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth,
+            int targetHeight) {
+        BufferedImage resizedImage =
+                new BufferedImage(targetWidth, targetHeight, originalImage.getType());
         Graphics2D graphics = resizedImage.createGraphics();
         graphics.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
         graphics.dispose();
         return resizedImage;
     }
+
     /**
      * Inverts the colors of a given BufferedImage.
      *
@@ -34,7 +37,8 @@ public class Traitement {
             for (int y = 0; y < height; y++) {
                 int rgba = originalImage.getRGB(x, y);
                 // Extraire les composantes alpha, rouge, vert et bleu
-                int alpha = (rgba >> 24) & 0xff;//canal alpha représente la transparence des pixel pour les formats ARGB (png)
+                int alpha = (rgba >> 24) & 0xff;// canal alpha représente la transparence des pixel
+                                                // pour les formats ARGB (png)
                 int red = (rgba >> 16) & 0xff;
                 int green = (rgba >> 8) & 0xff;
                 int blue = rgba & 0xff;
@@ -46,30 +50,27 @@ public class Traitement {
 
                 // Recomposer la couleur inversée
                 int invertedRGBA;
-                if (originalImage.getType() == BufferedImage.TYPE_INT_ARGB) {
-                    // Conserver le canal alpha pour les images avec transparence
-                    invertedRGBA = (alpha << 24) | (invertedRed << 16) | (invertedGreen << 8) | invertedBlue;
-                } else {
-                    // Ignorer le canal alpha pour les images sans transparence
-                    invertedRGBA = (invertedRed << 16) | (invertedGreen << 8) | invertedBlue;
-                }
+                // Always preserve alpha channel for all image types
+                invertedRGBA =
+                        (alpha << 24) | (invertedRed << 16) | (invertedGreen << 8) | invertedBlue;
                 // Appliquer la couleur inversée au pixel
                 invertedImage.setRGB(x, y, invertedRGBA);
             }
-            
+
         }
 
         return invertedImage;
     }
 
-   /**
-    * Creates a mirrored version of the given BufferedImage.
-    *
-    * @param originalImage The original BufferedImage to be mirrored.
-    * @param horizontal True for horizontal mirroring (left-right), false for vertical mirroring (top-bottom).
-    * @return A new BufferedImage object with the mirrored image.
-    * @throws IllegalArgumentException If the image cannot be processed.
-    */
+    /**
+     * Creates a mirrored version of the given BufferedImage.
+     *
+     * @param originalImage The original BufferedImage to be mirrored.
+     * @param horizontal True for horizontal mirroring (left-right), false for vertical mirroring
+     *        (top-bottom).
+     * @return A new BufferedImage object with the mirrored image.
+     * @throws IllegalArgumentException If the image cannot be processed.
+     */
     public static BufferedImage mirrorImage(BufferedImage originalImage, boolean horizontal) {
         int width = originalImage.getWidth();
         int height = originalImage.getHeight();
@@ -90,13 +91,15 @@ public class Traitement {
                         mirroredImage.setRGB(x, height - 1 - y, pixel);
                     }
                 }
-           }
+            }
         } catch (Exception e) {
-            throw new IllegalArgumentException("L'image ne peut pas être traitée : " + e.getMessage());
-       }
+            throw new IllegalArgumentException(
+                    "L'image ne peut pas être traitée : " + e.getMessage());
+        }
 
         return mirroredImage;
     }
+
     /**
      * Rotates the given image by the specified angle.
      *
@@ -107,7 +110,8 @@ public class Traitement {
      */
     public static BufferedImage rotateImage(BufferedImage originalImage, int angle) {
         if (angle != 90 && angle != 180 && angle != 270) {
-            throw new IllegalArgumentException("Angle invalide. Seuls 90°, 180° et 270° sont pris en charge.");
+            throw new IllegalArgumentException(
+                    "Angle invalide. Seuls 90°, 180° et 270° sont pris en charge.");
         }
 
         int width = originalImage.getWidth();
