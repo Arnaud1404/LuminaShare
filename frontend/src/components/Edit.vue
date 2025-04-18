@@ -247,28 +247,6 @@ const Apply_filter = async () => {
     );
   }
 };
-
-const submitFile = async () => {
-  if (!file.value || isUploading.value) return;
-
-  isUploading.value = true;
-
-  try {
-    await uploadImage(file.value);
-    file.value = null;
-    notification.value?.showNotification('Image téléversée avec succès', 'success');
-  } catch (error: any) {
-    console.error('Upload failed:', error);
-    const errorMessage = formatErrorMessage(error);
-    notification.value?.showNotification(`Échec du téléversement: ${errorMessage}`, 'error');
-  } finally {
-    file.value = null;
-    isFileValid.value = false;
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
-    isUploading.value = false;
-  }
-};
 </script>
 
 <template>
