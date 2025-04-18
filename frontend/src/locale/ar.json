@@ -31,8 +31,14 @@
       "brightness": "سطوع",
       "reverse": "عكس",
       "rotation": "تدوير",
+      "resize": "تغيير الحجم",
+      "mirror": "انعكاس",
       "apply": "تطبيق",
       "research": "بحث"
+  },
+  "label": {
+      "horizontal": "أفقي",
+      "vertical": "عمودي"
   },
   "login": {
       "id": ":معرف المستخدم",
