@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.nio.file.Files;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -19,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.http.MediaType;
@@ -27,7 +25,7 @@ import org.springframework.http.MediaType;
 import pdl.backend.FileHandler.*;
 import pdl.backend.Image.Image;
 import pdl.backend.Image.ImageDao;
-import pdl.backend.Image.ImageService;
+import pdl.backend.Image.ImageRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -36,6 +34,9 @@ public class ImageControllerTests {
 
 	@Autowired
 	private MockMvc mockMvc;
+
+	@Autowired
+	private ImageRepository imageRepository;
 
 	private String json = "application/json;charset=UTF-8";
 
@@ -55,7 +56,6 @@ public class ImageControllerTests {
 	@Test
 	@Order(3)
 	public void createImageShouldReturnSuccessJPEG() throws Exception {
-		// ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
 
 		ClassPathResource imgFile = new ClassPathResource("images_test/test_certain_est_test12312315646216.jpg");
 
@@ -99,8 +99,17 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(7)
-	public void getImageSimilarShouldReturnSuccess() throws Exception {
+	public void getImageSimilarShouldReturnSuccessHue() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=5&descriptor=huesat"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(json));
+	}
+
+	@Test
+	@Order(7)
+	public void getImageSimilarShouldReturnSuccessRGBCube() throws Exception {
+		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=5&descriptor=rgbcube"))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(json));
@@ -134,6 +143,15 @@ public class ImageControllerTests {
 	@Order(9)
 	public void testSystemSynchronization() throws Exception {
 		// TODO : Check dao, database and physical files are in sync
+		// assertTrue(ImageDao.getImageCount() == Image.getCount());
+		// assertTrue(ImageDao.getImageCount() == imageRepository.getImageCount());
+		// assertTrue(imageRepository.getImageCount() == Image.getCount());
+		assertTrue(ImageDao.getImageCount() == Image.getCount());
+		assertTrue(ImageDao.getImageCount() == (imageRepository.getImageCount() * 2 - 1)); // * 2 car les test
+																							// initialise exécute 2 fois
+																							// un truc
+		assertTrue(Image.getCount() == (imageRepository.getImageCount() * 2 - 1));
+
 		return;
 	}
 

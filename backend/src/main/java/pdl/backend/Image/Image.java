@@ -1,12 +1,12 @@
 package pdl.backend.Image;
 
 import org.springframework.http.MediaType;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.pgvector.PGvector;
 
 /**
- * Represents an image with its metadata and binary data. This class allows storing and managing
+ * Represents an image with its metadata and binary data. This class allows
+ * storing and managing
  * image information, including its path, name, media type, and dimensions.
  */
 public class Image {
@@ -25,15 +25,16 @@ public class Image {
   private int likes = 0;
 
   /**
-   * Constructs a new Image instance with the specified parameters. The identifier is automatically
+   * Constructs a new Image instance with the specified parameters. The identifier
+   * is automatically
    * generated from the static counter.
    *
-   * @param path the path of the image in the file system
-   * @param name the name of the image
-   * @param data the binary data of the image
-   * @param type the media type of the image
-   * @param width the width of the image in pixels
-   * @param height the height of the image in pixels
+   * @param path        the path of the image in the file system
+   * @param name        the name of the image
+   * @param data        the binary data of the image
+   * @param type        the media type of the image
+   * @param width       the width of the image in pixels
+   * @param height      the height of the image in pixels
    * @param description the description of the image
    */
   public Image(String path, String name, byte[] data, MediaType type, long width, long height) {
@@ -45,7 +46,8 @@ public class Image {
     this.data = data;
   }
 
-  public Image() {}
+  public Image() {
+  }
 
   public long getId() {
     return id;
@@ -110,7 +112,6 @@ public class Image {
   public float getSimilarityScore() {
     return this.similarityScore;
   }
-
 
   public String getUserid() {
     return userid;

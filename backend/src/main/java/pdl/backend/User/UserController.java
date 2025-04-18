@@ -5,8 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import pdl.backend.Security.PasswordService;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.HashMap;
@@ -55,7 +53,7 @@ public class UserController {
     /**
      * Update user information
      * 
-     * @param userid User ID to update
+     * @param userid   User ID to update
      * @param userData Updated user data
      * @return Updated user or error
      */
@@ -71,8 +69,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("User ID in path must match user ID in body");
         }
 
-        boolean updatePassword =
-                (userData.getPassword() != null && !userData.getPassword().isEmpty());
+        boolean updatePassword = (userData.getPassword() != null && !userData.getPassword().isEmpty());
 
         boolean success = userDao.update(userData, updatePassword);
 
