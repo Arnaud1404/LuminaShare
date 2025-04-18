@@ -151,6 +151,22 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(8)
+	public void getToggleLikeBadRequest() throws Exception {
+		this.mockMvc.perform(put("/images/" + (ImageDao.getImageCount() - 1) + "/toggle-like?userid="))
+				.andDo(print())
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@Order(8)
+	public void getToggleLikeNotFound() throws Exception {
+		this.mockMvc.perform(put("/images/" + 0 + "/toggle-like?userid=admin"))
+				.andDo(print())
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	@Order(8)
 	public void deleteImageShouldReturnSuccessPNG() throws Exception {
 		assertTrue(FileController.file_exists("test_certain_est_test12312315646216.png"));
 		this.mockMvc.perform(delete("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
