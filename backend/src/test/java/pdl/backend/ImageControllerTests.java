@@ -146,7 +146,9 @@ public class ImageControllerTests {
 	public void getToggleLikeSucess() throws Exception {
 		this.mockMvc.perform(put("/images/" + (ImageDao.getImageCount() - 1) + "/toggle-like?userid=admin"))
 				.andDo(print())
-				.andExpect(status().isOk());
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(json));
+
 	}
 
 	@Test
