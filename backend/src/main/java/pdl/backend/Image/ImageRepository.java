@@ -25,10 +25,8 @@ import java.awt.image.BufferedImage;
 /**
  * Handles database operations for images with vector similarity search.
  *
- * IMPORTANT: Only manages database records. Doesn't handle physical files or
- * in-memory records.
- * Synchronization with physical files and memory should be done by
- * ImageController.
+ * IMPORTANT: Only manages database records. Doesn't handle physical files or in-memory records.
+ * Synchronization with physical files and memory should be done by ImageController.
  */
 @Repository
 public class ImageRepository implements InitializingBean {
@@ -46,23 +44,9 @@ public class ImageRepository implements InitializingBean {
         img.setName(rs.getString("name"));
         img.setType(MediaType.valueOf(rs.getString("type")));
         img.setSize(rs.getString("size"));
-        try {
-            img.setUserid(rs.getString("userid"));
-        } catch (Exception e) {
-            img.setUserid("admin");
-        }
-
-        try {
-            img.setPublic(rs.getBoolean("ispublic"));
-        } catch (Exception e) {
-            img.setPublic(false);
-        }
-
-        try {
-            img.setLikes(rs.getInt("likes"));
-        } catch (Exception e) {
-            img.setLikes(0);
-        }
+        img.setUserid(rs.getString("userid"));
+        img.setPublic(rs.getBoolean("ispublic"));
+        img.setLikes(rs.getInt("likes"));
         return img;
     };
 
@@ -149,8 +133,7 @@ public class ImageRepository implements InitializingBean {
     }
 
     /**
-     * Deletes an image from the database by its unique id This function does not
-     * delete an image
+     * Deletes an image from the database by its unique id This function does not delete an image
      * server-side
      * 
      * @param id The ID of the image to delete
@@ -161,8 +144,7 @@ public class ImageRepository implements InitializingBean {
     }
 
     /**
-     * Deletes an image from the database This function does not delete an image
-     * server-side
+     * Deletes an image from the database This function does not delete an image server-side
      * 
      * @param img The Image
      * @return Number of rows affected (1 if successful)
@@ -190,8 +172,7 @@ public class ImageRepository implements InitializingBean {
      * Creates a 3D RGB histogram vector from an image
      *
      * @param img The image object containing metadata and path information
-     * @return PGvector containing the hue-saturation histogram, or null if
-     *         processing fails
+     * @return PGvector containing the hue-saturation histogram, or null if processing fails
      */
     private PGvector createRgbHistogramFromImage(Image img) {
         try {
@@ -201,7 +182,8 @@ public class ImageRepository implements InitializingBean {
                 return null;
             }
 
-            Planar<GrayU8> image = ConvertBufferedImage.convertFromPlanar(input, null, true, GrayU8.class);
+            Planar<GrayU8> image =
+                    ConvertBufferedImage.convertFromPlanar(input, null, true, GrayU8.class);
             return ImagePGVector.createRgb(image, 8);
         } catch (Exception e) {
             System.err.println("Failed to create histogram: " + e.getMessage());
@@ -213,8 +195,7 @@ public class ImageRepository implements InitializingBean {
      * Creates a hue-saturation histogram vector from an image
      *
      * @param img The image object containing metadata and path information
-     * @return PGvector containing the hue-saturation histogram, or null if
-     *         processing fails
+     * @return PGvector containing the hue-saturation histogram, or null if processing fails
      */
     private PGvector createHueSaturationHistogramFromImage(Image img) {
         try {
@@ -224,7 +205,8 @@ public class ImageRepository implements InitializingBean {
                 return null;
             }
 
-            Planar<GrayU8> image = ConvertBufferedImage.convertFromPlanar(input, null, true, GrayU8.class);
+            Planar<GrayU8> image =
+                    ConvertBufferedImage.convertFromPlanar(input, null, true, GrayU8.class);
             return ImagePGVector.createHueSaturation(image);
         } catch (Exception e) {
             System.err.println("Failed to create histogram: " + e.getMessage());
@@ -248,12 +230,9 @@ public class ImageRepository implements InitializingBean {
     /**
      * Inserts an image record into the database
      *
-     * @param img     The Image object containing metadata (name, type, size) to
-     *                insert
-     * @param rgbcube The PGvector containing the RGB histogram data for similarity
-     *                search
-     * @param hueSat  The PGvector containing the Hue-Saturation histogram data for
-     *                similarity search
+     * @param img The Image object containing metadata (name, type, size) to insert
+     * @param rgbcube The PGvector containing the RGB histogram data for similarity search
+     * @param hueSat The PGvector containing the Hue-Saturation histogram data for similarity search
      * @return 1 if insertion was successful, 0 if it failed
      */
     private int insertImageRecord(Image img, PGvector rgbcube, PGvector hueSat) {
@@ -284,7 +263,7 @@ public class ImageRepository implements InitializingBean {
     /**
      * Checks if a user has already liked an image
      * 
-     * @param userid  The user ID
+     * @param userid The user ID
      * @param imageId The image ID
      * @return true if the user has already liked the image, false otherwise
      */
@@ -303,7 +282,7 @@ public class ImageRepository implements InitializingBean {
     /**
      * Toggles a user's like on an image
      * 
-     * @param userid  The user ID
+     * @param userid The user ID
      * @param imageId The image ID
      * @return true if the image is now liked, false if unliked
      */
@@ -312,20 +291,16 @@ public class ImageRepository implements InitializingBean {
 
         try {
             if (hasLiked) {
-                jdbcTemplate.update(
-                        "DELETE FROM user_likes WHERE userid = ? AND image_id = ?",
+                jdbcTemplate.update("DELETE FROM user_likes WHERE userid = ? AND image_id = ?",
                         userid, imageId);
-                jdbcTemplate.update(
-                        "UPDATE " + databaseTable + " SET likes = GREATEST(likes - 1, 0) WHERE id = ?",
-                        imageId);
+                jdbcTemplate.update("UPDATE " + databaseTable
+                        + " SET likes = GREATEST(likes - 1, 0) WHERE id = ?", imageId);
                 return false;
             } else {
-                jdbcTemplate.update(
-                        "INSERT INTO user_likes (userid, image_id) VALUES (?, ?)",
+                jdbcTemplate.update("INSERT INTO user_likes (userid, image_id) VALUES (?, ?)",
                         userid, imageId);
                 jdbcTemplate.update(
-                        "UPDATE " + databaseTable + " SET likes = likes + 1 WHERE id = ?",
-                        imageId);
+                        "UPDATE " + databaseTable + " SET likes = likes + 1 WHERE id = ?", imageId);
                 return true;
             }
         } catch (Exception e) {
@@ -344,13 +319,12 @@ public class ImageRepository implements InitializingBean {
     }
 
     /**
-     * Returns the list of images similar to this image from the database Sets the
-     * similarity score
+     * Returns the list of images similar to this image from the database Sets the similarity score
      * in the Image object
      *
-     * @param img        the image to compare with
+     * @param img the image to compare with
      * @param descriptor the descriptor to use for comparison (huesat or rgbcube)
-     * @param n          the number of similar images to get
+     * @param n the number of similar images to get
      *
      * @return A List<Image> with the n most similar images
      */
@@ -386,15 +360,14 @@ public class ImageRepository implements InitializingBean {
     /**
      * Updates the privacy status of an image in the database
      * 
-     * @param imageId  The ID of the image to update
+     * @param imageId The ID of the image to update
      * @param isPublic The new privacy status
      * @return true if update was successful, false otherwise
      */
     public boolean updateImagePrivacy(long imageId, boolean isPublic) {
         try {
             int updatedRows = jdbcTemplate.update(
-                    "UPDATE " + databaseTable + " SET ispublic = ? WHERE id = ?",
-                    isPublic,
+                    "UPDATE " + databaseTable + " SET ispublic = ? WHERE id = ?", isPublic,
                     imageId);
             return updatedRows > 0;
         } catch (Exception e) {
@@ -406,8 +379,7 @@ public class ImageRepository implements InitializingBean {
     public int getLikeCount(long imageId) {
         try {
             Integer count = jdbcTemplate.queryForObject(
-                    "SELECT likes FROM " + databaseTable + " WHERE id = ?",
-                    Integer.class, imageId);
+                    "SELECT likes FROM " + databaseTable + " WHERE id = ?", Integer.class, imageId);
             return count != null ? count : 0;
         } catch (Exception e) {
             System.err.println("Error getting like count: " + e.getMessage());
@@ -419,14 +391,13 @@ public class ImageRepository implements InitializingBean {
      * Updates the like count for an image (for testing purposes)
      * 
      * @param imageId The ID of the image
-     * @param likes   The new number of likes
+     * @param likes The new number of likes
      * @return true if update was successful, false otherwise
      */
     public boolean updateLikeCount(long imageId, int likes) {
         try {
             int updatedRows = jdbcTemplate.update(
-                    "UPDATE " + databaseTable + " SET likes = ? WHERE id = ?",
-                    likes, imageId);
+                    "UPDATE " + databaseTable + " SET likes = ? WHERE id = ?", likes, imageId);
             return updatedRows > 0;
         } catch (Exception e) {
             System.err.println("Error updating like count: " + e.getMessage());
