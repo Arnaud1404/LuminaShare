@@ -230,7 +230,7 @@ public class ImageController {
    * @return JSON array with user's image metadata, or error message if retrieval
    *         fails
    */
-  @GetMapping("/images/user/{userid}")
+  @RequestMapping(value = "/images/user/{userid}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public ResponseEntity<?> getUserImages(@PathVariable String userid,
       @RequestParam(defaultValue = "false") boolean includePrivate,
       @RequestParam(required = false) String currentUserid) {

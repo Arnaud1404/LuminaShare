@@ -7,8 +7,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.IOException;
 import java.nio.file.Files;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -18,8 +20,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import boofcv.io.image.UtilImageIO;
+
 import org.springframework.http.MediaType;
 
 import pdl.backend.FileHandler.*;
@@ -39,6 +45,12 @@ public class ImageControllerTests {
 	private ImageRepository imageRepository;
 
 	private String json = "application/json;charset=UTF-8";
+
+	@BeforeAll
+	public static void setup() throws IOException {
+		ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(1));
+
+	}
 
 	@Test
 	@Order(1)
@@ -141,13 +153,15 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(9)
-	public void testSystemSynchronization() throws Exception {
+	public void testSystemSynchronization() throws Exception { // marche pas à fix
+		long img_repo = imageRepository.getImageCount() * 2;
+
+		System.out.println("Dao images : " + ImageDao.getImageCount() + " Repo images : "
+				+ imageRepository.getImageCount() + "Count var : "
+				+ Image.getCount());
 		assertTrue(ImageDao.getImageCount() == Image.getCount());
-		assertTrue(ImageDao.getImageCount() == (imageRepository.getImageCount() * 2 - 1)); // * 2 car les test
-																							// initialise exécute 2 fois
-																							// un truc et -1 car
-																							// imagedao est init à 1
-		assertTrue(Image.getCount() == (imageRepository.getImageCount() * 2 - 1));
+		assertTrue(ImageDao.getImageCount() == img_repo);
+		assertTrue(Image.getCount() == img_repo);
 
 		return;
 	}
@@ -215,4 +229,17 @@ public class ImageControllerTests {
 				.andExpect(status().isBadRequest());
 	}
 
+	@Test
+	@Order(16)
+	public void getUserImageSucess() throws Exception {
+		this.mockMvc.perform(get("/images/user/admin")).andDo(print())
+				.andExpect(content().contentType(json));
+	}
+
+	@Test
+	@Order(16)
+	public void getUserImageShouldReturnBadRequest() throws Exception {
+		this.mockMvc.perform(get("/images/user/$?!:;")).andDo(print())
+				.andExpect(status().isBadRequest());
+	}
 }
