@@ -377,11 +377,11 @@ const submitFile = async () => {
             {{ $t('button.delete') }}
           </button>
           <button @click="submitFile" :disabled="isUploading">
-            {{ isUploading ? 'Téléversement...' :'Téléverser' }}
+            {{ isUploading ? 'Téléversement...' : 'Téléverser' }}
           </button>
         </div>
       </div>
-      <div v-if="showMetadata && selectedImage" class="metadata-popup">
+      <div v-if="showMetadata && (filtrerImage || selectedImage)" class="metadata-popup">
         <div class="metadata-content panel">
           <h3>
             {{ $t('button.metadata') }}
@@ -390,25 +390,25 @@ const submitFile = async () => {
             <strong>
               {{ $t('edit.id') }}
             </strong>
-            {{ selectedImage.id }}
+            {{ filtrerImage ? filtrerImage.id : selectedImage?.id }}
           </p>
           <p>
             <strong>
               {{ $t('edit.name') }}
             </strong>
-            {{ selectedImage.name }}
+            {{ filtrerImage ? filtrerImage.name : selectedImage?.name }}
           </p>
           <p>
             <strong>
               {{ $t('edit.type') }}
             </strong>
-            {{ selectedImage.type }}
+            {{ filtrerImage ? filtrerImage.type : selectedImage?.type }}
           </p>
           <p>
             <strong>
               {{ $t('edit.length') }}
             </strong>
-            {{ selectedImage.size }}
+            {{ filtrerImage ? filtrerImage.size : selectedImage?.size }}
           </p>
           <button @click="toggleMetadata" class="close-button">
             {{ $t('edit.close') }}
