@@ -142,14 +142,11 @@ public class ImageControllerTests {
 	@Test
 	@Order(9)
 	public void testSystemSynchronization() throws Exception {
-		// TODO : Check dao, database and physical files are in sync
-		// assertTrue(ImageDao.getImageCount() == Image.getCount());
-		// assertTrue(ImageDao.getImageCount() == imageRepository.getImageCount());
-		// assertTrue(imageRepository.getImageCount() == Image.getCount());
 		assertTrue(ImageDao.getImageCount() == Image.getCount());
 		assertTrue(ImageDao.getImageCount() == (imageRepository.getImageCount() * 2 - 1)); // * 2 car les test
 																							// initialise exécute 2 fois
-																							// un truc
+																							// un truc et -1 car
+																							// imagedao est init à 1
 		assertTrue(Image.getCount() == (imageRepository.getImageCount() * 2 - 1));
 
 		return;
