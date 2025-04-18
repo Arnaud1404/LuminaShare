@@ -379,7 +379,7 @@ const submitFile = async () => {
             {{ $t('button.delete') }}
           </button>
           <button @click="submitFile" :disabled="isUploading">
-            {{ isUploading ? 'Téléversement...' : 'Téléverser' }}
+            {{ isUploading ? 'Téléversement...' :'Téléverser' }}
           </button>
         </div>
       </div>

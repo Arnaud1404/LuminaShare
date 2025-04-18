@@ -342,7 +342,8 @@ public class ImageController {
   @RequestMapping(value = "/images/{id}/filter", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   @ResponseBody
   public ResponseEntity<?> applyFilter(@PathVariable("id") long id,
-      @RequestParam("filter") String filter, @RequestParam("number") int number) {
+      @RequestParam("filter") String filter, @RequestParam("number") int number,
+      @RequestParam(value = "height", required = false) Integer height) {
     try {
       Image img = imageDao.retrieve(id).get();
       boolean alreday = false;
@@ -376,7 +377,8 @@ public class ImageController {
         }
         case "resize": {
           alreday = true;
-          filteredImage = Traitement.resizeImage(img_input, number, number); 
+          int targetHeight = (height != null) ? height : number;
+          filteredImage = Traitement.resizeImage(img_input, number, targetHeight); 
           break;
         }
         case "mirrorh": {

@@ -1,6 +1,7 @@
 package pdl.backend.Image.Processing;
 
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 public class Traitement {
@@ -17,6 +18,11 @@ public class Traitement {
         BufferedImage resizedImage =
                 new BufferedImage(targetWidth, targetHeight, originalImage.getType());
         Graphics2D graphics = resizedImage.createGraphics();
+        // Activer les options de rendu de haute qualité
+        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
         graphics.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
         graphics.dispose();
         return resizedImage;
