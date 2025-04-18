@@ -5,21 +5,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.annotation.PostConstruct;
-import pdl.backend.FileHandler.FileController;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Service class for managing image-related operations and similarity searches.
  * 
- * This class interacts with the ImageDao to retrieve images and performs similarity computations
- * based on image descriptors. It supports variable-length descriptors and handles different
+ * This class interacts with the ImageDao to retrieve images and performs
+ * similarity computations
+ * based on image descriptors. It supports variable-length descriptors and
+ * handles different
  * descriptor types (e.g., grayscale, RGB).
  */
 @Service
@@ -28,7 +25,6 @@ public class ImageService {
     private final ImageDao imageDao;
     private final ImageRepository imageRepository;
     private static final String IMAGE_FOLDER = "src/main/resources/images";
-    private static final List<String> SUPPORTED_FORMATS = Arrays.asList("jpg", "jpeg", "png");
 
     public ImageService(ImageDao imageDao, ImageRepository imageRepository) {
         this.imageDao = imageDao;
@@ -36,9 +32,11 @@ public class ImageService {
     }
 
     /**
-     * Loads images from a predefined folder into the database on application startup.
+     * Loads images from a predefined folder into the database on application
+     * startup.
      * 
-     * This method scans the 'images/' folder for image files and loads them into the database using
+     * This method scans the 'images/' folder for image files and loads them into
+     * the database using
      * the {@code ImageDao}.
      * 
      * @throws RuntimeException If an I/O error occurs while reading an image file
@@ -50,7 +48,7 @@ public class ImageService {
         if (!folder.exists() || !folder.isDirectory()) {
             System.out.println(
                     "Le dossier '" + IMAGE_FOLDER + "' n'existe pas. Création en cours...");
-            folder.mkdirs(); // Crée le dossier s'il n'existe pas
+            folder.mkdirs();
             System.out.println("Dossier 'images' créé : " + IMAGE_FOLDER);
             return; // Pas de fichiers à charger immédiatement après création
         }
@@ -80,7 +78,8 @@ public class ImageService {
     /**
      * Loads images from a specified folder into the database.
      * 
-     * This method scans the specified folder for image files and loads them into the database using
+     * This method scans the specified folder for image files and loads them into
+     * the database using
      * the {@code ImageDao}.
      * 
      * @param name_folder The path to the folder containing images to load
@@ -92,7 +91,7 @@ public class ImageService {
         if (!folder.exists() || !folder.isDirectory()) {
             System.out.println(
                     "Le dossier '" + IMAGE_FOLDER + "' n'existe pas. Création en cours...");
-            folder.mkdirs(); // Crée le dossier s'il n'existe pas
+            folder.mkdirs();
             System.out.println("Dossier 'images' créé : " + IMAGE_FOLDER);
             return; // Pas de fichiers à charger immédiatement après création
         }
@@ -145,7 +144,8 @@ public class ImageService {
      * Parses the media type of a file based on its original filename.
      * 
      * @param file The MultipartFile to analyze
-     * @return The MediaType corresponding to the file extension (e.g., IMAGE_PNG, IMAGE_JPEG), or
+     * @return The MediaType corresponding to the file extension (e.g., IMAGE_PNG,
+     *         IMAGE_JPEG), or
      *         null if undetermined
      */
     public static MediaType parseMediaTypeFromFile(MultipartFile file) {
@@ -157,7 +157,8 @@ public class ImageService {
      * Parses the media type of a file based on its filename extension.
      * 
      * @param fileName The name of the file to parse
-     * @return The MediaType corresponding to the file extension (e.g., IMAGE_PNG, IMAGE_JPEG), or
+     * @return The MediaType corresponding to the file extension (e.g., IMAGE_PNG,
+     *         IMAGE_JPEG), or
      *         null if undetermined
      */
     public static MediaType parseMediaTypeFromFilename(String fileName) {

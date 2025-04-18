@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
@@ -39,7 +38,6 @@ public class DatabaseTests {
     private ImageRepository imageRepository;
 
     @Autowired
-    // Singleton because of the @Repository
     private ImageDao imageDao;
 
     private static BufferedImage testBufferedImage;
@@ -51,8 +49,7 @@ public class DatabaseTests {
     public static void setup() throws IOException {
         ReflectionTestUtils.setField(Image.class, "count", Long.valueOf(0));
 
-        ClassPathResource imgFile =
-                new ClassPathResource("images_test/test_certain_est_test12312315646216.png");
+        ClassPathResource imgFile = new ClassPathResource("images_test/test_certain_est_test12312315646216.png");
         testBufferedImage = UtilImageIO.loadImage(imgFile.getFile().getAbsolutePath());
         byte[] imgData = Files.readAllBytes(imgFile.getFile().toPath());
 
@@ -64,8 +61,7 @@ public class DatabaseTests {
     @Test
     @Order(1)
     public void testHistogramGeneration() {
-        Planar<GrayU8> image =
-                ConvertBufferedImage.convertFromPlanar(testBufferedImage, null, true, GrayU8.class);
+        Planar<GrayU8> image = ConvertBufferedImage.convertFromPlanar(testBufferedImage, null, true, GrayU8.class);
 
         PGvector histogram = ImagePGVector.createRgb(image, 8);
 
