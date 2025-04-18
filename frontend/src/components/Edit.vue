@@ -33,6 +33,10 @@ const similarImages = ref<ImageGallery[]>([]);
 const isFileValid = ref(false);
 const isUploading = ref(false);
 const showMetadata = ref(false);
+const resizeWidth = ref(300);
+const resizeHeight = ref(300);
+const mirrorDirection = ref("mirrorh");
+
 
 const fetchSimilarImages = async () => {
   if (!selectedImage.value) return;
@@ -204,11 +208,27 @@ const Apply_filter = async () => {
   if (!filtrerImage.value) return;
   try {
     console.log('avant url est ' + filtrerImage.value.dataUrl);
-    filtrerImage.value.dataUrl = await getImageFilter(
-      filtrerImage.value.id,
-      infoFilter.value,
-      FilterPourcent.value
-    );
+    if (infoFilter.value === 'resize') {
+      filtrerImage.value.dataUrl = await getImageFilter(
+        filtrerImage.value.id,
+        'resize',
+        resizeWidth.value,
+        resizeHeight.value
+      );
+    } else if (infoFilter.value === 'mirror') {
+      filtrerImage.value.dataUrl = await getImageFilter(
+        filtrerImage.value.id,
+        mirrorDirection.value,
+        0
+      );
+    } else {
+      filtrerImage.value.dataUrl = await getImageFilter(
+        filtrerImage.value.id,
+        infoFilter.value,
+        FilterPourcent.value
+      );
+    }
+
     console.log('image = ' + filtrerImage.value.name + 'url est' + filtrerImage.value.dataUrl);
   } catch (error) {
     console.error('Failed to load Altered image:', error);
@@ -269,6 +289,12 @@ const submitFile = async () => {
           <option value="rotation">
             {{ $t('button.rotation') }}
           </option>
+          <option value="resize">
+            {{ $t('button.resize') }}
+          </option>
+          <option value="mirror">
+            {{ $t('button.mirror') }}
+          </option>
         </select>
         <input
           v-if="infoFilter === 'gradienImage' || infoFilter === 'modif_lum'"
@@ -282,6 +308,26 @@ const submitFile = async () => {
           <option value="90">90°</option>
           <option value="180">180°</option>
           <option value="270">270°</option>
+        </select>
+        <div v-if="infoFilter === 'resize'">
+          <input
+            type="number"
+            v-model.number="resizeWidth"
+            min="1"
+            placeholder="Largeur (px)"
+          />
+          <input
+            type="number"
+            v-model.number="resizeHeight"
+            min="1"
+             placeholder="Hauteur (px)"
+          />
+        </div>
+
+        <!-- Mirror : choix horizontal / vertical -->
+        <select v-if="infoFilter === 'mirror'" v-model="mirrorDirection">
+          <option value="mirrorh">{{ $t('label.horizontal') }}</option>
+          <option value="mirrorv">{{ $t('label.vertical') }}</option>
         </select>
 
         <button @click="Apply_filter">

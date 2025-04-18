@@ -316,10 +316,13 @@ export async function refreshImages(): Promise<void> {
   }
 }
 
-export async function getImageFilter(id: number, filter: string, number: number) {
+export async function getImageFilter(id: number, filter: string, number: number, height?: number) {
+  const url = height
+    ? `/images/${id}/filter?filter=${filter}&number=${number}&height=${height}`
+    : `/images/${id}/filter?filter=${filter}&number=${number}`;
   return axios
 
-    .get(`/images/${id}/filter?filter=${filter}&number=${number}`, { responseType: 'blob' })
+    .get(url, { responseType: 'blob' })
     .then(function (response: AxiosResponse) {
       return new Promise<string>((resolve) => {
         const reader = new window.FileReader();
