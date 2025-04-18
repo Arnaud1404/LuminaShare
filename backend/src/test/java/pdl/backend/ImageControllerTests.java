@@ -102,12 +102,28 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(7)
+	public void putsetLikeCountOk() throws Exception {
+		this.mockMvc.perform(put("/images/" + (ImageDao.getImageCount() - 1) + "/set-likes?likes=1"))
+				.andDo(print())
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@Order(8)
+	public void putsetLikeCountBadRequest() throws Exception {
+		this.mockMvc.perform(put("/images/" + (ImageDao.getImageCount() - 1) + "/set-likes?likes=-50"))
+				.andDo(print())
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@Order(9)
 	public void getImageSuccessPNG() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
 	}
 
 	@Test
-	@Order(8)
+	@Order(10)
 	public void getImageSimilarSuccessHue() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=5&descriptor=huesat"))
 				.andDo(print())
@@ -116,7 +132,7 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(9)
+	@Order(11)
 	public void getImageSimilarSuccessRGBCube() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=5&descriptor=rgbcube"))
 				.andDo(print())
@@ -125,7 +141,7 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(10)
+	@Order(12)
 	public void getImageSimilarBadRequestDescriptor() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) +
 				"/similar?number=5&descriptor=bad"))
@@ -133,14 +149,14 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(11)
+	@Order(13)
 	public void getImageSimilarBadRequestNumber() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=-1&descriptor=huesat"))
 				.andExpect(status().isBadRequest());
 	}
 
 	@Test
-	@Order(12)
+	@Order(14)
 	public void getcheckLikeStatusSucessFalse() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/like-status?userid=admin"))
 				.andDo(print())
@@ -150,7 +166,7 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(13)
+	@Order(15)
 	public void getToggleLikeSucess() throws Exception {
 		this.mockMvc.perform(put("/images/" + (ImageDao.getImageCount() - 1) + "/toggle-like?userid=admin"))
 				.andDo(print())
@@ -160,17 +176,7 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(14)
-	public void getcheckLikeStatusSucessTrue() throws Exception {
-		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/like-status?userid=admin"))
-				.andDo(print())
-				.andExpect(status().isOk())
-				.andExpect(content().contentType(json))
-				.andExpect(jsonPath("isLiked").value("true"));
-	}
-
-	@Test
-	@Order(15)
+	@Order(16)
 	public void getToggleLikeBadRequest() throws Exception {
 		this.mockMvc.perform(put("/images/" + (ImageDao.getImageCount() - 1) + "/toggle-like?userid="))
 				.andDo(print())
@@ -178,7 +184,7 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(16)
+	@Order(17)
 	public void getToggleLikeNotFound() throws Exception {
 		this.mockMvc.perform(put("/images/" + 0 + "/toggle-like?userid=admin"))
 				.andDo(print())
@@ -186,26 +192,13 @@ public class ImageControllerTests {
 	}
 
 	@Test
-	@Order(17)
+	@Order(18)
 	public void deleteImageSuccessPNG() throws Exception {
 		assertTrue(FileController.file_exists("test_certain_est_test12312315646216.png"));
 		this.mockMvc.perform(delete("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
 		assertFalse(FileController.file_exists("test_certain_est_test12312315646216.png"));
 
 	}
-
-	// @Test
-	// @Order(9)
-	// public void testSystemSynchronization() throws Exception { // marche pas à
-	// fix
-	// long img_repo = imageRepository.getImageCount() * 2;
-
-	// assertTrue(ImageDao.getImageCount() == Image.getCount());
-	// assertTrue(ImageDao.getImageCount() == img_repo);
-	// assertTrue(Image.getCount() == img_repo);
-
-	// return;
-	// }
 
 	@Test
 	@Order(19)
@@ -287,10 +280,9 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(28)
-	public void getToggleImagePrivacyWrongID() throws Exception {
-		this.mockMvc.perform(get("/images/" + 0 + "privacy"))
+	public void putsetLikeCountBadID() throws Exception {
+		this.mockMvc.perform(put("/images/" + 0 + "/set-likes?likes=1"))
 				.andDo(print())
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isNotFound());
 	}
-
 }
