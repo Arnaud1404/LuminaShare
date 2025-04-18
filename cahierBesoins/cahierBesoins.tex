@@ -96,17 +96,15 @@ L'application devra permettre de traiter les images couleur enregistrées aux fo
 \besoin{server:initImages}
 {Initialiser un ensemble d'images présentes sur le serveur}
 {
-  Lorsque le serveur est lancé, il doit charger toutes les images présentes à l'intérieur du dossier \verb!images! et les indexer dans une base de données (cf. \refBesoin{server:indexImage}). Ce dossier \verb!images! doit exister à l'endroit où est lancé le serveur. Seuls les fichiers images correspondants aux formats d'image reconnus doivent être traités. Les sous-dossiers du dossier \verb!images! ne seront pas traités.
+ Lorsque le serveur est lancé, il doit vérifier l'existence du dossier \verb!images! à l'endroit où le serveur est exécuté. S'il n'existe pas, le serveur doit créer ce dossier automatiquement. Ensuite, il charge toutes les images présentes dans ce dossier et les indexe dans une base de données (cf. \refBesoin{server:indexImage}). Seuls les fichiers images correspondants aux formats reconnus (JPEG, PNG) doivent être traités. Les sous-dossiers du dossier \verb!images! ne seront pas traités.
 }
 {
-  Si le dossier \verb!images! n'existe pas depuis l'endroit où a été lancé le
-  serveur, une erreur explicite doit être levée.
+Si la création du dossier \verb!images! échoue (par exemple, en raison de permissions insuffisantes), une erreur explicite doit être levée avec un message indiquant la cause.
 }
 {
   \begin{enumerate}
-  \item Lancement de l'exécutable depuis un environnement vide, une erreur doit
-    se déclencher indiquant que le dossier \verb!images! n'est pas présent.
-  \item Mise en place d'un dossier de test contenant des images aux formats reconnus ainsi que des documents avec des extensions non-reconnues comme étant des images (e.g.,~\verb!.txt!).
+  \item Lancement du serveur dans un environnement où le dossier \verb!images! n'existe pas : vérifier que le dossier est créé automatiquement et que le serveur démarre sans erreur.
+  \item Mise en place d'un dossier de test contenant des images aux formats reconnus ainsi que des documents avec des extensions non-reconnues comme étant des images (e.g.,~\verb!.txt!) et vérifier que seules les images JPEG et PNG sont indexées..
   \end{enumerate}
 }
 
@@ -419,21 +417,16 @@ Les actions que peut effectuer l'utilisateur côté client induisent des requêt
 {}
 {}
 
-\besoin{client:exifMetadata}
-{Métadonnées d'une image}
+\besoin{client:saveFilteredImage}
+{Sauvegarder une image filtrée dans la galerie personnelle}
 {
-  Afficher de manière visible toutes les métadonnées (données EXIF) extractables de l'image
-  \begin {itemize}
-    \item size
-    \item description
-    \item extension
-    \item localisation
-    \item credits
-    \item date
-  \end {itemize}
+  L'utilisateur peut sauvegarder une image après application d'un filtre (par exemple, redimensionnement, rotation) directement dans sa galerie personnelle sur le serveur. La nouvelle image conserve les mêmes paramètres que l'image originale, tels que la visibilité (publique ou privée). Le nom du fichier doit être unique pour éviter les conflits.
+}
+{
+  Si l'enregistrement échoue (par exemple, en raison d'un problème de connexion ou d'un nom de fichier déjà existant), un message d'erreur explicatif doit être affiché à l'utilisateur.
 }
 {}
-{}
+
 %% \newpage
 
 %% \subsection{Traitement d'images}
@@ -470,6 +463,63 @@ Les actions que peut effectuer l'utilisateur côté client induisent des requêt
 %% {}
 
 \newpage
+\subsection{Traitement d'images}
+\label{tai}
+
+\besoin{tai:resize}
+{Redimensionnement des images}
+{
+  L'utilisateur peut redimensionner une image sélectionnée à une taille standard (des valeurs standard pour une hauteur et largeuer selon le beosin ou le choix) pour optimiser son stockage ou son affichage.
+  La fonctionne redimensionne bien l'image selon les valeur qu'on propose mais la qualité d'image se diminue.
+}
+{
+  Si l'image ne peut pas être redimensionnée (par exemple, en cas de corruption), un message d'erreur explicatif doit être affiché à l'utilisateur.
+}
+{}
+
+\besoin{tai:invertColors}
+{Inversion des couleurs}
+{
+  L'utilisateur peut inverser les couleurs d'une image sélectionnée pour obtenir un effet de négatif (par exemple, le blanc devient noir, le rouge devient cyan).
+}
+{
+  Si l'image est invalide ou corrompue, un message d'erreur explicatif doit être affiché à l'utilisateur.
+}
+{}
+
+\besoin{tai:mirror}
+{Miroir de l'image}
+{
+  L'utilisateur peut créer une version miroir de l'image sélectionnée, soit horizontalement (inversion gauche-droite), soit verticalement (inversion haut-bas).
+}
+{
+  Si l'image ne peut pas être traitée (par exemple, en cas de corruption), un message d'erreur explicatif doit être affiché à l'utilisateur.
+}
+{}
+
+\besoin{tai:rotate}
+{Rotation des images}
+{
+  L'utilisateur peut faire pivoter une image sélectionnée selon un angle spécifié (par exemple, 90°, 180°, ou 270°) pour corriger son orientation ou appliquer un effet visuel. 
+}
+{
+  Si l'image ne peut pas être pivotée (par exemple, en cas de corruption ou d'angle invalide), un message d'erreur explicatif doit être affiché à l'utilisateur.
+}
+{}
+
+\besoin{tai:luminosity}
+{Réglage de la luminosité}
+{L'utilisateur peut augmenter ou diminuer la luminosité de l'image sélectionnée.}
+{}
+{}
+
+\besoin{tai:blur}
+{Filtres de flou}
+{L'utilisateur peut appliquer un flou à l'image sélectionnée. Il peut définir le filtre appliqué (moyen ou gaussien) et choisir le niveau de flou. La convolution est appliquée sur les trois canaux R, G et B.}
+{}
+{}
+
+\newpage
 
 \subsection{Besoins non-fonctionnels}
 
@@ -484,8 +534,8 @@ Les actions que peut effectuer l'utilisateur côté client induisent des requêt
 \besoin{bnf:internationalization}
 {Internationalisation}
 {
-  L'application supportera le français et l'anglais. Les traductions seront stockées dans des fichiers JSON et l'utilisateur pourra
-  basculer entre les langues via un sélecteur dans l'interface.
+  L'application supportera le français, l'anglais et l'arabe . Les traductions seront stockées dans des fichiers JSON et l'utilisateur pourra
+  basculer entre les langues via un sélecteur dans l'interface. L'interface doit prendre en charge l'écriture de droite à gauche (RTL) pour l'arabe afin d'assurer une expérience utilisateur correcte.
 }
 {}
 {}
@@ -566,11 +616,26 @@ Les actions que peut effectuer l'utilisateur côté client induisent des requêt
     \refBesoin{bnf:serverCompatibility}.
   \item Navigateur(s) web sur lesquels votre client a été testé incluant la
     version de celui-ci, voir \refBesoin{bnf:clientCompatibility}.
+    \item Instructions pour configurer et lancer le serveur.
+    \item Instructions pour installer et exécuter le client, y compris la configuration des dépendances (par exemple, via \verb!npm install!).
   \end{itemize}
   
 }
 {}
 {}
 
+\besoin{bnf:codeStructure}
+{Structuration du code}
+{
+  Le code de l'application est organisé de manière claire et modulaire pour faciliter la maintenance et l'extensibilité :
+  \begin{itemize}
+    \item \textbf{Frontend} : Les composants Vue.js est organisés dans le dossier \verb!frontend/src/components!, avec des fichiers comme \verb!Edit.vue! (édition d'images), \verb!Gallery.vue! (affichage des galeries), \verb!Login.vue! (authentification), etc. Les fichiers TypeScript pour la logique API est placés dans \verb!frontend/src!, comme \verb!http-api.ts! pour les appels au serveur. Les traductions sont stockées dans \verb!frontend/src/locale! (les fichiers \verb!fr.json!, \verb!en.json!, \verb!ar.json!).
+    \item \textbf{Backend} : Les classes Java sont organisées dans \verb!backend/src/main/java/pdl/backend! avec des sous-dossiers comme \verb!Image! (gestion des images, comme, \verb!ImageController.java!, \verb!ImageDao.java!), \verb!Processing! (traitement d'images, par exemple, \verb!Traitement.java!), \verb!User! (gestion des utilisateurs, les fichiers, \verb!UserController.java!), et \verb!Security! (authentification, par exemple, \verb!PasswordService.java!). Les ressources (comme les images) sont stockées dans \verb!backend/src/main/resources/images!.
+  \end{itemize}
+}
+{}
+{}
 
 \end{document}
+
+
