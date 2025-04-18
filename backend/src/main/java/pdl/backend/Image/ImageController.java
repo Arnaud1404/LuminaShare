@@ -376,7 +376,6 @@ public class ImageController {
         }
         case "resize": {
           alreday = true;
-
           int targetHeight = (height != null) ? height : number;
           filteredImage = Traitement.resizeImage(img_input, number, targetHeight);
           break;

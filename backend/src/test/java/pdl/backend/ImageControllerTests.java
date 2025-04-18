@@ -51,20 +51,20 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(1)
-	public void getImageListShouldReturnSuccess() throws Exception {
+	public void getImageListSuccess() throws Exception {
 		this.mockMvc.perform(get("/images")).andDo(print()).andExpect(status().isOk())
 				.andExpect(content().contentType(json));
 	}
 
 	@Test
 	@Order(2)
-	public void getImageShouldReturnNotFound() throws Exception {
+	public void getImageNotFound() throws Exception {
 		this.mockMvc.perform(get("/images/-1")).andExpect(status().isNotFound());
 	}
 
 	@Test
 	@Order(3)
-	public void createImageShouldReturnSuccessJPEG() throws Exception {
+	public void createImageSuccessJPEG() throws Exception {
 
 		ClassPathResource imgFile = new ClassPathResource("images_test/test_certain_est_test12312315646216.jpg");
 
@@ -76,13 +76,13 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(4)
-	public void getImageShouldReturnSuccessJPEG() throws Exception {
+	public void getImageSuccessJPEG() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
 	}
 
 	@Test
 	@Order(5)
-	public void deleteImageShouldReturnSuccessJPEG() throws Exception {
+	public void deleteImageSuccessJPEG() throws Exception {
 		assertTrue(FileController.file_exists("test_certain_est_test12312315646216.jpg"));
 		this.mockMvc.perform(delete("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
 		assertFalse(FileController.file_exists("test_certain_est_test12312315646216.jpg"));
@@ -90,7 +90,7 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(6)
-	public void createImageShouldReturnSuccessPNG() throws Exception {
+	public void createImageSuccessPNG() throws Exception {
 
 		ClassPathResource imgFile = new ClassPathResource("images_test/test_certain_est_test12312315646216.png");
 
@@ -102,13 +102,13 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(7)
-	public void getImageShouldReturnSuccessPNG() throws Exception {
+	public void getImageSuccessPNG() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
 	}
 
 	@Test
 	@Order(8)
-	public void getImageSimilarShouldReturnSuccessHue() throws Exception {
+	public void getImageSimilarSuccessHue() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=5&descriptor=huesat"))
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -117,7 +117,7 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(9)
-	public void getImageSimilarShouldReturnSuccessRGBCube() throws Exception {
+	public void getImageSimilarSuccessRGBCube() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=5&descriptor=rgbcube"))
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -126,7 +126,7 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(10)
-	public void getImageSimilarShouldReturnBadRequestDescriptor() throws Exception {
+	public void getImageSimilarBadRequestDescriptor() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) +
 				"/similar?number=5&descriptor=bad"))
 				.andExpect(status().isBadRequest());
@@ -134,7 +134,7 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(11)
-	public void getImageSimilarShouldReturnBadRequestNumber() throws Exception {
+	public void getImageSimilarBadRequestNumber() throws Exception {
 		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=-1&descriptor=huesat"))
 				.andExpect(status().isBadRequest());
 	}
@@ -187,7 +187,7 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(17)
-	public void deleteImageShouldReturnSuccessPNG() throws Exception {
+	public void deleteImageSuccessPNG() throws Exception {
 		assertTrue(FileController.file_exists("test_certain_est_test12312315646216.png"));
 		this.mockMvc.perform(delete("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
 		assertFalse(FileController.file_exists("test_certain_est_test12312315646216.png"));
@@ -209,7 +209,7 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(19)
-	public void createImageShouldReturnNoContent() throws Exception {
+	public void createImageNoContent() throws Exception {
 		ClassPathResource imgFile = new ClassPathResource("images_test/empty.txt");
 		byte[] fileContent;
 		fileContent = Files.readAllBytes(imgFile.getFile().toPath());
@@ -221,7 +221,7 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(20)
-	public void createImageShouldReturnUnsupportedMediaType() throws Exception {
+	public void createImageUnsupportedMediaType() throws Exception {
 		ClassPathResource imgFile = new ClassPathResource("images_test/test.gif");
 		byte[] fileContent;
 		fileContent = Files.readAllBytes(imgFile.getFile().toPath());
@@ -234,7 +234,7 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(21)
-	public void createImageShouldReturnUnsupportedMediaType2() throws Exception {
+	public void createImageUnsupportedMediaType2() throws Exception {
 		ClassPathResource imgFile = new ClassPathResource("images_test/test.txt");
 		byte[] fileContent;
 		fileContent = Files.readAllBytes(imgFile.getFile().toPath());
@@ -247,13 +247,13 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(22)
-	public void deleteImagesShouldReturnMethodNotAllowed() throws Exception {
+	public void deleteImagesMethodNotAllowed() throws Exception {
 		this.mockMvc.perform(delete("/images")).andExpect(status().isMethodNotAllowed());
 	}
 
 	@Test
 	@Order(23)
-	public void deleteImageShouldReturnNotFound() throws Exception {
+	public void deleteImageNotFound() throws Exception {
 		this.mockMvc.perform(delete("/images/-1")).andExpect(status().isNotFound());
 	}
 
@@ -265,7 +265,7 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(25)
-	public void getImageSimilarShouldReturnBadRequestId() throws Exception {
+	public void getImageSimilarBadRequestId() throws Exception {
 		this.mockMvc.perform(get("/images/-1/similar?number=5&descriptor=huesat")).andDo(print())
 				.andExpect(status().isBadRequest());
 	}
@@ -279,10 +279,25 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(27)
-	public void getcheckLikeStatusShouldReturnBadRequest() throws Exception {
+	public void getcheckLikeStatusBadRequest() throws Exception {
 		this.mockMvc.perform(get("/images/" + 0 + "/like-status?userid="))
 				.andDo(print())
 				.andExpect(status().isBadRequest());
 	}
 
+	@Test
+	@Order(28)
+	public void applyfilterNotFOund() throws Exception {
+		this.mockMvc.perform(get("/images/0/filter?filter=gradienImage&number=100"))
+				.andDo(print())
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	@Order(29)
+	public void applyfilterBadRequest() throws Exception {
+		this.mockMvc.perform(get("/images/1/filter?filter=dontexist&number=100"))
+				.andDo(print())
+				.andExpect(status().isBadRequest());
+	}
 }
