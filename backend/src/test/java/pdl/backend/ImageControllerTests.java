@@ -285,4 +285,12 @@ public class ImageControllerTests {
 				.andExpect(status().isBadRequest());
 	}
 
+	@Test
+	@Order(28)
+	public void getToggleImagePrivacyWrongID() throws Exception {
+		this.mockMvc.perform(get("/images/" + 0 + "privacy"))
+				.andDo(print())
+				.andExpect(status().isBadRequest());
+	}
+
 }
