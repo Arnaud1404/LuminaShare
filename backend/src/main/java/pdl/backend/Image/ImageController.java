@@ -374,6 +374,21 @@ public class ImageController {
           filteredImage = Traitement.rotateImage(img_input, number);
           break;
         }
+        case "resize": {
+          alreday = true;
+          filteredImage = Traitement.resizeImage(img_input, number, number); 
+          break;
+        }
+        case "mirrorh": {
+          alreday = true;
+          filteredImage = Traitement.mirrorImage(img_input, true);
+          break;
+        }
+        case "mirrorv": {
+          alreday = true;
+          filteredImage = Traitement.mirrorImage(img_input, false);
+          break;
+        }
         default:
           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Filtre inconnu : " + filter);
       }

@@ -30,8 +30,14 @@
     "brightness": "Brightness",
     "reverse": "Reverse",
     "rotation": "Rotation",
+    "resize": "Resize",
+    "mirror": "Mirror",
     "apply": "Apply",
     "research": "Search"
+  },
+  "label": {
+    "horizontal": "Horizontal",
+    "vertical": "Vertical"
   },
   "login": {
     "id": "User ID:",

@@ -31,8 +31,14 @@
       "brightness": "سطوع",
       "reverse": "عكس",
       "rotation": "تدوير",
+      "resize": "تغيير الحجم",
+      "mirror": "انعكاس",
       "apply": "تطبيق",
       "research": "بحث"
+  },
+  "label": {
+      "horizontal": "أفقي",
+      "vertical": "عمودي"
   },
   "login": {
       "id": ":معرف المستخدم",
@@ -50,7 +56,7 @@
       "title": "غير موجود"
   },
   "register": {
-    "choose_userid": "Choisissez un ID unique",
+    "choose_userid": "اختر معرفًا فريدًا",
       "name": "الاسم الكامل",
       "exist": "مسجل بالفعل؟"
   },
