@@ -376,9 +376,9 @@ const submitFile = async () => {
           <button @click="handleDeleteImage" class="delete-button">
             {{ $t('button.delete') }}
           </button>
-          <button @click="submitFile" :disabled="isUploading">
+          <!-- <button @click="submitFile" :disabled="isUploading">
             {{ isUploading ? 'Téléversement...' : 'Téléverser' }}
-          </button>
+          </button> -->
         </div>
       </div>
       <div v-if="showMetadata && (filtrerImage || selectedImage)" class="metadata-popup">

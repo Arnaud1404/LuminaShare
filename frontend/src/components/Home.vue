@@ -55,14 +55,8 @@ onMounted(() => {
       <h1>Image Gallery</h1>
     </div>
 
-    <div v-if="loading" class="loading-container">
-      <div class="loading-spinner"></div>
+    <div v-if="loading" class="loading">
       <p>Loading amazing images...</p>
-    </div>
-
-    <div v-else-if="error" class="error-container">
-      <p>{{ error }}</p>
-      <button @click="loadPublicImages" class="retry-button">Try Again</button>
     </div>
 
     <div v-else-if="publicImages.length === 0" class="empty-state">
@@ -107,35 +101,6 @@ onMounted(() => {
   justify-content: center;
   min-height: 300px;
   text-align: center;
-}
-
-.loading-spinner {
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top: 4px solid var(--color_button, #4caf50);
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.retry-button {
-  background-color: var(--color_button, #4caf50);
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 1rem;
 }
 
 .images-container {
