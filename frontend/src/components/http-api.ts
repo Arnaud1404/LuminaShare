@@ -126,12 +126,13 @@ async function loadImageDataUrls(jsonImages: ImageGallery[]): Promise<ImageGalle
 }
 
 export async function loadAllImages(): Promise<ImageGallery[]> {
-  const json = await getImagesAsJSON();
-  const completeImages = await loadImageDataUrls(json);
-  images.value = completeImages;
-  return completeImages;
+  if (currentUser.value) {
+    images.value = await getUserImages(currentUser.value.userid, true);
+    return getUserImages(currentUser.value.userid, true);
+  } else {
+    return [];
+  }
 }
-
 export async function getSimilarImages(
   id: number,
   count: number = 5,
@@ -320,14 +321,11 @@ export async function getImageFilter(id: number, filter: string, number: number,
   const url = height
     ? `/images/${id}/filter?filter=${filter}&number=${number}&height=${height}`
     : `/images/${id}/filter?filter=${filter}&number=${number}`;
-  return axios
-
-    .get(url, { responseType: 'blob' })
-    .then(function (response: AxiosResponse) {
-      return new Promise<string>((resolve) => {
-        const reader = new window.FileReader();
-        reader.readAsDataURL(response.data);
-        reader.onload = () => resolve(reader.result as string);
-      });
+  return axios.get(url, { responseType: 'blob' }).then(function (response: AxiosResponse) {
+    return new Promise<string>((resolve) => {
+      const reader = new window.FileReader();
+      reader.readAsDataURL(response.data);
+      reader.onload = () => resolve(reader.result as string);
     });
+  });
 }
