@@ -1,11 +1,8 @@
 package pdl.backend.Image;
 
 import pdl.backend.Image.Processing.ImagePGVector;
-import pdl.backend.Image.Processing.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
