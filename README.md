@@ -88,8 +88,8 @@ sudo apt-get install openjdk-17-jdk
 ## Inspiration
 
 Données : https://www.dcode.fr/donnees-exif\
-Langue  : https://www.youtube.com/watch?v=_QTRUA7bZvU&t=303s\
-routeur : https://www.youtube.com/watch?v=fvr1E8SWFrg&t=932s\
+Langue : https://www.youtube.com/watch?v=_QTRUA7bZvU&t=303s\
+Routeur : https://www.youtube.com/watch?v=fvr1E8SWFrg&t=932s\
 
 ## Testé Sur
 
@@ -103,3 +103,4 @@ routeur : https://www.youtube.com/watch?v=fvr1E8SWFrg&t=932s\
 - Google Chrome
 - Mozilla Firefox
 - Opera
+- Brave

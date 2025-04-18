@@ -51,6 +51,7 @@ public class AuthController {
                 Map<String, Object> response = new HashMap<>();
                 response.put("userid", user.getUserid());
                 response.put("name", user.getName());
+                response.put("bio", user.getBio() != null ? user.getBio() : "");
 
                 return ResponseEntity.ok(response);
             }

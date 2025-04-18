@@ -5,7 +5,6 @@ import { currentUser } from './users';
 export async function loginUser(userid: string, password: string): Promise<boolean> {
   try {
     const response = await axios.post('/api/auth/login', { userid, password });
-    console.log('Login response:', response.data);
     currentUser.value = response.data;
     localStorage.setItem('user', JSON.stringify(response.data));
     return true;

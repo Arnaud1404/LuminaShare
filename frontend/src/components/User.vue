@@ -122,7 +122,9 @@ onMounted(() => {
 
       <div class="user-info">
         <h2>{{ username }}</h2>
-        <p v-if="userBio">{{ userBio }}</p>
+        <p v-if="userBio" class="user-bio">
+          {{ userBio }}
+        </p>
         <p v-else class="no-bio">{{ $t('user.no_bio') }}</p>
         <div v-if="isOwnProfile" class="upload-container">
           <UploadImage @uploaded="loadUserImages" />
@@ -173,6 +175,13 @@ onMounted(() => {
 
 .user-info {
   margin-bottom: 2rem;
+}
+
+.user-bio {
+  margin: 1rem 0;
+  line-height: 1.5;
+  color: #e0e0e0;
+  white-space: pre-line;
 }
 
 .no-bio {

@@ -143,10 +143,28 @@ public class ImageControllerTests {
 
 	@Test
 	@Order(8)
-	public void gettoggleLikeSucess() throws Exception {
-		this.mockMvc.perform(put("/images/1/toggle-like?userid=admin"))
+	public void getToggleLikeSucess() throws Exception {
+		this.mockMvc.perform(put("/images/" + (ImageDao.getImageCount() - 1) + "/toggle-like?userid=admin"))
 				.andDo(print())
-				.andExpect(status().isOk());
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(json));
+
+	}
+
+	@Test
+	@Order(8)
+	public void getToggleLikeBadRequest() throws Exception {
+		this.mockMvc.perform(put("/images/" + (ImageDao.getImageCount() - 1) + "/toggle-like?userid="))
+				.andDo(print())
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@Order(8)
+	public void getToggleLikeNotFound() throws Exception {
+		this.mockMvc.perform(put("/images/" + 0 + "/toggle-like?userid=admin"))
+				.andDo(print())
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
