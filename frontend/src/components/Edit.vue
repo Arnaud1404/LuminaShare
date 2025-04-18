@@ -6,7 +6,6 @@ import {
   deleteImage,
   getSimilarImages,
   getImageFilter,
-  uploadImage,
 } from './http-api';
 import Gallery from './Gallery.vue';
 import Similar from './Similar.vue';
@@ -32,7 +31,6 @@ const descriptor = ref('rgbcube');
 const similarCount = ref(3);
 const similarImages = ref<ImageGallery[]>([]);
 const isFileValid = ref(false);
-const isUploading = ref(false);
 const showMetadata = ref(false);
 const resizeWidth = ref(300);
 const resizeHeight = ref(300);
