@@ -78,7 +78,14 @@ mvn javadoc:javadoc
 
 La documentation sera disponible dans `docs/api/index.html`
 
-La documentation du frontend `docs/api/frontend`
+Pour générer la documentation Javadoc, exécutez la commande suivante:
+
+```
+cd frontend
+npm run docs
+```
+
+La documentation du frontend sera disponible dans `docs/api/frontend`
 Si vous n'avez pas Javadoc d'installé, installez tout le JDK
 
 ```
