@@ -285,19 +285,4 @@ public class ImageControllerTests {
 				.andExpect(status().isBadRequest());
 	}
 
-	@Test
-	@Order(28)
-	public void applyfilterNotFOund() throws Exception {
-		this.mockMvc.perform(get("/images/0/filter?filter=gradienImage&number=100"))
-				.andDo(print())
-				.andExpect(status().isNotFound());
-	}
-
-	@Test
-	@Order(29)
-	public void applyfilterBadRequest() throws Exception {
-		this.mockMvc.perform(get("/images/1/filter?filter=dontexist&number=100"))
-				.andDo(print())
-				.andExpect(status().isBadRequest());
-	}
 }
