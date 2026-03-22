@@ -75,8 +75,10 @@ async function togglePrivacy(event: Event, image: ImageGallery) {
       </div>
       <div class="card-footer">
         <div class="image-name">
-          {{ image.name }}
-          <span v-if="image.isapproved === false"> - {{ $t('user.pending_approval') }}</span>
+          <span class="image-name-text">{{ image.name }}</span>
+          <span v-if="image.isapproved === false" class="pending-status">
+            {{ $t('user.pending_approval') }}
+          </span>
         </div>
         <div class="card-actions">
           <div class="likes-container">
@@ -141,11 +143,22 @@ async function togglePrivacy(event: Event, image: ImageGallery) {
 }
 
 .image-name {
-  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
   margin-bottom: 0.5rem;
+}
+
+.image-name-text {
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.pending-status {
+  font-size: 0.8rem;
+  opacity: 0.85;
 }
 
 .card-actions {
