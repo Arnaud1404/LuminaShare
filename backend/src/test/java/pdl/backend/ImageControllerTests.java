@@ -36,6 +36,23 @@ import pdl.backend.Image.ImageDao;
 @AutoConfigureMockMvc
 @TestMethodOrder(OrderAnnotation.class)
 public class ImageControllerTests {
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+
+	private long getImageIdByName(String fileName) {
+		Long id = jdbcTemplate.queryForObject(
+				"SELECT id FROM imageDatabase WHERE name = ? ORDER BY id DESC LIMIT 1",
+				Long.class,
+				fileName);
+		if (id == null) {
+			throw new IllegalStateException("Image not found in database: " + fileName);
+		}
+		return id;
+	}
+
+	private void approveImageByName(String fileName) {
+		jdbcTemplate.update("UPDATE imageDatabase SET is_approved = true WHERE name = ?", fileName);
+	}
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -78,19 +95,20 @@ public class ImageControllerTests {
 				MediaType.IMAGE_JPEG_VALUE, imgFile.getInputStream());
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart))
 				.andDo(print()).andExpect(status().isCreated());
+		approveImageByName("test_certain_est_test12312315646216.jpg");
 	}
 
 	@Test
 	@Order(4)
 	public void getImageSuccessJPEG() throws Exception {
-		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
+		this.mockMvc.perform(get("/images/" + getImageIdByName("test_certain_est_test12312315646216.jpg"))).andExpect(status().isOk());
 	}
 
 	@Test
 	@Order(5)
 	public void deleteImageSuccessJPEG() throws Exception {
 		assertTrue(FileController.file_exists("test_certain_est_test12312315646216.jpg"));
-		this.mockMvc.perform(delete("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
+		this.mockMvc.perform(delete("/images/" + getImageIdByName("test_certain_est_test12312315646216.jpg"))).andExpect(status().isOk());
 		assertFalse(FileController.file_exists("test_certain_est_test12312315646216.jpg"));
 	}
 
@@ -104,12 +122,13 @@ public class ImageControllerTests {
 				MediaType.IMAGE_JPEG_VALUE, imgFile.getInputStream());
 		this.mockMvc.perform(MockMvcRequestBuilders.multipart("/images").file(file_multipart))
 				.andDo(print()).andExpect(status().isCreated());
+		approveImageByName("test_certain_est_test12312315646216.png");
 	}
 
 	@Test
 	@Order(8)
 	public void putsetLikeCountBadRequest() throws Exception {
-		this.mockMvc.perform(put("/images/" + (ImageDao.getImageCount() - 1) + "/set-likes?likes=-50"))
+		this.mockMvc.perform(put("/images/" + getImageIdByName("test_certain_est_test12312315646216.png") + "/set-likes?likes=-50"))
 				.andDo(print())
 				.andExpect(status().isBadRequest());
 	}
@@ -117,13 +136,13 @@ public class ImageControllerTests {
 	@Test
 	@Order(9)
 	public void getImageSuccessPNG() throws Exception {
-		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
+		this.mockMvc.perform(get("/images/" + getImageIdByName("test_certain_est_test12312315646216.png"))).andExpect(status().isOk());
 	}
 
 	@Test
 	@Order(10)
 	public void getImageSimilarSuccessHue() throws Exception {
-		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=5&descriptor=huesat"))
+		this.mockMvc.perform(get("/images/" + getImageIdByName("test_certain_est_test12312315646216.png") + "/similar?number=5&descriptor=huesat"))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(json));
@@ -132,7 +151,7 @@ public class ImageControllerTests {
 	@Test
 	@Order(11)
 	public void getImageSimilarSuccessRGBCube() throws Exception {
-		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=5&descriptor=rgbcube"))
+		this.mockMvc.perform(get("/images/" + getImageIdByName("test_certain_est_test12312315646216.png") + "/similar?number=5&descriptor=rgbcube"))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(json));
@@ -141,7 +160,7 @@ public class ImageControllerTests {
 	@Test
 	@Order(12)
 	public void getImageSimilarBadRequestDescriptor() throws Exception {
-		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) +
+		this.mockMvc.perform(get("/images/" + getImageIdByName("test_certain_est_test12312315646216.png") +
 				"/similar?number=5&descriptor=bad"))
 				.andExpect(status().isBadRequest());
 	}
@@ -149,14 +168,14 @@ public class ImageControllerTests {
 	@Test
 	@Order(13)
 	public void getImageSimilarBadRequestNumber() throws Exception {
-		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/similar?number=-1&descriptor=huesat"))
+		this.mockMvc.perform(get("/images/" + getImageIdByName("test_certain_est_test12312315646216.png") + "/similar?number=-1&descriptor=huesat"))
 				.andExpect(status().isBadRequest());
 	}
 
 	@Test
 	@Order(14)
 	public void getcheckLikeStatusSucessFalse() throws Exception {
-		this.mockMvc.perform(get("/images/" + (ImageDao.getImageCount() - 1) + "/like-status?userid=admin"))
+		this.mockMvc.perform(get("/images/" + getImageIdByName("test_certain_est_test12312315646216.png") + "/like-status?userid=admin"))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(json))
@@ -166,7 +185,7 @@ public class ImageControllerTests {
 	@Test
 	@Order(15)
 	public void getToggleLikeSucess() throws Exception {
-		this.mockMvc.perform(put("/images/" + (ImageDao.getImageCount() - 1) + "/toggle-like?userid=admin"))
+		this.mockMvc.perform(put("/images/" + getImageIdByName("test_certain_est_test12312315646216.png") + "/toggle-like?userid=admin"))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(json));
@@ -176,7 +195,7 @@ public class ImageControllerTests {
 	@Test
 	@Order(16)
 	public void getToggleLikeBadRequest() throws Exception {
-		this.mockMvc.perform(put("/images/" + (ImageDao.getImageCount() - 1) + "/toggle-like?userid="))
+		this.mockMvc.perform(put("/images/" + getImageIdByName("test_certain_est_test12312315646216.png") + "/toggle-like?userid="))
 				.andDo(print())
 				.andExpect(status().isBadRequest());
 	}
@@ -193,7 +212,7 @@ public class ImageControllerTests {
 	@Order(18)
 	public void deleteImageSuccessPNG() throws Exception {
 		assertTrue(FileController.file_exists("test_certain_est_test12312315646216.png"));
-		this.mockMvc.perform(delete("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
+		this.mockMvc.perform(delete("/images/" + getImageIdByName("test_certain_est_test12312315646216.png"))).andExpect(status().isOk());
 		assertFalse(FileController.file_exists("test_certain_est_test12312315646216.png"));
 
 	}

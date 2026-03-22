@@ -57,11 +57,23 @@ public class ImageController {
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = { MediaType.IMAGE_JPEG_VALUE,
       MediaType.IMAGE_PNG_VALUE })
   public ResponseEntity<?> getImage(@PathVariable("id") long id) throws IOException {
-    Optional<Image> img = imageDao.retrieve(id);
-    if (img.isPresent() && img.get().isApproved()) {
-      byte[] bytes = img.get().getData();
-      MediaType mediaType = img.get().getType();
-      return ResponseEntity.ok().contentType(mediaType).body(bytes);
+    Image imgInfo = imageRepository.getById(id);
+    if (imgInfo != null && imgInfo.isApproved()) {
+      byte[] bytes = null;
+      java.io.File imgFile = FileController.get_file(imgInfo.getName());
+      if (imgFile != null && imgFile.exists()) {
+        bytes = java.nio.file.Files.readAllBytes(imgFile.toPath());
+      } else {
+        org.springframework.core.io.ClassPathResource classPathResource = new org.springframework.core.io.ClassPathResource("images/" + imgInfo.getName());
+        if (classPathResource.exists()) {
+          try (java.io.InputStream is = classPathResource.getInputStream()) {
+            bytes = is.readAllBytes();
+          }
+        }
+      }
+      if (bytes != null) {
+        return ResponseEntity.ok().contentType(imgInfo.getType()).body(bytes);
+      }
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
@@ -74,12 +86,12 @@ public class ImageController {
    */
   @RequestMapping(value = "/images/{id}", method = RequestMethod.DELETE)
   public ResponseEntity<?> deleteImage(@PathVariable("id") long id) {
-    Optional<Image> img = imageDao.retrieve(id);
-    if (!img.isPresent()) {
+    Image img = imageRepository.getById(id);
+    if (img == null) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
     }
-    if (img.isPresent()) {
-      imageDao.delete(img.get());
+    if (img != null) {
+      imageDao.delete(img);
       return ResponseEntity.ok("Image deleted successfully\n");
     }
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
@@ -147,7 +159,7 @@ public class ImageController {
   @ResponseBody
   public ArrayNode getImageList() {
     ArrayNode nodes = mapper.createArrayNode();
-    List<Image> imgs = imageDao.retrieveAll();
+    List<Image> imgs = imageRepository.list();
     for (Image img : imgs) {
       if (!img.isApproved()) {
         continue;
@@ -196,7 +208,7 @@ public class ImageController {
 
       System.out.println("id = " + id + " taille imaegdao = " + ImageDao.getImageCount());
 
-      Image image = imageDao.retrieve(id).get();
+      Image image = imageRepository.getById(id);
 
       List<Image> similarImages = imageRepository.imageSimilar(image, descriptor, n);
 
@@ -217,7 +229,7 @@ public class ImageController {
       return ResponseEntity.ok(nodes);
     } catch (IllegalArgumentException e) {
       if (e.getMessage().contains("non trouvée")) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        e.printStackTrace(); return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
       } else {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
       }
@@ -248,9 +260,9 @@ public class ImageController {
 
       List<Image> images;
       if (includePrivate) {
-        images = imageDao.getByUserId(userid);
+        images = imageRepository.getByUserId(userid);
       } else {
-        images = imageDao.getPublicByUserId(userid);
+        images = imageRepository.getPublicByUserId(userid);
       }
 
       ArrayNode nodes = mapper.createArrayNode();
@@ -295,16 +307,16 @@ public class ImageController {
             .body("User ID is required");
       }
 
-      Optional<Image> imgOpt = imageDao.retrieve(id);
-      if (!imgOpt.isPresent()) {
+      Image imgOpt = imageRepository.getById(id);
+      if (imgOpt == null) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body("Image not found");
       }
 
       boolean isLiked = imageDao.toggleLike(id, userid);
 
-      Optional<Image> updatedImg = imageDao.retrieve(id);
-      int currentLikes = updatedImg.isPresent() ? updatedImg.get().getLikes() : 0;
+      Image updatedImg = imageRepository.getById(id);
+      int currentLikes = updatedImg != null ? updatedImg.getLikes() : 0;
 
       ObjectNode response = mapper.createObjectNode();
       response.put("likes", currentLikes);
@@ -351,7 +363,7 @@ public class ImageController {
       @RequestParam("filter") String filter, @RequestParam("number") int number,
       @RequestParam(value = "height", required = false) Integer height) {
     try {
-      Image img = imageDao.retrieve(id).get();
+      Image img = imageRepository.getById(id);
       boolean alreday = false;
 
       BufferedImage img_input = ImageIO.read(FileController.get_file(img.getName()));
@@ -426,7 +438,7 @@ public class ImageController {
 
     Exception e) {
       e.printStackTrace();
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+      e.printStackTrace(); return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 
     }
   }
@@ -440,13 +452,13 @@ public class ImageController {
   @RequestMapping(value = "/images/{id}/privacy", method = RequestMethod.PATCH)
   public ResponseEntity<?> toggleImagePrivacy(@PathVariable("id") long id) {
     try {
-      Optional<Image> imgOpt = imageDao.retrieve(id);
+      Image imgOpt = imageRepository.getById(id);
 
-      if (!imgOpt.isPresent()) {
+      if (imgOpt == null) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
       }
 
-      Image img = imgOpt.get();
+      Image img = imgOpt;
       boolean newPrivacyStatus = !img.isPublic();
 
       boolean success = imageDao.updatePrivacy(img.getId(), newPrivacyStatus);
@@ -481,8 +493,8 @@ public class ImageController {
             .body("Likes count cannot be negative");
       }
 
-      Optional<Image> imgOpt = imageDao.retrieve(id);
-      if (!imgOpt.isPresent()) {
+      Image imgOpt = imageRepository.getById(id);
+      if (imgOpt == null) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body("Image not found");
       }
@@ -491,7 +503,7 @@ public class ImageController {
 
       if (success) {
         // Get updated like count
-        int updatedLikes = imgOpt.get().getLikes();
+        int updatedLikes = imgOpt.getLikes();
 
         ObjectNode response = mapper.createObjectNode();
         response.put("likes", updatedLikes);

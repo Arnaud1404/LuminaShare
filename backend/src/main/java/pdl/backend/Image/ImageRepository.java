@@ -114,7 +114,7 @@ public class ImageRepository implements InitializingBean {
      * @return A List<Image> with the images from the database
      */
     public List<Image> list() {
-        String sql = "SELECT id, name, type, size FROM " + databaseTable;
+        String sql = "SELECT * FROM " + databaseTable;
         return jdbcTemplate.query(sql, rowMapper);
     }
 
@@ -125,9 +125,8 @@ public class ImageRepository implements InitializingBean {
      */
     public Image getById(long id) {
         try {
-            String sql = "SELECT id, name, type, size, rgbcube, hueSat FROM " + databaseTable
-                    + " WHERE id = ?";
-            return jdbcTemplate.queryForObject(sql, Image.class, id);
+            String sql = "SELECT * FROM " + databaseTable + " WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
         } catch (Exception e) {
             return null; // Non trouvé
         }

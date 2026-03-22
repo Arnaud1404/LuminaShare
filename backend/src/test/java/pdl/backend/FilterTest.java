@@ -28,11 +28,24 @@ import org.springframework.http.MediaType;
 @AutoConfigureMockMvc
 @TestMethodOrder(OrderAnnotation.class)
 public class FilterTest {
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     @Autowired
     private MockMvc mockMvc;
 
     private long id;
+
+        private long getImageIdByName(String fileName) {
+                Long imageId = jdbcTemplate.queryForObject(
+                                "SELECT id FROM imageDatabase WHERE name = ? ORDER BY id DESC LIMIT 1",
+                                Long.class,
+                                fileName);
+                if (imageId == null) {
+                        throw new IllegalStateException("Image not found in database: " + fileName);
+                }
+                return imageId;
+        }
 
     @Test
     @Order(1)
@@ -57,17 +70,17 @@ public class FilterTest {
     @Test
     @Order(3)
     public void applyfilterBadFilterJPEG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc.perform(get("/images/" + id +
                 "/filter?filter=dontexist&number=100"))
 
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(4)
     public void applyFilterGradienImageJPEG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=gradienImage&number=50"))
 
@@ -77,27 +90,27 @@ public class FilterTest {
     @Test
     @Order(5)
     public void applyFilterGradienImageBadNumberJPEG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=gradienImage&number=-50"))
 
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(6)
     public void applyFilterGradienImageBadargumentJPEG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=gradienImage&number=bad"))
 
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(7)
     public void applyFilterModif_LumJPEG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=modif_lum&number=50"))
 
@@ -107,18 +120,18 @@ public class FilterTest {
     @Test
     @Order(8)
     public void applyFilterModif_LumBadArgumentJPEG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=modif_lum&number=bad"))
 
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(9)
     public void applyFilterInvertJPEG() throws Exception { // the argument is not important so doesn't need test about
                                                            // it
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=invert&number=50"))
 
@@ -128,17 +141,17 @@ public class FilterTest {
     @Test
     @Order(10)
     public void applyFilterRotationBadAngleJPEG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=rotation&number=50"))
 
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(11)
     public void applyFilterRotation90JPEG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=rotation&number=90"))
 
@@ -148,7 +161,7 @@ public class FilterTest {
     @Test
     @Order(12)
     public void applyFilterRotation180JPEG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=rotation&number=180"))
 
@@ -158,7 +171,7 @@ public class FilterTest {
     @Test
     @Order(13)
     public void applyFilterRotation270JPEG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=rotation&number=270"))
                 .andExpect(status().isOk());
@@ -167,7 +180,7 @@ public class FilterTest {
     @Test
     @Order(14)
     public void applyFilterResizeSquareJPEG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=resize&number=500"))
                 .andExpect(status().isOk());
@@ -176,7 +189,7 @@ public class FilterTest {
     @Test
     @Order(15)
     public void applyFilterResizeRectangleJPEG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id +
                         "/filter?filter=resize&number=500&height=300"))
@@ -186,26 +199,26 @@ public class FilterTest {
     @Test
     @Order(16)
     public void applyFilterResizeBadWidthJPEG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=resize&number=-50"))
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(17)
     public void applyFilterResizeBadHeightJPEG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id +
                         "/filter?filter=resize&number=500&height=-50"))
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(18)
     public void applyFilterMirrorhJPEG() throws Exception { // we don't care about the arguement for this filter
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=mirrorh&number=50"))
                 .andExpect(status().isOk());
@@ -213,17 +226,17 @@ public class FilterTest {
 
     @Order(19)
     public void applyFilterMirrorvJPEG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=mirrorv&number=50"))
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(20)
     public void deleteImageSuccessJPEG() throws Exception {
         assertTrue(FileController.file_exists("test_certain_est_test12312315646216.jpg"));
-        this.mockMvc.perform(delete("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
+                this.mockMvc.perform(delete("/images/" + getImageIdByName("test_certain_est_test12312315646216.jpg"))).andExpect(status().isOk());
         assertFalse(FileController.file_exists("test_certain_est_test12312315646216.jpg"));
     }
 
@@ -250,17 +263,17 @@ public class FilterTest {
     @Test
     @Order(23)
     public void applyfilterBadFilterPNG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc.perform(get("/images/" + id +
                 "/filter?filter=dontexist&number=100"))
 
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(24)
     public void applyFilterGradienImagePNG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=gradienImage&number=50"))
 
@@ -270,27 +283,27 @@ public class FilterTest {
     @Test
     @Order(25)
     public void applyFilterGradienImageBadNumberPNG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=gradienImage&number=-50"))
 
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(26)
     public void applyFilterGradienImageBadargumentPNG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=gradienImage&number=bad"))
 
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(27)
     public void applyFilterModif_LumPNG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=modif_lum&number=50"))
 
@@ -300,18 +313,18 @@ public class FilterTest {
     @Test
     @Order(28)
     public void applyFilterModif_LumBadArgumentPNG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=modif_lum&number=bad"))
 
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(29)
     public void applyFilterInvertPNG() throws Exception { // the argument is not important so doesn't need test about
                                                           // it
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=invert&number=50"))
 
@@ -321,17 +334,17 @@ public class FilterTest {
     @Test
     @Order(30)
     public void applyFilterRotationBadAnglePNG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=rotation&number=50"))
 
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(31)
     public void applyFilterRotation90PNG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=rotation&number=90"))
 
@@ -341,7 +354,7 @@ public class FilterTest {
     @Test
     @Order(32)
     public void applyFilterRotation180PNG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=rotation&number=180"))
 
@@ -351,7 +364,7 @@ public class FilterTest {
     @Test
     @Order(33)
     public void applyFilterRotation270PNG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=rotation&number=270"))
                 .andExpect(status().isOk());
@@ -360,7 +373,7 @@ public class FilterTest {
     @Test
     @Order(34)
     public void applyFilterResizeSquarePNG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=resize&number=500"))
                 .andExpect(status().isOk());
@@ -369,7 +382,7 @@ public class FilterTest {
     @Test
     @Order(35)
     public void applyFilterResizeRectanglePNG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id +
                         "/filter?filter=resize&number=500&height=300"))
@@ -379,26 +392,26 @@ public class FilterTest {
     @Test
     @Order(36)
     public void applyFilterResizeBadWidthPNG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=resize&number=-50"))
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(37)
     public void applyFilterResizeBadHeightPNG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id +
                         "/filter?filter=resize&number=500&height=-50"))
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(38)
     public void applyFilterMirrorhPNG() throws Exception { // we don't care about the arguement for this filter
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=mirrorh&number=50"))
                 .andExpect(status().isOk());
@@ -406,17 +419,17 @@ public class FilterTest {
 
     @Order(39)
     public void applyFilterMirrorvPNG() throws Exception {
-        id = ImageDao.getImageCount() - 1;
+        id = jdbcTemplate.queryForObject("SELECT max(id) FROM imageDatabase", Long.class); System.out.println("THE MAX ID IS: " + id);
         this.mockMvc
                 .perform(get("/images/" + id + "/filter?filter=mirrorv&number=50"))
-                .andExpect(status().isBadRequest());
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print()).andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(40)
     public void deleteImageSuccessPNG() throws Exception {
         assertTrue(FileController.file_exists("image_pour_filtre.png"));
-        this.mockMvc.perform(delete("/images/" + (ImageDao.getImageCount() - 1))).andExpect(status().isOk());
+                this.mockMvc.perform(delete("/images/" + getImageIdByName("image_pour_filtre.png"))).andExpect(status().isOk());
         assertFalse(FileController.file_exists("image_pour_filtre.png"));
     }
 }
