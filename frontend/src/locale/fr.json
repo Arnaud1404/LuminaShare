@@ -1,0 +1,90 @@
+{
+  "header": {
+    "title": "LuminaShare - Partagez vos photos",
+    "home": "Accueil",
+    "user": "Utilisateur",
+    "users": "Les autres",
+    "edit": "Modifier",
+    "login": "Connexion",
+    "register": "S'inscrire"
+  },
+  "display_image": {
+    "title": "Image",
+    "loading": "Chargement de l'image ...",
+    "no-image": "Aucune image sélectionnée"
+  },
+  "image_similar": {
+    "title": "Images similaires - Plus le score est bas, plus l'image est similaire"
+  },
+  "upload_img": {
+    "title": "Téléverser une image"
+  },
+  "button": {
+    "3D": "3D RGB",
+    "2D": "2D Teinte Saturation",
+    "upload": "Téléverser",
+    "uploading": "Téléversement...",
+    "delete": "Supprimer",
+    "download": "Télécharger",
+    "metadata": "Métadonnées",
+    "blur": "Flouter",
+    "brightness": "Luminosité",
+    "reverse": "Inverser coleur",
+    "rotation": "Rotation",
+    "resize": "Redimensionner",
+    "mirror": "Miroir",
+    "apply": "Appliquer",
+    "research": "Rechercher"
+  },
+  "label": {
+    "horizontal": "Horizontal", 
+    "vertical": "Vertical"
+  },
+  "login": {
+    "id": "ID Utilisateur:",
+    "enter_id": "Entrez votre ID",
+    "mdp": "Mot de passe:",
+    "enter_mdp": "Entrez votre mot de passe",
+    "no-account": "Pas encore de compte ?",
+    "login_now": "Se connecter",
+    "connecting": "Connexion...",
+    "erreur": {
+      "handle": "Veuillez entrer un ID et un mot de passe"
+    }
+  },
+  "notFound": {
+    "title": "Pas trouvée"
+  },
+  "register": {
+    "choose_userid": "Choisissez un ID unique",
+    "name": "Nom Complet",
+    "exist": "Déjà inscrit ?"
+  },
+  "user": {
+    "title": "Mon profil",
+    "loading_profile": "Chargement du profil...",
+    "user_not_found": "Utilisateur introuvable",
+    "no_photos_you": "Vous n'avez pas encore téléchargé de photos.",
+    "no_photos_other": "Cet utilisateur n'a pas encore téléchargé de photos.",
+    "upload_photos": "Télécharger des photos",
+    "your_profile": "Votre Profil",
+    "user_profile": "Profil de {username}",
+    "no_bio": "Aucune biographie fournie",
+    "your_photos": "Vos Photos",
+    "user_photos": "Photos de {username}",
+    "loading_images": "Chargement des images..."
+  },
+  "users": {
+    "title": "Les Utilisateurs"
+  },
+  "edit": {
+    "title_selected_img": "Choisissez une image depuis la galerie",
+    "title_filter_img": "Image altérée",
+    "title_gallery": "Galerie",
+    "id": "Identifiant:",
+    "name": "Nom:",
+    "type": "Type:",
+    "length": "Taille:",
+    "close": "Fermer"
+  }
+}

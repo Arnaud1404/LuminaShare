@@ -1,14 +1,13 @@
-package pdl.backend;
+package pdl.backend.Image;
 
 import org.springframework.http.MediaType;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.pgvector.PGvector;
 
 /**
- * Represents an image with its metadata and binary data.
- * This class allows storing and managing image information,
- * including its path, name, media type, and dimensions.
+ * Represents an image with its metadata and binary data. This class allows
+ * storing and managing
+ * image information, including its path, name, media type, and dimensions.
  */
 public class Image {
   private static Long count = Long.valueOf(1);
@@ -22,10 +21,14 @@ public class Image {
   private float similarityScore;
   private byte[] data;
   private boolean isApproved = false;
+  private String userid = "admin";
+  private boolean isPublic = false;
+  private int likes = 0;
 
   /**
-   * Constructs a new Image instance with the specified parameters.
-   * The identifier is automatically generated from the static counter.
+   * Constructs a new Image instance with the specified parameters. The identifier
+   * is automatically
+   * generated from the static counter.
    *
    * @param path        the path of the image in the file system
    * @param name        the name of the image
@@ -35,8 +38,7 @@ public class Image {
    * @param height      the height of the image in pixels
    * @param description the description of the image
    */
-  public Image(String path, String name, byte[] data,
-      MediaType type, long width, long height) {
+  public Image(String path, String name, byte[] data, MediaType type, long width, long height) {
     id = count++;
     this.path = path;
     this.name = name;
@@ -119,8 +121,31 @@ public class Image {
   public void setApproved(boolean isApproved) {
     this.isApproved = isApproved;
   }
+  public String getUserid() {
+    return userid;
+  }
+
+  public void setUserid(String userid) {
+    this.userid = userid;
+  }
+
+  public boolean isPublic() {
+    return isPublic;
+  }
+
+  public void setPublic(boolean isPublic) {
+    this.isPublic = isPublic;
+  }
 
   public static long getCount() {
     return count;
+  }
+
+  public int getLikes() {
+    return likes;
+  }
+
+  public void setLikes(int likes) {
+    this.likes = likes;
   }
 }

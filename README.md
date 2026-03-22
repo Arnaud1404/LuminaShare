@@ -51,6 +51,23 @@ sudo docker compose down
 4. Obtenir des images de test (Optionnel)
    https://picsum.photos/images
 
+   Vous pouvez aussi utiliser notre script pour télécharger automatiquement des images de test:
+
+   ```bash
+   # Utilisation simple avec les paramètres par défaut
+   # (télécharge 10 images de 800x600 dans backend/src/main/resources/images)
+   ./download_pics.sh
+
+   # Télécharger 5 images
+   ./download_pics.sh --count 5
+
+   # Spécifier dimensions et répertoire de sortie
+   ./download_pics.sh -c 20 -w 1024 -h 768 -o ./mes-images
+
+   # Afficher l'aide
+   ./download_pics.sh --help
+   ```
+
 ## Documentation
 
 Pour générer la documentation Javadoc, exécutez la commande suivante:
@@ -61,6 +78,14 @@ mvn javadoc:javadoc
 
 La documentation sera disponible dans `docs/api/index.html`
 
+Pour générer la documentation Javadoc, exécutez la commande suivante:
+
+```
+cd frontend
+npm run docs
+```
+
+La documentation du frontend sera disponible dans `docs/api/frontend`
 Si vous n'avez pas Javadoc d'installé, installez tout le JDK
 
 ```
@@ -70,7 +95,9 @@ sudo apt-get install openjdk-17-jdk
 
 ## Inspiration
 
-Données : https://www.dcode.fr/donnees-exif
+Données : https://www.dcode.fr/donnees-exif\
+Langue : https://www.youtube.com/watch?v=_QTRUA7bZvU&t=303s\
+Routeur : https://www.youtube.com/watch?v=fvr1E8SWFrg&t=932s\
 
 ## Testé Sur
 
@@ -83,3 +110,5 @@ Données : https://www.dcode.fr/donnees-exif
 
 - Google Chrome
 - Mozilla Firefox
+- Opera
+- Brave

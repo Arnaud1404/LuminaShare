@@ -1,0 +1,16 @@
+{
+  "entryPoints": [
+    "src/components/http-api.ts",
+    "src/components/images.ts",
+    "src/components/users.ts"
+  ],
+  "out": "../docs/api/frontend",
+  "name": "LuminaShare Frontend API",
+  "excludePrivate": false,
+  "excludeExternals": false,
+  "includeVersion": true,
+  "categorizeByGroup": true,
+  "categoryOrder": ["Authentication", "Image", "User", "*"],
+  "readme": "none",
+  "skipErrorChecking": true
+}
