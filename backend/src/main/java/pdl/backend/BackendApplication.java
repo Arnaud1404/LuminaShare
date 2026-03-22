@@ -15,18 +15,22 @@ public class BackendApplication {
 			System.exit(1);
 		}
 
-		if (dbUrl.startsWith("postgres://")) {
+		if (dbUrl.startsWith("postgres://") || dbUrl.startsWith("postgresql://")) {
 			try {
 				java.net.URI dbUri = new java.net.URI(dbUrl);
 				String username = dbUri.getUserInfo().split(":")[0];
 				String password = dbUri.getUserInfo().split(":")[1];
-				String dbUrlJdbc = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
+				String dbUrlJdbc = "jdbc:postgresql://" + dbUri.getHost() + (dbUri.getPort() != -1 ? ":" + dbUri.getPort() : "") + dbUri.getPath();
+
+				if (dbUri.getQuery() != null) {
+					dbUrlJdbc += "?" + dbUri.getQuery();
+				}
 
 				System.setProperty("spring.datasource.url", dbUrlJdbc);
 				System.setProperty("spring.datasource.username", username);
 				System.setProperty("spring.datasource.password", password);
 			} catch (Exception e) {
-				System.err.println("FATAL ERROR: Malformed DATABASE_URL.");
+				System.err.println("FATAL ERROR: Malformed DATABASE_URL: " + e.getMessage());
 				System.exit(1);
 			}
 		} else {
