@@ -59,7 +59,7 @@ const submitFile = async () => {
   <Notification ref="notification" />
   <div class="upload-area">
     <input type="file" @change="handleFileUpload" />
-    <button @click="submitFile" :disabled="isUploading || !isFileValid">
+    <button class="upload-btn" @click="submitFile" :disabled="isUploading || !isFileValid">
       {{ isUploading ? $t('button.uploading') : $t('button.upload') }}
     </button>
   </div>
@@ -70,5 +70,19 @@ const submitFile = async () => {
   display: flex;
   gap: 10px;
   align-items: center;
+}
+
+.upload-btn {
+  background-color: #3a3f4b;
+  color: #fff;
+  border: 1px solid #5a6070;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+}
+
+.upload-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 </style>
