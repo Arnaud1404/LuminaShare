@@ -4,11 +4,13 @@ import { loadAllPublicImages } from './http-api';
 import { type ImageGallery } from './images.ts';
 import UserImages from './UserImages.vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 const publicImages = ref<ImageGallery[]>([]);
 const loading = ref(true);
 const router = useRouter();
 const error = ref<string | null>(null);
+const { t } = useI18n();
 
 async function loadPublicImages() {
   try {
@@ -27,7 +29,7 @@ async function loadPublicImages() {
     }
   } catch (err) {
     console.error('Error loading public images:', err);
-    error.value = 'Failed to load images. Please try again later.';
+    error.value = t('home.error_load');
   } finally {
     loading.value = false;
   }
@@ -52,21 +54,21 @@ onMounted(() => {
 <template>
   <div class="home-container">
     <div class="compact-header">
-      <h1>Image Gallery</h1>
+      <h1>{{ $t('home.title') }}</h1>
     </div>
 
     <div v-if="loading" class="loading-container">
       <div class="loading-spinner"></div>
-      <p>Loading amazing images...</p>
+      <p>{{ $t('home.loading') }}</p>
     </div>
 
     <div v-else-if="error" class="error-container">
       <p>{{ error }}</p>
-      <button @click="loadPublicImages" class="retry-button">Try Again</button>
+      <button @click="loadPublicImages" class="retry-button">{{ $t('home.retry') }}</button>
     </div>
 
     <div v-else-if="publicImages.length === 0" class="empty-state">
-      <p>No public images available yet.</p>
+      <p>{{ $t('home.empty') }}</p>
     </div>
 
     <div v-else class="images-container">

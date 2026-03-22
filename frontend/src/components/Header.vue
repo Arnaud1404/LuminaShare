@@ -83,7 +83,7 @@ function handleLogout() {
         <div class="user-info nav-link">
           {{ currentUser?.name }}
         </div>
-        <a href="#" class="nav-link" @click.prevent="handleLogout"> Déconnexion </a>
+        <a href="#" class="nav-link" @click.prevent="handleLogout">{{ $t('header.logout') }}</a>
       </template>
     </div>
   </nav>

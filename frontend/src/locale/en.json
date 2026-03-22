@@ -6,7 +6,15 @@
     "users": "Others",
     "edit": "Edit",
     "login": "Login",
-    "register": "Register"
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "home": {
+    "title": "Image Gallery",
+    "loading": "Loading amazing images...",
+    "retry": "Try Again",
+    "empty": "No public images available yet.",
+    "error_load": "Failed to load images. Please try again later."
   },
   "display_image": {
     "title": "Image",
@@ -17,12 +25,16 @@
     "title": "Similar images - The lower the score, the more similar the image"
   },
   "upload_img": {
-    "title": "Upload an image"
+    "title": "Upload an image",
+    "invalid_type": "Invalid file type. Only JPEG and PNG are accepted.",
+    "success": "Image uploaded successfully",
+    "failed": "Upload failed"
   },
   "button": {
     "3D": "3D RGB",
     "2D": "2D Hue Saturation",
     "upload": "Upload",
+    "uploading": "Uploading...",
     "delete": "Delete",
     "download": "Download",
     "metadata": "Metadata",
@@ -71,7 +83,11 @@
     "no_bio": "No bio provided",
     "your_photos": "Your Photos",
     "user_photos": "{username}'s Photos",
-    "loading_images": "Loading images..."
+    "loading_images": "Loading images...",
+    "pending_approval": "Pending approval",
+    "like_login_required": "Please log in to like images",
+    "privacy_public": "Public",
+    "privacy_private": "Private"
   },
   "users": {
     "title": "Users"

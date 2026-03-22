@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { uploadImage } from './http-api';
 import Notification, { type NotificationType } from './Notification.vue';
 
@@ -12,13 +13,14 @@ const file = ref<File | null>(null);
 const isUploading = ref(false);
 const isFileValid = ref(false);
 const allowedFileTypes = ['image/jpeg', 'image/png'];
+const { t } = useI18n();
 
 watchEffect(() => {
   if (file.value) {
     isFileValid.value = allowedFileTypes.includes(file.value.type);
     if (!isFileValid.value) {
       notification.value?.showNotification(
-        'Type de fichier non valide. Seuls JPEG et PNG sont acceptés.',
+        t('upload_img.invalid_type'),
         'error'
       );
     }
@@ -39,10 +41,10 @@ const submitFile = async () => {
   isUploading.value = true;
   try {
     await uploadImage(file.value);
-    notification.value?.showNotification('Image téléversée avec succès', 'success');
+    notification.value?.showNotification(t('upload_img.success'), 'success');
     emit('uploaded');
   } catch (error: any) {
-    notification.value?.showNotification('Échec du téléversement', 'error');
+    notification.value?.showNotification(t('upload_img.failed'), 'error');
   } finally {
     file.value = null;
     isFileValid.value = false;
@@ -58,7 +60,7 @@ const submitFile = async () => {
   <div class="upload-area">
     <input type="file" @change="handleFileUpload" />
     <button @click="submitFile" :disabled="isUploading || !isFileValid">
-      {{ isUploading ? 'Téléversement...' : 'Téléverser' }}
+      {{ isUploading ? $t('button.uploading') : $t('button.upload') }}
     </button>
   </div>
 </template>

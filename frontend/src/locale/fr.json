@@ -6,7 +6,15 @@
     "users": "Les autres",
     "edit": "Modifier",
     "login": "Connexion",
-    "register": "S'inscrire"
+    "register": "S'inscrire",
+    "logout": "Déconnexion"
+  },
+  "home": {
+    "title": "Galerie d'images",
+    "loading": "Chargement des images...",
+    "retry": "Réessayer",
+    "empty": "Aucune image publique disponible pour le moment.",
+    "error_load": "Impossible de charger les images. Veuillez réessayer plus tard."
   },
   "display_image": {
     "title": "Image",
@@ -17,7 +25,10 @@
     "title": "Images similaires - Plus le score est bas, plus l'image est similaire"
   },
   "upload_img": {
-    "title": "Téléverser une image"
+    "title": "Téléverser une image",
+    "invalid_type": "Type de fichier non valide. Seuls JPEG et PNG sont acceptés.",
+    "success": "Image téléversée avec succès",
+    "failed": "Échec du téléversement"
   },
   "button": {
     "3D": "3D RGB",
@@ -72,7 +83,11 @@
     "no_bio": "Aucune biographie fournie",
     "your_photos": "Vos Photos",
     "user_photos": "Photos de {username}",
-    "loading_images": "Chargement des images..."
+    "loading_images": "Chargement des images...",
+    "pending_approval": "En attente d'approbation",
+    "like_login_required": "Veuillez vous connecter pour aimer les images",
+    "privacy_public": "Publique",
+    "privacy_private": "Privée"
   },
   "users": {
     "title": "Les Utilisateurs"

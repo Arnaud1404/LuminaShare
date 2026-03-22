@@ -3,12 +3,14 @@ import { type ImageGallery } from './images';
 import { toggleLike, checkLikeStatus, toggleImagePrivacy } from './http-api';
 import { currentUser } from './users';
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   images: ImageGallery[],
   showPrivacyToggle?: boolean
 }>();
 const emit = defineEmits(['select', 'imageUpdated']);
+const { t } = useI18n();
 
 onMounted(async () => {
   if (currentUser.value?.userid) {
@@ -30,7 +32,7 @@ async function handleLike(event: Event, image: ImageGallery) {
   event.stopPropagation(); 
 
   if (!currentUser.value?.userid) {
-    alert('Please log in to like images');
+    alert(t('user.like_login_required'));
     return;
   }
 
@@ -74,7 +76,7 @@ async function togglePrivacy(event: Event, image: ImageGallery) {
       <div class="card-footer">
         <div class="image-name">
           {{ image.name }}
-          <span v-if="image.isapproved === false"> - Pending approval</span>
+          <span v-if="image.isapproved === false"> - {{ $t('user.pending_approval') }}</span>
         </div>
         <div class="card-actions">
           <div class="likes-container">
@@ -89,7 +91,7 @@ async function togglePrivacy(event: Event, image: ImageGallery) {
             v-if="showPrivacyToggle"
             @click="(e) => togglePrivacy(e, image)" 
             class="privacy-toggle"
-            :title="image.ispublic ? 'Public' : 'Private'">
+            :title="image.ispublic ? $t('user.privacy_public') : $t('user.privacy_private')">
             {{ image.ispublic ? '🌎' : '🔒' }}
           </button>
         </div>
