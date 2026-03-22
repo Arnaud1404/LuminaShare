@@ -253,6 +253,19 @@ public class ImageRepository implements InitializingBean {
     }
 
     /**
+     * Ensures a startup/default image is visible in home feed by forcing
+     * admin ownership, public visibility and approved status.
+     *
+     * @param imageName image file name
+     */
+    public void ensureStartupImageVisibility(String imageName) {
+        jdbcTemplate.update(
+                "UPDATE " + databaseTable
+                        + " SET userid = 'admin', ispublic = true, is_approved = true WHERE name = ?",
+                imageName);
+    }
+
+    /**
      * Gets all images belonging to a specific user
      */
     public List<Image> getByUserId(String userid) {

@@ -65,6 +65,7 @@ public class ImageService {
                         if (!imageRepository.imageExists(file.getName())) {
                             imageRepository.addDatabase(image);
                         }
+                        imageRepository.ensureStartupImageVisibility(file.getName());
                         System.out.println("Image chargée : " + file.getName());
                     } catch (IOException e) {
                         throw new RuntimeException(
@@ -108,6 +109,7 @@ public class ImageService {
                         if (!imageRepository.imageExists(file.getName())) {
                             imageRepository.addDatabase(image);
                         }
+                        imageRepository.ensureStartupImageVisibility(file.getName());
                         System.out.println("Image chargée : " + file.getName());
                     } catch (IOException e) {
                         throw new RuntimeException(
