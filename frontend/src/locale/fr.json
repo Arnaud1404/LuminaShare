@@ -6,11 +6,11 @@
     "users": "Les autres",
     "edit": "Modifier",
     "login": "Connexion",
-    "register": "S''inscrire",
+    "register": "S inscrire",
     "logout": "Déconnexion"
   },
   "home": {
-    "title": "Galerie d''images",
+    "title": "Galerie images",
     "loading": "Chargement des images...",
     "retry": "Réessayer",
     "empty": "Aucune image publique disponible pour le moment.",
@@ -18,11 +18,11 @@
   },
   "display_image": {
     "title": "Image",
-    "loading": "Chargement de l''image ...",
+    "loading": "Chargement image ...",
     "no-image": "Aucune image sélectionnée"
   },
   "image_similar": {
-    "title": "Images similaires - Plus le score est bas, plus l''image est similaire"
+    "title": "Images similaires - Plus le score est bas, plus image est similaire"
   },
   "upload_img": {
     "title": "Téléverser une image",
@@ -75,8 +75,8 @@
     "title": "Mon profil",
     "loading_profile": "Chargement du profil...",
     "user_not_found": "Utilisateur introuvable",
-    "no_photos_you": "Vous n''avez pas encore téléchargé de photos.",
-    "no_photos_other": "Cet utilisateur n''a pas encore téléchargé de photos.",
+    "no_photos_you": "Vous navez pas encore telecharge de photos.",
+    "no_photos_other": "Cet utilisateur na pas encore telecharge de photos.",
     "upload_photos": "Télécharger des photos",
     "your_profile": "Votre Profil",
     "user_profile": "Profil de {username}",
@@ -84,7 +84,7 @@
     "your_photos": "Vos Photos",
     "user_photos": "Photos de {username}",
     "loading_images": "Chargement des images...",
-    "pending_approval": "En attente d''approbation",
+    "pending_approval": "En attente approbation",
     "like_login_required": "Veuillez vous connecter pour aimer les images",
     "privacy_public": "Publique",
     "privacy_private": "Privée"
