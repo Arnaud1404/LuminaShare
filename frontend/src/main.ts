@@ -11,10 +11,34 @@ if (!document.cookie.includes('locale')) {
     document.cookie = 'locale=EN';
 }
 
+const localeCookie = document.cookie
+    .split(';')
+    .map((cookie) => cookie.trim())
+    .find((cookie) => cookie.startsWith('locale='))
+    ?.split('=')[1];
+
+const locale = ['EN', 'FR', 'AR'].includes(localeCookie || '') ? localeCookie : 'EN';
+
+const safeMessageCompiler = (message: unknown) => {
+    return (ctx: any) => {
+        if (typeof message !== 'string') {
+            return '';
+        }
+
+        return message.replace(/\{(\w+)\}/g, (_match, key) => {
+            const value = ctx?.named?.(key);
+            return value == null ? `{${key}}` : String(value);
+        });
+    };
+};
+
 // createApp(App).use(router).mount('#app')
 
 const i18n = createI18n({
-    locale: document.cookie.split('=')[1] || 'EN',
+    allowComposition: true,
+    locale,
+    fallbackLocale: 'EN',
+    messageCompiler: safeMessageCompiler,
     messages: {
         EN: EN,
         FR: FR,
