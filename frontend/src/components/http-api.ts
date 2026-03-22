@@ -123,8 +123,12 @@ async function getSimilarImagesAsJSON(
  * @return {*}  {Promise<string>} String representing the image pixels
  */
 export async function loadImageData(imageID: number): Promise<string> {
+  const currentUserid = currentUser.value?.userid
+    ? `?currentUserid=${encodeURIComponent(currentUser.value.userid)}`
+    : '';
+
   return axios
-    .get(`/images/${imageID}`, { responseType: 'blob' })
+    .get(`/images/${imageID}${currentUserid}`, { responseType: 'blob' })
     .then(function (response: AxiosResponse) {
       return new Promise<string>((resolve) => {
         const reader = new window.FileReader();

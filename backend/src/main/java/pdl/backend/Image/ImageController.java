@@ -56,9 +56,12 @@ public class ImageController {
    */
   @RequestMapping(value = "/images/{id}", method = RequestMethod.GET, produces = { MediaType.IMAGE_JPEG_VALUE,
       MediaType.IMAGE_PNG_VALUE })
-  public ResponseEntity<?> getImage(@PathVariable("id") long id) throws IOException {
+  public ResponseEntity<?> getImage(@PathVariable("id") long id,
+      @RequestParam(value = "currentUserid", required = false) String currentUserid) throws IOException {
     Image imgInfo = imageRepository.getById(id);
-    if (imgInfo != null && imgInfo.isApproved()) {
+    boolean canAccess = imgInfo != null
+        && (imgInfo.isApproved() || (currentUserid != null && currentUserid.equals(imgInfo.getUserid())));
+    if (canAccess) {
       byte[] bytes = null;
       java.io.File imgFile = FileController.get_file(imgInfo.getName());
       if (imgFile != null && imgFile.exists()) {
