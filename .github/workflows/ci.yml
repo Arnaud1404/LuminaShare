@@ -19,6 +19,22 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Start PostgreSQL container
+      run: |
+        docker run -d \
+          --name postgres-db \
+          -e POSTGRES_USER=imagedb \
+          -e POSTGRES_PASSWORD=password \
+          -e POSTGRES_DB=imagedb \
+          -p 5432:5432 \
+          pgvector/pgvector:pg16
+        
+        # Wait for PostgreSQL to be ready
+        until docker exec postgres-db pg_isready -U imagedb; do
+          echo "Waiting for PostgreSQL..."
+          sleep 2
+        done
+
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
@@ -32,7 +48,7 @@ jobs:
         cache: 'maven'
 
     - name: Build with Maven
-      run: mvn --batch-mode compile
+      run: cd backend && ./mvnw --batch-mode compile
 
     - name: Test with Maven
-      run: mvn --batch-mode test
+      run: cd backend && ./mvnw --batch-mode test
