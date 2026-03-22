@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
@@ -39,9 +40,12 @@ public class ImageControllerTests {
     @Autowired
     private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
+    @Value("${DATABASE_TABLE:imageDatabase}")
+    private String databaseTable;
+
 	private long getImageIdByName(String fileName) {
 		Long id = jdbcTemplate.queryForObject(
-				"SELECT id FROM imageDatabase WHERE name = ? ORDER BY id DESC LIMIT 1",
+				"SELECT id FROM " + databaseTable + " WHERE name = ? ORDER BY id DESC LIMIT 1",
 				Long.class,
 				fileName);
 		if (id == null) {
@@ -51,7 +55,7 @@ public class ImageControllerTests {
 	}
 
 	private void approveImageByName(String fileName) {
-		jdbcTemplate.update("UPDATE imageDatabase SET is_approved = true WHERE name = ?", fileName);
+		jdbcTemplate.update("UPDATE " + databaseTable + " SET is_approved = true WHERE name = ?", fileName);
 	}
 
 	@Autowired

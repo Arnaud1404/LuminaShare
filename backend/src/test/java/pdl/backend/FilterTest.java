@@ -24,7 +24,7 @@ import pdl.backend.Image.ImageDao;
 
 import org.springframework.http.MediaType;
 
-@SpringBootTest
+@SpringBootTest(properties = "DATABASE_TABLE=imageDatabase")
 @AutoConfigureMockMvc
 @TestMethodOrder(OrderAnnotation.class)
 public class FilterTest {
