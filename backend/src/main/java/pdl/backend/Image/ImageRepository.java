@@ -47,6 +47,7 @@ public class ImageRepository implements InitializingBean {
         img.setUserid(rs.getString("userid"));
         img.setPublic(rs.getBoolean("ispublic"));
         img.setLikes(rs.getInt("likes"));
+        img.setApproved(rs.getBoolean("is_approved"));
         return img;
     };
 
@@ -239,10 +240,10 @@ public class ImageRepository implements InitializingBean {
         try {
             jdbcTemplate.update(
                     "INSERT INTO " + databaseTable
-                            + " (name, type, size, rgbcube, hueSat, userid, ispublic, likes) "
-                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                            + " (name, type, size, rgbcube, hueSat, userid, ispublic, likes, is_approved) "
+                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     img.getName(), img.getType().toString(), img.getSize(), rgbcube, hueSat,
-                    img.getUserid(), img.isPublic(), img.getLikes());
+                    img.getUserid(), img.isPublic(), img.getLikes(), img.isApproved());
             img.setHueSat(hueSat);
             img.setRgbCube(rgbcube);
             return 1;

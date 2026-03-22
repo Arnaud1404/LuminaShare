@@ -45,6 +45,10 @@ public class ImageDao implements Dao<Image> {
    * @throws RuntimeException if image processing fails
    */
   public Image saveImage(String fileName, byte[] fileContent) {
+      return saveImage(fileName, fileContent, false, false);
+  }
+
+  public Image saveImage(String fileName, byte[] fileContent, boolean isApproved, boolean isPublic) {
     try {
       BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(fileContent));
 
@@ -55,6 +59,9 @@ public class ImageDao implements Dao<Image> {
 
       Image img = new Image(FileController.directory_location.toString(), fileName, fileContent,
           type, width, height);
+
+      img.setApproved(isApproved);
+      img.setPublic(isPublic);
 
       this.create(img);
       return img;

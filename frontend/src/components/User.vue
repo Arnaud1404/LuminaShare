@@ -109,10 +109,6 @@ onMounted(() => {
 
     <div v-else-if="!userExists" class="error-message">{{ $t('user.user_not_found') }}</div>
 
-    <div v-else-if="userImages.length === 0" class="no-images">
-      <p>{{ isOwnProfile ? $t('user.no_photos_you') : $t('user.no_photos_other') }}</p>
-    </div>
-
     <div v-else>
       <div class="profile-header">
         <h1>

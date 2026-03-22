@@ -60,7 +60,7 @@ public class ImageService {
                 if (file.isFile() && isValidImage(file.getName())) {
                     try {
                         byte[] fileContent = Files.readAllBytes(file.toPath());
-                        Image image = imageDao.saveImage(file.getName(), fileContent);
+                        Image image = imageDao.saveImage(file.getName(), fileContent, true, true);
 
                         if (!imageRepository.imageExists(file.getName())) {
                             imageRepository.addDatabase(image);
@@ -103,7 +103,7 @@ public class ImageService {
                 if (file.isFile() && isValidImage(file.getName())) {
                     try {
                         byte[] fileContent = Files.readAllBytes(file.toPath());
-                        Image image = imageDao.saveImage(file.getName(), fileContent);
+                        Image image = imageDao.saveImage(file.getName(), fileContent, true, true);
 
                         if (!imageRepository.imageExists(file.getName())) {
                             imageRepository.addDatabase(image);

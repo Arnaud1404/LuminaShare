@@ -57,7 +57,8 @@ public class DatabaseInitializer implements InitializingBean {
                         + "name character varying(255) UNIQUE, " + "type character varying(10), "
                         + "size character varying(255), " + "rgbcube vector(512), "
                         + "hueSat vector(101), " + "userid VARCHAR(50) REFERENCES users(userid), "
-                        + "ispublic BOOLEAN DEFAULT false, " + "likes INT DEFAULT 0" + ")");
+                        + "ispublic BOOLEAN DEFAULT false, " + "likes INT DEFAULT 0, "
+                        + "is_approved BOOLEAN DEFAULT false" + ")");
 
         System.out.println("Image table initialized");
 
