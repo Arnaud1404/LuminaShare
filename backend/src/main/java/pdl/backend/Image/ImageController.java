@@ -278,6 +278,7 @@ public class ImageController {
         img_json.put("similarity", img.getSimilarityScore());
         img_json.put("url", "/images/" + img.getId());
         img_json.put("ispublic", img.isPublic());
+        img_json.put("isapproved", img.isApproved());
         img_json.put("likes", img.getLikes());
         if (img.getUserid() != null) {
           img_json.put("userid", img.getUserid());

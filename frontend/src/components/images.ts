@@ -17,6 +17,7 @@ export interface ImageGallery {
   similarity?: number;
   userid?: string;
   ispublic: boolean;
+  isapproved?: boolean;
   likes: number;
   isLiked?: boolean;
 }

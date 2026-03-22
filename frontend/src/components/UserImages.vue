@@ -72,7 +72,10 @@ async function togglePrivacy(event: Event, image: ImageGallery) {
         <img v-if="image.dataUrl" :src="image.dataUrl" :alt="image.name" />
       </div>
       <div class="card-footer">
-        <div class="image-name">{{ image.name }}</div>
+        <div class="image-name">
+          {{ image.name }}
+          <span v-if="image.isapproved === false"> - Pending approval</span>
+        </div>
         <div class="card-actions">
           <div class="likes-container">
             <span class="like-count">{{ image.likes || 0 }}</span>
