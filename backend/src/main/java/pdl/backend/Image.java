@@ -21,6 +21,7 @@ public class Image {
   private PGvector hueSat;
   private float similarityScore;
   private byte[] data;
+  private boolean isApproved = false;
 
   /**
    * Constructs a new Image instance with the specified parameters.
@@ -109,6 +110,14 @@ public class Image {
 
   public float getSimilarityScore() {
     return this.similarityScore;
+  }
+
+  public boolean isApproved() {
+    return isApproved;
+  }
+
+  public void setApproved(boolean isApproved) {
+    this.isApproved = isApproved;
   }
 
   public static long getCount() {

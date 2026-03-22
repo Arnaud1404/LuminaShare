@@ -38,6 +38,13 @@ public class ImageControllerTests {
 	public static void reset (){
 		System.out.println("nb d'image dans dao"+ImageDao.getImageCount());
 	}
+	@Autowired
+	private ImageDao imageDao;
+
+	@org.junit.jupiter.api.BeforeEach
+	public void setup() {
+		imageDao.retrieveAll().forEach(img -> img.setApproved(true));
+	}
 
 	@Test
 	@Order(1)

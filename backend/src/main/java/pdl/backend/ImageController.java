@@ -55,7 +55,7 @@ public class ImageController {
       MediaType.IMAGE_PNG_VALUE })
   public ResponseEntity<?> getImage(@PathVariable("id") long id) throws IOException {
     Optional<Image> img = imageDao.retrieve(id);
-    if (img.isPresent()) {
+    if (img.isPresent() && img.get().isApproved()) {
       byte[] bytes = img.get().getData();
       MediaType mediaType = img.get().getType();
       return ResponseEntity
@@ -151,6 +151,9 @@ public class ImageController {
     ArrayNode nodes = mapper.createArrayNode();
     List<Image> imgs = imageDao.retrieveAll();
     for (Image img : imgs) {
+      if (!img.isApproved()) {
+        continue;
+      }
       ObjectNode img_json = mapper.createObjectNode();
       img_json.put("id", img.getId());
       img_json.put("name", img.getName());
@@ -185,6 +188,9 @@ public class ImageController {
 
       ArrayNode nodes = mapper.createArrayNode();
       for (Image img : similarImages) {
+        if (!img.isApproved()) {
+          continue;
+        }
         ObjectNode img_json = mapper.createObjectNode();
         img_json.put("id", img.getId());
         img_json.put("name", img.getName());

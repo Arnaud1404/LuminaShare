@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: ${DATABASE_NAME:-imagedb}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-password}
     ports:
-      - "127.0.0.1::5432"
+      - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     restart: always
@@ -30,7 +30,9 @@ services:
       - DATABASE_NAME=${DATABASE_NAME:-imagedb}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD:-password}
       - DATABASE_TABLE=${DATABASE_TABLE:-imageDatabase}
+      - DATABASE_URL=postgres://${DATABASE_NAME:-imagedb}:${DATABASE_PASSWORD:-password}@postgres:5432/${DATABASE_NAME:-imagedb}
       - SPRING_PROFILES_ACTIVE=docker
+      - PORT=8181
     ports:
       - "8182:8181"
     volumes:
