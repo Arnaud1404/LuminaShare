@@ -14,10 +14,13 @@ Une application de partage de photos développée par Arnaud Gomes, Kamiel De Vo
 1. Créez un fichier `.env` à la racine avec les variables suivantes:
 
    ```
-   DATABASE_NAME=<nom>
-   DATABASE_PASSWORD=<motdepasse>
-   DATABASE_PATH=pgsql # au CREMI, ou localhost pour un environnement local
+   # Obligatoire (utilisé par le backend au démarrage)
+   DATABASE_URL=postgres://imagedb:password@localhost:5432/imagedb
+
+   # Optionnel
    DATABASE_TABLE=imageDatabase # nom de la table pour stocker les images
+   DATABASE_RESET=true          # reset des tables au démarrage
+   PORT=3000                    # port backend local
    ```
 
 ### Localement
